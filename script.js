@@ -3,7 +3,7 @@
 // UTILISATEURS NORMAUX
 const USERS = {
   paul: { password: "azd0i91kzao!&" },
-  theo: { password: "0kzdaéOadZo91" }
+  theo: { password: "0kzda1910Kz" }
 };
 
 // ADMINISTRATEURS
@@ -217,4 +217,5 @@ function del(id) {
   loadStickers();
 
 }
+
 
