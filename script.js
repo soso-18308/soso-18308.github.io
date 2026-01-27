@@ -8,7 +8,7 @@ const USERS = {
 
 // ADMINISTRATEURS
 const ADMINS = {
-  admin: { password: "JAOIAé&11k021KDZok" }
+  admin: { password: "JAOIAe&11k021KDZok" }
 };
 
 const STICKERS_KEY = "ss_stickers";
@@ -66,6 +66,8 @@ function login() {
   const p = document.getElementById('password').value;
   const msg = document.getElementById("loginMsg");
   msg.innerHTML = "";
+
+  console.log("Tentative de connexion:", u); // Debug
 
   // Vérifier d'abord dans les admins
   if (ADMINS[u] && ADMINS[u].password === p) {
@@ -215,7 +217,4 @@ function del(id) {
   });
   localStorage.setItem(STICKERS_KEY, JSON.stringify(stickers));
   loadStickers();
-
 }
-
-
