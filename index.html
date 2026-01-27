@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>StickerShare</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link href="https://fonts.googleapis.com/css2?family=Righteous&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<!-- LOGIN -->
+<div id="login" class="login-screen">
+  <div class="login-box">
+    <h2>StickerShare</h2>
+    <p class="subtitle">Partage tes meilleurs stickers</p>
+    <div class="input-group">
+      <label>Nom d'utilisateur</label>
+      <input id="username" autocomplete="username">
+    </div>
+    <div class="input-group">
+      <label>Mot de passe</label>
+      <input id="password" type="password" autocomplete="current-password">
+    </div>
+    <button onclick="login()">Se connecter</button>
+    <div id="loginMsg"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app" class="app">
+  <header>
+    <div class="brand">
+      <h1>StickerShare</h1>
+    </div>
+    <div class="user-info">
+      <div class="user-badge">
+        <strong id="userName"></strong>
+        <span id="userRole"></span>
+      </div>
+      <button onclick="logout()">Déconnexion</button>
+    </div>
+  </header>
+
+  <div class="upload-section">
+    <div class="upload-card">
+      <h3>Partager un sticker</h3>
+      <p class="subtitle">Télécharge ton image et choisis une catégorie</p>
+      <div class="upload-grid">
+        <div class="file-input-wrapper">
+          <input type="file" id="file" accept="image/*">
+          <label class="file-input-label" for="file">
+            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+            <span id="fileLabel">Choisir une image</span>
+          </label>
+        </div>
+        <input type="text" id="customCategory" placeholder="Nom de la catégorie (ex: Memes, Anime, Citations...)">
+      </div>
+      <button onclick="upload()">Publier le sticker</button>
+    </div>
+  </div>
+
+  <div class="stickers-section">
+    <h3>Tous les stickers</h3>
+    <div class="grid" id="grid"></div>
+  </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
