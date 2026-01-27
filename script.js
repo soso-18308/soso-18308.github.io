@@ -2,11 +2,7 @@
 
 // UTILISATEURS NORMAUX
 const USERS = {
-  lucas: { password: "lucas123" },
-  marie: { password: "marie456" },
-  thomas: { password: "thomas789" },
-  sarah: { password: "sarah321" },
-  test: { password: "test123" }
+  paul: { password: "azd0i91kzao!&" }
 };
 
 // ADMINISTRATEURS
@@ -218,4 +214,5 @@ function del(id) {
   });
   localStorage.setItem(STICKERS_KEY, JSON.stringify(stickers));
   loadStickers();
+
 }
