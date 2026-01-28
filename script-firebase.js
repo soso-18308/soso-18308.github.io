@@ -22,7 +22,9 @@ const database = getDatabase(app);
 // UTILISATEURS NORMAUX
 const USERS = {
   paul: { password: "azd0i91kzao!&" },
-  theo: { password: "0kzda1910Kz" }
+  theo: { password: "0kzda1910Kz" },
+  timothe: { password: "dza&1791ji!" },
+  samuel: { password: "azd10fa0219!" }
 };
 
 // ADMINISTRATEURS
@@ -35,6 +37,11 @@ let currentUser = null;
 let isAdmin = false;
 let notificationsEnabled = false;
 let lastStickerCount = 0;
+let unreadMessages = 0;
+let localStream = null;
+let remoteStream = null;
+let peerConnection = null;
+let callDurationInterval = null;
 
 /* ================= INIT ================= */
 
@@ -203,6 +210,12 @@ function showApp() {
   // Vérifier le statut des notifications
   checkNotificationStatus();
   
+  // Charger le chat
+  loadChat();
+  
+  // Écouter les appels entrants
+  listenForIncomingCalls();
+  
   // Écouter les changements en temps réel
   loadStickers();
 }
@@ -356,4 +369,266 @@ window.downloadSticker = function(id, category, imageData) {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+}
+
+/* ================= CHAT ================= */
+
+window.toggleChat = function() {
+  const sidebar = document.getElementById('chatSidebar');
+  sidebar.classList.toggle('open');
+  
+  if (sidebar.classList.contains('open')) {
+    unreadMessages = 0;
+    document.getElementById('chatBadge').style.display = 'none';
+    loadChat();
+  }
+}
+
+window.sendMessage = function() {
+  const input = document.getElementById('chatInput');
+  const message = input.value.trim();
+  
+  if (!message) return;
+  
+  const messagesRef = ref(database, 'chat');
+  const newMessageRef = push(messagesRef);
+  
+  set(newMessageRef, {
+    author: currentUser,
+    message: message,
+    timestamp: Date.now()
+  }).then(function() {
+    input.value = '';
+  });
+}
+
+function loadChat() {
+  const messagesRef = ref(database, 'chat');
+  
+  onValue(messagesRef, function(snapshot) {
+    const data = snapshot.val();
+    const container = document.getElementById('chatMessages');
+    
+    if (!data) {
+      container.innerHTML = '<div style="text-align:center;color:var(--text-dim);padding:20px;">Aucun message pour le moment 💬</div>';
+      return;
+    }
+    
+    const messages = Object.keys(data).map(function(key) {
+      return {
+        id: key,
+        ...data[key]
+      };
+    });
+    
+    messages.sort(function(a, b) {
+      return a.timestamp - b.timestamp;
+    });
+    
+    // Compter les nouveaux messages
+    const sidebar = document.getElementById('chatSidebar');
+    if (!sidebar.classList.contains('open')) {
+      const newMsgs = messages.filter(m => m.author !== currentUser && m.timestamp > (Date.now() - 60000));
+      if (newMsgs.length > 0) {
+        unreadMessages = newMsgs.length;
+        const badge = document.getElementById('chatBadge');
+        badge.textContent = unreadMessages;
+        badge.style.display = 'block';
+      }
+    }
+    
+    container.innerHTML = '';
+    
+    messages.forEach(function(msg) {
+      const div = document.createElement('div');
+      div.className = 'chat-message' + (msg.author === currentUser ? ' own' : '');
+      
+      const time = new Date(msg.timestamp);
+      const timeStr = time.getHours().toString().padStart(2, '0') + ':' + 
+                      time.getMinutes().toString().padStart(2, '0');
+      
+      div.innerHTML = `
+        ${msg.author !== currentUser ? `<div class="author">@${msg.author}</div>` : ''}
+        <div class="bubble">${msg.message}</div>
+        <div class="time">${timeStr}</div>
+      `;
+      
+      container.appendChild(div);
+    });
+    
+    // Scroll vers le bas
+    container.scrollTop = container.scrollHeight;
+  });
+}
+
+// Support Enter pour envoyer
+document.addEventListener('DOMContentLoaded', function() {
+  const chatInput = document.getElementById('chatInput');
+  if (chatInput) {
+    chatInput.addEventListener('keypress', function(e) {
+      if (e.key === 'Enter') {
+        sendMessage();
+      }
+    });
+  }
+});
+
+/* ================= APPELS ================= */
+
+window.toggleCall = function() {
+  const panel = document.getElementById('callPanel');
+  panel.classList.toggle('open');
+  
+  if (panel.classList.contains('open')) {
+    loadOnlineUsers();
+  }
+}
+
+function loadOnlineUsers() {
+  const container = document.getElementById('usersList');
+  container.innerHTML = '';
+  
+  // Créer une présence pour l'utilisateur actuel
+  const presenceRef = ref(database, 'presence/' + currentUser);
+  set(presenceRef, {
+    online: true,
+    lastSeen: Date.now()
+  });
+  
+  // Supprimer la présence à la déconnexion
+  window.addEventListener('beforeunload', function() {
+    set(presenceRef, {
+      online: false,
+      lastSeen: Date.now()
+    });
+  });
+  
+  // Écouter tous les utilisateurs
+  const allUsers = {...USERS, ...ADMINS};
+  
+  Object.keys(allUsers).forEach(function(username) {
+    if (username === currentUser) return; // Ne pas s'afficher soi-même
+    
+    const userDiv = document.createElement('div');
+    userDiv.className = 'user-item';
+    
+    // Vérifier si en ligne (simulation pour l'instant)
+    const isOnline = Math.random() > 0.5; // TODO: vérifier vraiment avec Firebase
+    
+    userDiv.innerHTML = `
+      <div class="user-info-item">
+        <div class="user-status ${isOnline ? '' : 'offline'}"></div>
+        <strong>@${username}</strong>
+      </div>
+      <button onclick="initiateCall('${username}')">📞 Appeler</button>
+    `;
+    
+    container.appendChild(userDiv);
+  });
+}
+
+window.initiateCall = function(targetUser) {
+  // Envoyer une notification d'appel
+  const callsRef = ref(database, 'calls/' + targetUser);
+  set(callsRef, {
+    from: currentUser,
+    status: 'ringing',
+    timestamp: Date.now()
+  });
+  
+  alert('📞 Appel en cours vers @' + targetUser + '... (en attente de réponse)');
+}
+
+window.acceptCall = function() {
+  document.getElementById('incomingCall').style.display = 'none';
+  document.getElementById('activeCall').style.display = 'flex';
+  
+  startCall();
+}
+
+window.declineCall = function() {
+  document.getElementById('incomingCall').style.display = 'none';
+}
+
+window.hangupCall = function() {
+  if (localStream) {
+    localStream.getTracks().forEach(track => track.stop());
+  }
+  
+  if (peerConnection) {
+    peerConnection.close();
+  }
+  
+  if (callDurationInterval) {
+    clearInterval(callDurationInterval);
+  }
+  
+  document.getElementById('activeCall').style.display = 'none';
+}
+
+window.toggleMute = function() {
+  if (localStream) {
+    const audioTrack = localStream.getAudioTracks()[0];
+    audioTrack.enabled = !audioTrack.enabled;
+    
+    const btn = document.querySelector('.btn-mute');
+    btn.textContent = audioTrack.enabled ? '🎤' : '🔇';
+  }
+}
+
+window.toggleVideo = function() {
+  if (localStream) {
+    const videoTrack = localStream.getVideoTracks()[0];
+    videoTrack.enabled = !videoTrack.enabled;
+    
+    const btn = document.querySelector('.btn-video');
+    btn.textContent = videoTrack.enabled ? '📹' : '📷';
+  }
+}
+
+async function startCall() {
+  try {
+    // Demander accès caméra + micro
+    localStream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true
+    });
+    
+    document.getElementById('localVideo').srcObject = localStream;
+    
+    // Démarrer le compteur de durée
+    let seconds = 0;
+    callDurationInterval = setInterval(function() {
+      seconds++;
+      const mins = Math.floor(seconds / 60);
+      const secs = seconds % 60;
+      document.getElementById('callDuration').textContent = 
+        mins.toString().padStart(2, '0') + ':' + secs.toString().padStart(2, '0');
+    }, 1000);
+    
+    // TODO: Implémenter WebRTC pour la connexion peer-to-peer
+    // (nécessite un serveur de signaling)
+    
+  } catch (error) {
+    console.error('Erreur accès média:', error);
+    alert('❌ Impossible d\'accéder à la caméra/micro. Vérifie les permissions.');
+  }
+}
+
+// Écouter les appels entrants
+function listenForIncomingCalls() {
+  const callsRef = ref(database, 'calls/' + currentUser);
+  
+  onValue(callsRef, function(snapshot) {
+    const data = snapshot.val();
+    
+    if (data && data.status === 'ringing') {
+      document.getElementById('callerName').textContent = '@' + data.from;
+      document.getElementById('incomingCall').style.display = 'block';
+      
+      // Jouer un son (optionnel)
+      const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYHGmi78OScTgcOUKzn77hiGwU7k9n0zXosBSh+zPLdkUALFmG36+uoVRQLSKPh9L1vIAUrlNXx3I4yBSOAzvHajjcHHG7A8eieTxALUK3o8LljHAU8lNr00XsrBSp/0PPckkAKFGG46+ypVRQLSaTi9b5wIAUsldjx3I4zBSOAz/HbjTcHHnC96+idThALUa7p8bllHAU9ld301XwrBSyBz/PclEAKFGO56+ypVRQKSqXh9cBxIAUrmNjx3I0zBSOB0PHbjjcHHnHA7OudTRALUq/q8bplHAU+ltv01X4rBSyCz/TclUAJFGS56+ypVRQKS6bi9cFxIAUsmdnx3I0zBSOB0PHbjjcHHnLA7OudTRALUrDq8bpmHAU/l9331X4rBSyC0PTcl0AJFmW56+ypVBQKSqfj9cJxIAUrmdnx3Y4yBSJ/z+/bjTYHH3HC7OqeThAKUbHp8rtnHAVAmdv115MrBSyC0fTdl0AJFmW66+ypVRQLSqfj9sJxIAUrmdrx3Y4zBSJ/0e/bjTYHHnHA7OqeThAKUrDp8rtnHAU/l9v01ZArBSyC0PTdl0AKFWO66+ypVRQLSqXj9cJxIAUsmdnx3Y4zBSJ/0O/bjTYGHnC/7OqeThEKUbDp8bpmHAU/l9v01ZErBSyC0PTdl0AKFWO66+ypVRQLSqXj9cJxIAUsmdnx3Y4zBSJ/0O/bjTYGHnC/7OqeThEKUbDp8bpmHAU/l9v01ZErBSyC0PTdl0AKFWO66+ypVRQLSqXj9cJxIAUsmdnx3Y4zBSJ/0O/bjTYGHnC/7OqeThEKUbDp8bpmHAU/l9v01ZErBSyC0PTdl0AKFWO66+ypVRQLSqXj9cJxIAUsmdnx3Y4zBSJ/0O/bjTYGHnC/7OqeThEKUbDp8bpmHAU/l9v01ZErBSyC0PTdl0AKFWO66+ypVRQLSqXj9cJxIAUsmdnx3Y4zBSJ/0O/bjTYGHnC/7OqeThEKUbDp8bpmHAU/l9v01ZErBSyC0PTdl0AK'); 
+      audio.play().catch(e => console.log('Audio play failed'));
+    }
+  });
 }
