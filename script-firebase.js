@@ -144,7 +144,9 @@ window.logout = function() {
 
 window.toggleNotifications = function() {
   const icon = document.getElementById('notifIcon');
-  const btn = document.querySelector('.btn-notif');
+  const btn = document.querySelector('.btn-icon[onclick*="toggleNotifications"]');
+  
+  if (!icon || !btn) return; // Protection contre null
   
   if (!notificationsEnabled) {
     // Activer les notifications
@@ -180,7 +182,9 @@ window.toggleNotifications = function() {
 function checkNotificationStatus() {
   const enabled = localStorage.getItem('notificationsEnabled') === 'true';
   const icon = document.getElementById('notifIcon');
-  const btn = document.querySelector('.btn-notif');
+  const btn = document.querySelector('.btn-icon[onclick*="toggleNotifications"]');
+  
+  if (!icon || !btn) return; // Protection contre null
   
   if (enabled && Notification.permission === 'granted') {
     notificationsEnabled = true;
