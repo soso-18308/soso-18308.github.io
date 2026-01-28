@@ -35,8 +35,15 @@
       <h1>StickerShare</h1>
     </div>
     <div class="user-info">
-      <button class="btn-notif" onclick="toggleNotifications()" title="Notifications">
-        <span id="notifIcon">🔔</span>
+      <button class="btn-icon" onclick="toggleCall()" title="Appels">
+        <span>📞</span>
+      </button>
+      <button class="btn-icon" onclick="toggleChat()" title="Chat">
+        <span id="chatIcon">💬</span>
+        <span class="badge" id="chatBadge" style="display:none;">0</span>
+      </button>
+      <button class="btn-icon" onclick="toggleNotifications()" title="Notifications">
+        <span id="notifIcon">🔕</span>
       </button>
       <div class="user-badge">
         <strong id="userName"></strong>
@@ -45,6 +52,57 @@
       <button onclick="logout()">Déconnexion</button>
     </div>
   </header>
+
+  <!-- CHAT SIDEBAR -->
+  <div id="chatSidebar" class="chat-sidebar">
+    <div class="chat-header">
+      <h3>💬 Chat général</h3>
+      <button class="btn-close" onclick="toggleChat()">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages"></div>
+    <div class="chat-input-container">
+      <input type="text" id="chatInput" placeholder="Écris un message..." />
+      <button onclick="sendMessage()">Envoyer</button>
+    </div>
+  </div>
+
+  <!-- CALL PANEL -->
+  <div id="callPanel" class="call-panel">
+    <div class="call-header">
+      <h3>📞 Appeler un ami</h3>
+      <button class="btn-close" onclick="toggleCall()">✕</button>
+    </div>
+    <div class="users-list" id="usersList"></div>
+    
+    <!-- INCOMING CALL -->
+    <div id="incomingCall" class="incoming-call" style="display:none;">
+      <div class="call-content">
+        <h3>📞 Appel entrant</h3>
+        <p id="callerName"></p>
+        <div class="call-actions">
+          <button class="btn-accept" onclick="acceptCall()">✓ Accepter</button>
+          <button class="btn-decline" onclick="declineCall()">✕ Refuser</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ACTIVE CALL -->
+    <div id="activeCall" class="active-call" style="display:none;">
+      <div class="call-content">
+        <h3>📞 En appel avec <span id="activeCallUser"></span></h3>
+        <p id="callDuration">00:00</p>
+        <div class="video-container">
+          <video id="localVideo" autoplay muted playsinline></video>
+          <video id="remoteVideo" autoplay playsinline></video>
+        </div>
+        <div class="call-controls">
+          <button class="btn-mute" onclick="toggleMute()" title="Muet">🎤</button>
+          <button class="btn-video" onclick="toggleVideo()" title="Vidéo">📹</button>
+          <button class="btn-hangup" onclick="hangupCall()">📞 Raccrocher</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="upload-section">
     <div class="upload-card">
