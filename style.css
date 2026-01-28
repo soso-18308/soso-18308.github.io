@@ -492,15 +492,35 @@ header button:hover {
   font-weight: 600;
 }
 
-.card button {
+.card-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.card-actions button {
+  flex: 1;
   padding: 10px;
   font-size: 12px;
+}
+
+.btn-download {
+  background: rgba(78, 205, 196, 0.15);
+  color: var(--secondary);
+  border: 1px solid rgba(78, 205, 196, 0.3);
+}
+
+.btn-download:hover {
+  background: rgba(78, 205, 196, 0.25);
+  box-shadow: 0 4px 12px rgba(78, 205, 196, 0.3);
+}
+
+.btn-delete {
   background: rgba(252, 92, 101, 0.15);
   color: #fc5c65;
   border: 1px solid rgba(252, 92, 101, 0.3);
 }
 
-.card button:hover {
+.btn-delete:hover {
   background: rgba(252, 92, 101, 0.25);
   box-shadow: 0 4px 12px rgba(252, 92, 101, 0.3);
 }
