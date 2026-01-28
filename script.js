@@ -1,3 +1,22 @@
+// ========== IMPORTER FIREBASE ==========
+import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
+import { getDatabase, ref, push, set, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+
+/* ================= CONFIGURATION FIREBASE ================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyAqgfCP4pWXGD9iKUfoggAdQ38qfu_JCCo",
+  authDomain: "stickers-6335f.firebaseapp.com",
+  databaseURL: "https://stickers-6335f-default-rtdb.europe-west1.firebasedatabase.app",
+  projectId: "stickers-6335f",
+  storageBucket: "stickers-6335f.firebasestorage.app",
+  messagingSenderId: "751797654652",
+  appId: "1:751797654652:web:ae748eb696d6dede61a5f9"
+};
+
+// Initialiser Firebase
+const app = initializeApp(firebaseConfig);
+const database = getDatabase(app);
+
 /* ================= CONFIG - UTILISATEURS PRÉDÉFINIS ================= */
 
 // UTILISATEURS NORMAUX
@@ -11,8 +30,6 @@ const ADMINS = {
   admin: { password: "JAOIAe&11k021KDZok" }
 };
 
-const STICKERS_KEY = "ss_stickers";
-
 // Variables globales
 let currentUser = null;
 let isAdmin = false;
@@ -20,11 +37,6 @@ let isAdmin = false;
 /* ================= INIT ================= */
 
 function init() {
-  // Initialiser le localStorage si nécessaire
-  if (!localStorage.getItem(STICKERS_KEY)) {
-    localStorage.setItem(STICKERS_KEY, JSON.stringify([]));
-  }
-  
   // Event listener pour le changement de fichier
   const fileInput = document.getElementById('file');
   if (fileInput) {
@@ -61,13 +73,13 @@ if (document.readyState === 'loading') {
 
 /* ================= LOGIN ================= */
 
-function login() {
+window.login = function() {
   const u = document.getElementById('username').value.trim();
   const p = document.getElementById('password').value;
   const msg = document.getElementById("loginMsg");
   msg.innerHTML = "";
 
-  console.log("Tentative de connexion:", u); // Debug
+  console.log("Tentative de connexion:", u);
 
   // Vérifier d'abord dans les admins
   if (ADMINS[u] && ADMINS[u].password === p) {
@@ -113,7 +125,7 @@ function autoLogin() {
   }
 }
 
-function logout() {
+window.logout = function() {
   localStorage.removeItem("current");
   localStorage.removeItem("isAdmin");
   location.reload();
@@ -133,12 +145,13 @@ function showApp() {
     roleElement.innerHTML = '';
   }
   
+  // Écouter les changements en temps réel
   loadStickers();
 }
 
-/* ================= STICKERS ================= */
+/* ================= STICKERS AVEC FIREBASE ================= */
 
-function upload() {
+window.upload = function() {
   const fileInput = document.getElementById("file");
   const file = fileInput.files[0];
   const customCat = document.getElementById("customCategory").value.trim();
@@ -148,73 +161,128 @@ function upload() {
     return;
   }
 
+  // Vérifier la taille du fichier (max 1MB pour Firebase)
+  if (file.size > 1048576) {
+    alert("⚠️ L'image est trop grande ! Maximum 1MB");
+    return;
+  }
+
   const reader = new FileReader();
   reader.onload = function(e) {
-    const stickers = JSON.parse(localStorage.getItem(STICKERS_KEY));
-    stickers.unshift({
-      id: Date.now(),
+    // Référence à la base de données
+    const stickersRef = ref(database, 'stickers');
+    const newStickerRef = push(stickersRef);
+    
+    // Données du sticker
+    const stickerData = {
       img: e.target.result,
       cat: customCat,
-      author: currentUser
-    });
-    localStorage.setItem(STICKERS_KEY, JSON.stringify(stickers));
-    loadStickers();
+      author: currentUser,
+      timestamp: Date.now()
+    };
     
-    // Reset les champs
-    fileInput.value = "";
-    document.getElementById("fileLabel").textContent = "Choisir une image";
-    document.getElementById("customCategory").value = "";
-    
-    // Animation de feedback
-    const uploadCard = document.querySelector('.upload-card');
-    uploadCard.style.animation = 'none';
-    setTimeout(function() {
-      uploadCard.style.animation = 'fadeIn 0.6s ease';
-    }, 10);
+    // Envoyer à Firebase
+    set(newStickerRef, stickerData)
+      .then(function() {
+        console.log("Sticker uploadé avec succès !");
+        
+        // Reset les champs
+        fileInput.value = "";
+        document.getElementById("fileLabel").textContent = "Choisir une image";
+        document.getElementById("customCategory").value = "";
+        
+        // Animation de feedback
+        const uploadCard = document.querySelector('.upload-card');
+        uploadCard.style.animation = 'none';
+        setTimeout(function() {
+          uploadCard.style.animation = 'fadeIn 0.6s ease';
+        }, 10);
+      })
+      .catch(function(error) {
+        console.error("Erreur upload:", error);
+        alert("❌ Erreur lors de l'upload : " + error.message);
+      });
   };
   reader.readAsDataURL(file);
 }
 
 function loadStickers() {
   const grid = document.getElementById("grid");
-  const stickers = JSON.parse(localStorage.getItem(STICKERS_KEY));
+  const stickersRef = ref(database, 'stickers');
   
-  if (stickers.length === 0) {
-    grid.innerHTML = `
-      <div class="empty-state" style="grid-column: 1/-1;">
-        <div class="empty-state-icon">🖼️</div>
-        <h4>Aucun sticker pour le moment</h4>
-        <p>Sois le premier à partager un sticker !</p>
-      </div>
-    `;
-    return;
-  }
-  
-  grid.innerHTML = "";
-
-  stickers.forEach(function(s) {
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.innerHTML = `
-      <img src="${s.img}" alt="Sticker">
-      <div class="card-info">
-        <small>
-          <span class="category-badge">${s.cat}</span>
-        </small>
-        <small class="author">@${s.author}</small>
-      </div>
-      ${isAdmin ? `<button onclick="del(${s.id})">🗑️ Supprimer</button>` : ""}
-    `;
-    grid.appendChild(card);
+  // Écouter les changements en temps réel
+  onValue(stickersRef, function(snapshot) {
+    const data = snapshot.val();
+    
+    console.log("Données Firebase:", data);
+    
+    if (!data) {
+      grid.innerHTML = `
+        <div class="empty-state" style="grid-column: 1/-1;">
+          <div class="empty-state-icon">🖼️</div>
+          <h4>Aucun sticker pour le moment</h4>
+          <p>Sois le premier à partager un sticker !</p>
+        </div>
+      `;
+      return;
+    }
+    
+    // Convertir l'objet en tableau
+    const stickersArray = Object.keys(data).map(function(key) {
+      return {
+        id: key,
+        ...data[key]
+      };
+    });
+    
+    // Trier par timestamp décroissant (plus récent en premier)
+    stickersArray.sort(function(a, b) {
+      return b.timestamp - a.timestamp;
+    });
+    
+    grid.innerHTML = "";
+    
+    stickersArray.forEach(function(s) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <img src="${s.img}" alt="Sticker">
+        <div class="card-info">
+          <small>
+            <span class="category-badge">${s.cat}</span>
+          </small>
+          <small class="author">@${s.author}</small>
+        </div>
+        <div class="card-actions">
+          <button class="btn-download" onclick="downloadSticker('${s.id}', '${s.cat}', '${s.img}')">⬇️ Télécharger</button>
+          ${isAdmin ? `<button class="btn-delete" onclick="deleteSticker('${s.id}')">🗑️ Supprimer</button>` : ""}
+        </div>
+      `;
+      grid.appendChild(card);
+    });
   });
 }
 
-function del(id) {
+window.deleteSticker = function(id) {
   if (!confirm("Supprimer ce sticker ?")) return;
-  let stickers = JSON.parse(localStorage.getItem(STICKERS_KEY));
-  stickers = stickers.filter(function(s) {
-    return s.id !== id;
-  });
-  localStorage.setItem(STICKERS_KEY, JSON.stringify(stickers));
-  loadStickers();
+  
+  const stickerRef = ref(database, 'stickers/' + id);
+  remove(stickerRef)
+    .then(function() {
+      console.log("Sticker supprimé !");
+    })
+    .catch(function(error) {
+      console.error("Erreur suppression:", error);
+      alert("❌ Erreur lors de la suppression");
+    });
+}
+
+window.downloadSticker = function(id, category, imageData) {
+  // Créer un lien de téléchargement
+  const link = document.createElement('a');
+  link.href = imageData;
+  link.download = `sticker_${category}_${id}.png`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
 }
