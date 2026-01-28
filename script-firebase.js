@@ -33,6 +33,8 @@ const ADMINS = {
 // Variables globales
 let currentUser = null;
 let isAdmin = false;
+let notificationsEnabled = false;
+let lastStickerCount = 0;
 
 /* ================= INIT ================= */
 
@@ -131,6 +133,59 @@ window.logout = function() {
   location.reload();
 }
 
+/* ================= NOTIFICATIONS ================= */
+
+window.toggleNotifications = function() {
+  const icon = document.getElementById('notifIcon');
+  const btn = document.querySelector('.btn-notif');
+  
+  if (!notificationsEnabled) {
+    // Activer les notifications
+    if ('Notification' in window) {
+      Notification.requestPermission().then(function(permission) {
+        if (permission === 'granted') {
+          notificationsEnabled = true;
+          icon.textContent = '🔔';
+          btn.classList.add('active');
+          localStorage.setItem('notificationsEnabled', 'true');
+          
+          // Notification de confirmation
+          new Notification('StickerShare 🎉', {
+            body: 'Notifications activées ! Tu seras alerté des nouveaux stickers.',
+            icon: '🔔'
+          });
+        } else {
+          alert('❌ Notifications refusées. Active-les dans les paramètres de ton navigateur.');
+        }
+      });
+    } else {
+      alert('❌ Ton navigateur ne supporte pas les notifications.');
+    }
+  } else {
+    // Désactiver les notifications
+    notificationsEnabled = false;
+    icon.textContent = '🔕';
+    btn.classList.remove('active');
+    localStorage.setItem('notificationsEnabled', 'false');
+  }
+}
+
+function checkNotificationStatus() {
+  const enabled = localStorage.getItem('notificationsEnabled') === 'true';
+  const icon = document.getElementById('notifIcon');
+  const btn = document.querySelector('.btn-notif');
+  
+  if (enabled && Notification.permission === 'granted') {
+    notificationsEnabled = true;
+    icon.textContent = '🔔';
+    btn.classList.add('active');
+  } else {
+    notificationsEnabled = false;
+    icon.textContent = '🔕';
+    btn.classList.remove('active');
+  }
+}
+
 /* ================= APP ================= */
 
 function showApp() {
@@ -144,6 +199,9 @@ function showApp() {
   } else {
     roleElement.innerHTML = '';
   }
+  
+  // Vérifier le statut des notifications
+  checkNotificationStatus();
   
   // Écouter les changements en temps réel
   loadStickers();
@@ -224,6 +282,7 @@ function loadStickers() {
           <p>Sois le premier à partager un sticker !</p>
         </div>
       `;
+      lastStickerCount = 0;
       return;
     }
     
@@ -234,6 +293,18 @@ function loadStickers() {
         ...data[key]
       };
     });
+    
+    // Vérifier s'il y a de nouveaux stickers
+    if (notificationsEnabled && lastStickerCount > 0 && stickersArray.length > lastStickerCount) {
+      const newSticker = stickersArray[0]; // Le plus récent
+      if (newSticker.author !== currentUser) {
+        new Notification('Nouveau sticker ! 🎉', {
+          body: `@${newSticker.author} a partagé un sticker dans "${newSticker.cat}"`,
+          icon: '🖼️'
+        });
+      }
+    }
+    lastStickerCount = stickersArray.length;
     
     // Trier par timestamp décroissant (plus récent en premier)
     stickersArray.sort(function(a, b) {
