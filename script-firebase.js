@@ -1,6 +1,6 @@
 // ========== IMPORTER FIREBASE ==========
 import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js';
-import { getDatabase, ref, push, set, onValue, remove } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
+import { getDatabase, ref, push, set, onValue, remove, onDisconnect } from 'https://www.gstatic.com/firebasejs/10.8.0/firebase-database.js';
 
 /* ================= CONFIGURATION FIREBASE ================= */
 const firebaseConfig = {
@@ -135,9 +135,27 @@ function autoLogin() {
 }
 
 window.logout = function() {
-  localStorage.removeItem("current");
-  localStorage.removeItem("isAdmin");
-  location.reload();
+  // ✅ Se déconnecter proprement de Firebase
+  if (currentUser) {
+    const myPresenceRef = ref(database, 'presence/' + currentUser);
+    set(myPresenceRef, {
+      online: false,
+      lastSeen: Date.now()
+    }).then(function() {
+      localStorage.removeItem("current");
+      localStorage.removeItem("isAdmin");
+      location.reload();
+    }).catch(function() {
+      // Si erreur, déconnecter quand même
+      localStorage.removeItem("current");
+      localStorage.removeItem("isAdmin");
+      location.reload();
+    });
+  } else {
+    localStorage.removeItem("current");
+    localStorage.removeItem("isAdmin");
+    location.reload();
+  }
 }
 
 /* ================= NOTIFICATIONS ================= */
@@ -211,6 +229,9 @@ function showApp() {
     roleElement.innerHTML = '';
   }
   
+  // ✅ ACTIVER LA PRÉSENCE EN LIGNE dès la connexion
+  setupPresence();
+  
   // Vérifier le statut des notifications
   checkNotificationStatus();
   
@@ -222,6 +243,44 @@ function showApp() {
   
   // Écouter les changements en temps réel
   loadStickers();
+}
+
+/* ================= ✅ SYSTÈME DE PRÉSENCE EN LIGNE/HORS LIGNE ================= */
+
+function setupPresence() {
+  // Référence à la présence de l'utilisateur actuel
+  const myPresenceRef = ref(database, 'presence/' + currentUser);
+  
+  // ✅ SE MARQUER COMME EN LIGNE
+  set(myPresenceRef, {
+    online: true,
+    lastSeen: Date.now()
+  });
+  
+  // ✅ AUTO-DÉCONNEXION Firebase (quand perd la connexion internet)
+  const disconnectRef = onDisconnect(myPresenceRef);
+  disconnectRef.set({
+    online: false,
+    lastSeen: Date.now()
+  });
+  
+  // ✅ METTRE À JOUR toutes les 2 minutes (pour prouver qu'on est toujours là)
+  setInterval(function() {
+    set(myPresenceRef, {
+      online: true,
+      lastSeen: Date.now()
+    });
+  }, 120000); // 2 minutes
+  
+  // ✅ DÉCONNEXION quand on ferme la page
+  window.addEventListener('beforeunload', function() {
+    set(myPresenceRef, {
+      online: false,
+      lastSeen: Date.now()
+    });
+  });
+  
+  console.log("✅ Système de présence activé pour:", currentUser);
 }
 
 /* ================= STICKERS AVEC FIREBASE ================= */
@@ -492,22 +551,7 @@ function loadOnlineUsers() {
   const container = document.getElementById('usersList');
   container.innerHTML = '';
   
-  // Créer une présence pour l'utilisateur actuel
-  const presenceRef = ref(database, 'presence/' + currentUser);
-  set(presenceRef, {
-    online: true,
-    lastSeen: Date.now()
-  });
-  
-  // Supprimer la présence à la déconnexion
-  window.addEventListener('beforeunload', function() {
-    set(presenceRef, {
-      online: false,
-      lastSeen: Date.now()
-    });
-  });
-  
-  // Écouter tous les utilisateurs
+  // ✅ LISTER TOUS LES UTILISATEURS et vérifier leur statut EN TEMPS RÉEL
   const allUsers = {...USERS, ...ADMINS};
   
   Object.keys(allUsers).forEach(function(username) {
@@ -515,17 +559,32 @@ function loadOnlineUsers() {
     
     const userDiv = document.createElement('div');
     userDiv.className = 'user-item';
+    userDiv.id = 'user-' + username;
     
-    // Vérifier si en ligne (simulation pour l'instant)
-    const isOnline = Math.random() > 0.5; // TODO: vérifier vraiment avec Firebase
+    // ✅ ÉCOUTER EN TEMPS RÉEL le statut de cet utilisateur
+    const userPresenceRef = ref(database, 'presence/' + username);
     
-    userDiv.innerHTML = `
-      <div class="user-info-item">
-        <div class="user-status ${isOnline ? '' : 'offline'}"></div>
-        <strong>@${username}</strong>
-      </div>
-      <button onclick="initiateCall('${username}')">📞 Appeler</button>
-    `;
+    onValue(userPresenceRef, function(snapshot) {
+      const presenceData = snapshot.val();
+      let isOnline = false;
+      
+      if (presenceData && presenceData.online === true) {
+        // Vérifier que lastSeen est récent (moins de 5 minutes)
+        const timeDiff = Date.now() - presenceData.lastSeen;
+        isOnline = timeDiff < 300000; // 5 minutes = 300000ms
+      }
+      
+      // Mettre à jour l'affichage
+      userDiv.innerHTML = `
+        <div class="user-info-item">
+          <div class="user-status ${isOnline ? '' : 'offline'}"></div>
+          <strong>@${username}</strong>
+        </div>
+        <button onclick="initiateCall('${username}')" ${!isOnline ? 'disabled style="opacity:0.5;cursor:not-allowed;"' : ''}>
+          📞 ${isOnline ? 'Appeler' : 'Hors ligne'}
+        </button>
+      `;
+    });
     
     container.appendChild(userDiv);
   });
@@ -631,7 +690,7 @@ function listenForIncomingCalls() {
       document.getElementById('incomingCall').style.display = 'block';
       
       // Jouer un son (optionnel)
-      const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYHGmi78OScTgcOUKzn77hiGwU7k9n0zXosBSh+zPLdkUALFmG36+uoVRQLSKPh9L1vIAUrlNXx3I4yBSOAzvHajjcHHG7A8eieTxALUK3o8LljHAU8lNr00XsrBSp/0PPckkAKFGG46+ypVRQLSaTi9b5wIAUsldjx3I4zBSOAz/HbjTcHHnC96+idThALUa7p8bllHAU9ld301XwrBSyBz/PclEAKFGO56+ypVRQKSqXh9cBxIAUrmNjx3I0zBSOB0PHbjjcHHnHA7OudTRALUq/q8bplHAU+ltv01X4rBSyCz/TclUAJFGS56+ypVRQKS6bi9cFxIAUsmdnx3I0zBSOB0PHbjjcHHnLA7OudTRALUrDq8bpmHAU/l9331X4rBSyC0PTcl0AJFmW56+ypVBQKSqfj9cJxIAUrmdnx3Y4yBSJ/z+/bjTYHH3HC7OqeThAKUbHp8rtnHAVAmdv115MrBSyC0fTdl0AJFmW66+ypVRQLSqfj9sJxIAUrmdrx3Y4zBSJ/0e/bjTYHHnHA7OqeThAKUrDp8rtnHAU/l9v01ZArBSyC0PTdl0AKFWO66+ypVRQLSqXj9cJxIAUsmdnx3Y4zBSJ/0O/bjTYGHnC/7OqeThEKUbDp8bpmHAU/l9v01ZErBSyC0PTdl0AKFWO66+ypVRQLSqXj9cJxIAUsmdnx3Y4zBSJ/0O/bjTYGHnC/7OqeThEKUbDp8bpmHAU/l9v01ZErBSyC0PTdl0AKFWO66+ypVRQLSqXj9cJxIAUsmdnx3Y4zBSJ/0O/bjTYGHnC/7OqeThEKUbDp8bpmHAU/l9v01ZErBSyC0PTdl0AKFWO66+ypVRQLSqXj9cJxIAUsmdnx3Y4zBSJ/0O/bjTYGHnC/7OqeThEKUbDp8bpmHAU/l9v01ZErBSyC0PTdl0AKFWO66+ypVRQLSqXj9cJxIAUsmdnx3Y4zBSJ/0O/bjTYGHnC/7OqeThEKUbDp8bpmHAU/l9v01ZErBSyC0PTdl0AK'); 
+      const audio = new Audio('data:audio/wav;base64,UklGRnoGAABXQVZFZm10IBAAAAABAAEAQB8AAEAfAAABAAgAZGF0YQoGAACBhYqFbF1fdJivrJBhNjVgodDbq2EcBj+a2/LDciUFLIHO8tiJNwgZaLvt559NEAxQp+PwtmMcBjiR1/LMeSwFJHfH8N2QQAoUXrTp66hVFApGn+DyvmwhBSuBzvLZiTYHGmi78OScTgcOUKzn77hiGwU7k9n0zXosBSh+zPLdkUALFmG36+uoVRQLSKPh9L1vIAUrlNXx3I4yBSOAzvHajjcHHG7A8eieTxALUK3o8LljHAU8lNr00XsrBSp/0PPckkAKFGG46+ypVRQLSaTi9b5wIAUsldjx3I4zBSOAz/HbjTcHHnC96+idThALUa7p8bllHAU9ld301XwrBSyBz/PclEAKFGO56+ypVRQKSqXh9cBxIAUrmNjx3I0zBSOB0PHbjjcHHnHA7OudTRALUq/q8bplHAU+ltv01X4rBSyCz/TclUAJFGS56+ypVRQKS6bi9cFxIAUsmdnx3I0zBSOB0PHbjjcHHnLA7OudTRALUrDq8bpmHAU/l9331X4rBSyC0PTcl0AJFmW56+ypVBQKSqfj9cJxIAUrmdnx3Y4yBSJ/z+/bjTYHH3HC7OqeThAKUbHp8rtnHAVAmdv115MrBSyC0fTdl0AJFmW66+ypVRQLSqfj9sJxIAUrmdrx3Y4zBSJ/0e/bjTYHHnHA7OqeThAKUrDp8rtnHAU/l9v01ZArBSyC0PTdl0AKFWO66+ypVRQLSqXj9cJxIAUsmdnx3Y4zBSJ/0O/bjTYGHnC/7OqeThEKUbDp8bpmHAU/l9v01ZErBSyC0PTdl0AKFWO66+ypVRQLSqXj9cJxIAUsmdnx3Y4zBSJ/0O/bjTYGHnC/7OqeThEKUbDp8bpmHAU/l9v01ZErBSyC0PTdl0AKFWO66+ypVRQLSqXj9cJxIAUsmdnx3Y4zBSJ/0O/bjTYGHnC/7OqeThEKUbDp8bpmHAU/l9v01ZErBSyC0PTdl0AKFWO66+ypVRQLSqXj9cJxIAUsmdnx3Y4zBSJ/0O/bjTYGHnC/7OqeThEKUbDp8bpmHAU/l9v01ZErBSyC0PTdl0AK'); 
       audio.play().catch(e => console.log('Audio play failed'));
     }
   });
