@@ -2,64 +2,305 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>School RP FR | École de Magie</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
 </head>
 <body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">🪄 School RP FR</div>
+            <ul class="nav-menu">
+                <li><a href="#univers">Univers</a></li>
+                <li><a href="#magies">Magies</a></li>
+                <li><a href="#regles">Règles</a></li>
+                <li><a href="#staff">Staff</a></li>
+            </ul>
+            <div class="burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
 
+    <!-- Hero Section -->
     <header class="hero">
+        <div class="particles"></div>
         <div class="overlay"></div>
         <div class="hero-content">
-            <h1>School RP FR</h1>
-            <p>L’école de magie où ton histoire commence</p>
-            <div class="buttons">
-                <a href="#" class="btn">🎮 Jouer sur Roblox</a>
-                <a href="#" class="btn secondary">💬 Rejoindre le Discord</a>
+            <div class="hero-badge">✨ Serveur Français Premium</div>
+            <h1 class="hero-title">
+                <span class="title-line">School RP FR</span>
+            </h1>
+            <p class="hero-subtitle">L'école de magie où ton histoire commence</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">500+</span>
+                    <span class="stat-label">Joueurs actifs</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Sorts disponibles</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Serveur en ligne</span>
+                </div>
             </div>
+            <div class="buttons">
+                <a href="#" class="btn primary">
+                    <span class="btn-icon">🎮</span>
+                    <span>Jouer sur Roblox</span>
+                </a>
+                <a href="#" class="btn secondary">
+                    <span class="btn-icon">💬</span>
+                    <span>Rejoindre le Discord</span>
+                </a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span></span>
         </div>
     </header>
 
-    <section class="section">
-        <h2>🧙‍♂️ L’Univers</h2>
-        <p>
-            Bienvenue à School RP FR, une école de magie française où les élèves
-            apprennent l’art des sorts, des potions et du rôleplay immersif.
-            Choisis ta voie, progresse et écris ta légende.
-        </p>
-    </section>
-
-    <section class="section dark">
-        <h2>✨ Les Magies</h2>
-        <div class="cards">
-            <div class="card">
-                <h3>🔥 Magie Offensive</h3>
-                <p>Sorts de feu, éclairs et attaques puissantes.</p>
+    <!-- L'Univers Section -->
+    <section id="univers" class="section">
+        <div class="section-header">
+            <span class="section-tag">🧙‍♂️ Découvre</span>
+            <h2>L'Univers Magique</h2>
+            <div class="divider"></div>
+        </div>
+        <div class="content-grid">
+            <div class="content-text">
+                <p class="lead-text">
+                    Bienvenue à School RP FR, une école de magie française où les élèves
+                    apprennent l'art des sorts, des potions et du roleplay immersif.
+                </p>
+                <p>
+                    Plonge dans un monde où la magie prend vie. Choisis ta voie entre l'offensive,
+                    la défensive ou l'utilitaire. Progresse à travers les années scolaires,
+                    participe à des événements épiques et écris ta propre légende.
+                </p>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="feature-icon">⚡</span>
+                        <span>Système de progression unique</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🏆</span>
+                        <span>Événements réguliers</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">👥</span>
+                        <span>Communauté active et bienveillante</span>
+                    </div>
+                </div>
             </div>
-            <div class="card">
-                <h3>🛡️ Magie Défensive</h3>
-                <p>Boucliers, protections et contre-sorts.</p>
-            </div>
-            <div class="card">
-                <h3>🌿 Magie Utilitaire</h3>
-                <p>Soins, déplacements et soutien magique.</p>
+            <div class="content-image">
+                <div class="image-wrapper">
+                    <div class="image-glow"></div>
+                    <div class="placeholder-image">
+                        <span class="placeholder-icon">🏰</span>
+                        <p>L'école de magie</p>
+                    </div>
+                </div>
             </div>
         </div>
     </section>
 
-    <section class="section">
-        <h2>📜 Règles RP</h2>
-        <ul class="rules">
-            <li>Respect du roleplay et des joueurs</li>
-            <li>Pas de powergaming</li>
-            <li>Respect des décisions du staff</li>
-            <li>Immersion avant tout</li>
-        </ul>
+    <!-- Les Magies Section -->
+    <section id="magies" class="section dark">
+        <div class="section-header">
+            <span class="section-tag">✨ Explore</span>
+            <h2>Les Magies</h2>
+            <div class="divider"></div>
+        </div>
+        <div class="cards">
+            <div class="card" data-magic="fire">
+                <div class="card-icon">🔥</div>
+                <h3>Magie Offensive</h3>
+                <p>Maîtrise les sorts de feu, éclairs et attaques puissantes pour dominer tes adversaires.</p>
+                <div class="card-stats">
+                    <div class="stat-bar">
+                        <span class="stat-label">Puissance</span>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 95%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-bar">
+                        <span class="stat-label">Défense</span>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 40%"></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="card-btn">En savoir plus →</button>
+            </div>
+            
+            <div class="card featured" data-magic="shield">
+                <div class="featured-badge">⭐ Populaire</div>
+                <div class="card-icon">🛡️</div>
+                <h3>Magie Défensive</h3>
+                <p>Crée des boucliers impénétrables, protège tes alliés et contre les sorts ennemis.</p>
+                <div class="card-stats">
+                    <div class="stat-bar">
+                        <span class="stat-label">Puissance</span>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 55%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-bar">
+                        <span class="stat-label">Défense</span>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 95%"></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="card-btn">En savoir plus →</button>
+            </div>
+            
+            <div class="card" data-magic="utility">
+                <div class="card-icon">🌿</div>
+                <h3>Magie Utilitaire</h3>
+                <p>Soigne tes compagnons, déplace-toi instantanément et apporte un soutien magique précieux.</p>
+                <div class="card-stats">
+                    <div class="stat-bar">
+                        <span class="stat-label">Puissance</span>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 65%"></div>
+                        </div>
+                    </div>
+                    <div class="stat-bar">
+                        <span class="stat-label">Défense</span>
+                        <div class="progress">
+                            <div class="progress-bar" style="width: 70%"></div>
+                        </div>
+                    </div>
+                </div>
+                <button class="card-btn">En savoir plus →</button>
+            </div>
+        </div>
     </section>
 
+    <!-- Règles Section -->
+    <section id="regles" class="section">
+        <div class="section-header">
+            <span class="section-tag">📜 Respecte</span>
+            <h2>Règles RP</h2>
+            <div class="divider"></div>
+        </div>
+        <div class="rules-container">
+            <div class="rule-card">
+                <div class="rule-number">01</div>
+                <h3>Respect du Roleplay</h3>
+                <p>Respecte l'immersion et les autres joueurs. Le RP est au cœur de notre communauté.</p>
+            </div>
+            <div class="rule-card">
+                <div class="rule-number">02</div>
+                <h3>Pas de Powergaming</h3>
+                <p>Joue de manière équitable. Ton personnage n'est pas invincible et a des limites.</p>
+            </div>
+            <div class="rule-card">
+                <div class="rule-number">03</div>
+                <h3>Respect du Staff</h3>
+                <p>Les décisions du staff sont finales. En cas de désaccord, contacte-les calmement.</p>
+            </div>
+            <div class="rule-card">
+                <div class="rule-number">04</div>
+                <h3>Immersion Avant Tout</h3>
+                <p>Reste dans ton rôle, utilise /hors-jeu pour les discussions externes au RP.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Staff Section -->
+    <section id="staff" class="section dark">
+        <div class="section-header">
+            <span class="section-tag">👑 Rencontre</span>
+            <h2>Notre Staff</h2>
+            <div class="divider"></div>
+        </div>
+        <div class="staff-grid">
+            <div class="staff-card">
+                <div class="staff-avatar">
+                    <div class="avatar-placeholder">👨‍💼</div>
+                    <div class="status-badge online"></div>
+                </div>
+                <h3>Fondateur</h3>
+                <p class="staff-role">Créateur & Développeur</p>
+            </div>
+            <div class="staff-card">
+                <div class="staff-avatar">
+                    <div class="avatar-placeholder">👩‍💼</div>
+                    <div class="status-badge online"></div>
+                </div>
+                <h3>Co-Fondateur</h3>
+                <p class="staff-role">Administrateur Principal</p>
+            </div>
+            <div class="staff-card">
+                <div class="staff-avatar">
+                    <div class="avatar-placeholder">🧙</div>
+                    <div class="status-badge away"></div>
+                </div>
+                <h3>Modérateurs</h3>
+                <p class="staff-role">Équipe de modération</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Prêt à Commencer Ton Aventure ?</h2>
+            <p>Rejoins des centaines de sorciers et écris ta propre histoire magique</p>
+            <div class="buttons">
+                <a href="#" class="btn primary large">
+                    <span class="btn-icon">🎮</span>
+                    <span>Jouer Maintenant</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
     <footer>
-        <p>© 2026 School RP FR — Développé par un sorcier Roblox 🪄</p>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>🪄 School RP FR</h3>
+                <p>L'école de magie française la plus immersive sur Roblox.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">Discord</a>
+                    <a href="#" class="social-link">Roblox</a>
+                    <a href="#" class="social-link">YouTube</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="#univers">Univers</a></li>
+                    <li><a href="#magies">Magies</a></li>
+                    <li><a href="#regles">Règles</a></li>
+                    <li><a href="#staff">Staff</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Communauté</h4>
+                <ul>
+                    <li><a href="#">Discord</a></li>
+                    <li><a href="#">Forum</a></li>
+                    <li><a href="#">Wiki</a></li>
+                    <li><a href="#">Support</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 School RP FR — Développé avec 🪄 par un sorcier Roblox</p>
+        </div>
     </footer>
 
+    <script src="script.js"></script>
 </body>
 </html>
