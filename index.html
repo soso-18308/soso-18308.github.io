@@ -1,137 +1,65 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-<meta charset="UTF-8">
-<title>StickerShare</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link href="https://fonts.googleapis.com/css2?family=Righteous&family=DM+Sans:wght@400;500;700&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css">
+    <meta charset="UTF-8">
+    <title>School RP FR | École de Magie</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&display=swap" rel="stylesheet">
 </head>
-
 <body>
 
-<!-- LOGIN -->
-<div id="login" class="login-screen">
-  <div class="login-box">
-    <h2>StickerShare</h2>
-    <p class="subtitle">Partage tes meilleurs stickers</p>
-    <div class="input-group">
-      <label>Nom d'utilisateur</label>
-      <input id="username" autocomplete="username">
-    </div>
-    <div class="input-group">
-      <label>Mot de passe</label>
-      <input id="password" type="password" autocomplete="current-password">
-    </div>
-    <button onclick="login()">Se connecter</button>
-    <div id="loginMsg"></div>
-  </div>
-</div>
-
-<!-- APP -->
-<div id="app" class="app">
-  <header>
-    <div class="brand">
-      <h1>StickerShare</h1>
-    </div>
-    <div class="user-info">
-      <button class="btn-icon" onclick="toggleCall()" title="Appels">
-        <span>📞</span>
-      </button>
-      <button class="btn-icon" onclick="toggleChat()" title="Chat">
-        <span id="chatIcon">💬</span>
-        <span class="badge" id="chatBadge" style="display:none;">0</span>
-      </button>
-      <button class="btn-icon" onclick="toggleNotifications()" title="Notifications">
-        <span id="notifIcon">🔕</span>
-      </button>
-      <div class="user-badge">
-        <strong id="userName"></strong>
-        <span id="userRole"></span>
-      </div>
-      <button onclick="logout()">Déconnexion</button>
-    </div>
-  </header>
-
-  <!-- CHAT SIDEBAR -->
-  <div id="chatSidebar" class="chat-sidebar">
-    <div class="chat-header">
-      <h3>💬 Chat général</h3>
-      <button class="btn-close" onclick="toggleChat()">✕</button>
-    </div>
-    <div class="chat-messages" id="chatMessages"></div>
-    <div class="chat-input-container">
-      <input type="text" id="chatInput" placeholder="Écris un message..." />
-      <button onclick="sendMessage()">Envoyer</button>
-    </div>
-  </div>
-
-  <!-- CALL PANEL -->
-  <div id="callPanel" class="call-panel">
-    <div class="call-header">
-      <h3>📞 Appeler un ami</h3>
-      <button class="btn-close" onclick="toggleCall()">✕</button>
-    </div>
-    <div class="users-list" id="usersList"></div>
-    
-    <!-- INCOMING CALL -->
-    <div id="incomingCall" class="incoming-call" style="display:none;">
-      <div class="call-content">
-        <h3>📞 Appel entrant</h3>
-        <p id="callerName"></p>
-        <div class="call-actions">
-          <button class="btn-accept" onclick="acceptCall()">✓ Accepter</button>
-          <button class="btn-decline" onclick="declineCall()">✕ Refuser</button>
+    <header class="hero">
+        <div class="overlay"></div>
+        <div class="hero-content">
+            <h1>School RP FR</h1>
+            <p>L’école de magie où ton histoire commence</p>
+            <div class="buttons">
+                <a href="#" class="btn">🎮 Jouer sur Roblox</a>
+                <a href="#" class="btn secondary">💬 Rejoindre le Discord</a>
+            </div>
         </div>
-      </div>
-    </div>
+    </header>
 
-    <!-- ACTIVE CALL -->
-    <div id="activeCall" class="active-call" style="display:none;">
-      <div class="call-content">
-        <h3>📞 En appel avec <span id="activeCallUser"></span></h3>
-        <p id="callDuration">00:00</p>
-        <div class="video-container">
-          <video id="localVideo" autoplay muted playsinline></video>
-          <video id="remoteVideo" autoplay playsinline></video>
+    <section class="section">
+        <h2>🧙‍♂️ L’Univers</h2>
+        <p>
+            Bienvenue à School RP FR, une école de magie française où les élèves
+            apprennent l’art des sorts, des potions et du rôleplay immersif.
+            Choisis ta voie, progresse et écris ta légende.
+        </p>
+    </section>
+
+    <section class="section dark">
+        <h2>✨ Les Magies</h2>
+        <div class="cards">
+            <div class="card">
+                <h3>🔥 Magie Offensive</h3>
+                <p>Sorts de feu, éclairs et attaques puissantes.</p>
+            </div>
+            <div class="card">
+                <h3>🛡️ Magie Défensive</h3>
+                <p>Boucliers, protections et contre-sorts.</p>
+            </div>
+            <div class="card">
+                <h3>🌿 Magie Utilitaire</h3>
+                <p>Soins, déplacements et soutien magique.</p>
+            </div>
         </div>
-        <div class="call-controls">
-          <button class="btn-mute" onclick="toggleMute()" title="Muet">🎤</button>
-          <button class="btn-video" onclick="toggleVideo()" title="Vidéo">📹</button>
-          <button class="btn-hangup" onclick="hangupCall()">📞 Raccrocher</button>
-        </div>
-      </div>
-    </div>
-  </div>
+    </section>
 
-  <div class="upload-section">
-    <div class="upload-card">
-      <h3>Partager un sticker</h3>
-      <p class="subtitle">Télécharge ton image et choisis une catégorie</p>
-      <div class="upload-grid">
-        <div class="file-input-wrapper">
-          <input type="file" id="file" accept="image/*">
-          <label class="file-input-label" for="file">
-            <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
-            </svg>
-            <span id="fileLabel">Choisir une image</span>
-          </label>
-        </div>
-        <input type="text" id="customCategory" placeholder="Nom de la catégorie (ex: Memes, Anime, Citations...)">
-      </div>
-      <button onclick="upload()">Publier le sticker</button>
-    </div>
-  </div>
+    <section class="section">
+        <h2>📜 Règles RP</h2>
+        <ul class="rules">
+            <li>Respect du roleplay et des joueurs</li>
+            <li>Pas de powergaming</li>
+            <li>Respect des décisions du staff</li>
+            <li>Immersion avant tout</li>
+        </ul>
+    </section>
 
-  <div class="stickers-section">
-    <h3>Tous les stickers</h3>
-    <div class="grid" id="grid"></div>
-  </div>
-</div>
-
-<!-- Firebase SDK -->
-<script type="module" src="script-firebase.js"></script>
+    <footer>
+        <p>© 2026 School RP FR — Développé par un sorcier Roblox 🪄</p>
+    </footer>
 
 </body>
 </html>
