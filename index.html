@@ -15,7 +15,8 @@
             <ul class="nav-menu">
                 <li><a href="#univers">Univers</a></li>
                 <li><a href="#magies">Magies</a></li>
-                <li><a href="#regles">Règles</a></li>
+                <li><a href="#regles">Règlement</a></li>
+                <li><a href="#whitelist">Whitelist</a></li>
                 <li><a href="#staff">Staff</a></li>
             </ul>
             <div class="burger">
@@ -185,34 +186,272 @@
         </div>
     </section>
 
-    <!-- Règles Section -->
-    <section id="regles" class="section">
+    <!-- Règlement Section -->
+    <section id="regles" class="section reglement-section">
         <div class="section-header">
-            <span class="section-tag">📜 Respecte</span>
-            <h2>Règles RP</h2>
+            <span class="section-tag">📜 Lis Attentivement</span>
+            <h2>Règlement du Serveur</h2>
             <div class="divider"></div>
         </div>
-        <div class="rules-container">
-            <div class="rule-card">
-                <div class="rule-number">01</div>
-                <h3>Respect du Roleplay</h3>
-                <p>Respecte l'immersion et les autres joueurs. Le RP est au cœur de notre communauté.</p>
+        
+        <div class="reglement-container">
+            <!-- Règles Générales -->
+            <div class="rule-category">
+                <div class="category-header">
+                    <span class="category-icon">⚖️</span>
+                    <h3>Règles Générales</h3>
+                </div>
+                <div class="rule-list">
+                    <div class="rule-item">
+                        <span class="rule-num">1.1</span>
+                        <div class="rule-content">
+                            <h4>Respect de la communauté</h4>
+                            <p>Aucune forme de discrimination, harcèlement ou toxicité ne sera tolérée. Respecte tous les joueurs.</p>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-num">1.2</span>
+                        <div class="rule-content">
+                            <h4>Langue française</h4>
+                            <p>Le serveur est francophone. Utilise uniquement le français dans les discussions RP et HRP.</p>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-num">1.3</span>
+                        <div class="rule-content">
+                            <h4>Publicité interdite</h4>
+                            <p>La publicité pour d'autres serveurs ou contenus externes est strictement interdite.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="rule-card">
-                <div class="rule-number">02</div>
-                <h3>Pas de Powergaming</h3>
-                <p>Joue de manière équitable. Ton personnage n'est pas invincible et a des limites.</p>
+
+            <!-- Règles RP -->
+            <div class="rule-category">
+                <div class="category-header">
+                    <span class="category-icon">🎭</span>
+                    <h3>Règles Roleplay</h3>
+                </div>
+                <div class="rule-list">
+                    <div class="rule-item">
+                        <span class="rule-num">2.1</span>
+                        <div class="rule-content">
+                            <h4>Immersion obligatoire</h4>
+                            <p>Reste dans ton rôle en permanence. Utilise /hors-jeu ou /hj pour les discussions HRP.</p>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-num">2.2</span>
+                        <div class="rule-content">
+                            <h4>Pas de Powergaming</h4>
+                            <p>Ton personnage a des limites. Ne te rends pas invincible ou tout-puissant sans raison valable.</p>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-num">2.3</span>
+                        <div class="rule-content">
+                            <h4>Pas de Metagaming</h4>
+                            <p>N'utilise pas d'informations HRP dans ton RP. Ce que tu sais ≠ ce que ton personnage sait.</p>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-num">2.4</span>
+                        <div class="rule-content">
+                            <h4>Background cohérent</h4>
+                            <p>Crée un personnage avec une histoire logique et respectueuse du lore de l'école.</p>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-num">2.5</span>
+                        <div class="rule-content">
+                            <h4>Actions /me</h4>
+                            <p>Décris tes actions avec /me. Laisse aux autres la possibilité de réagir. Pas de forçage RP.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="rule-card">
-                <div class="rule-number">03</div>
-                <h3>Respect du Staff</h3>
-                <p>Les décisions du staff sont finales. En cas de désaccord, contacte-les calmement.</p>
+
+            <!-- Règles des Magies -->
+            <div class="rule-category">
+                <div class="category-header">
+                    <span class="category-icon">✨</span>
+                    <h3>Règles des Magies</h3>
+                </div>
+                <div class="rule-list">
+                    <div class="rule-item">
+                        <span class="rule-num">3.1</span>
+                        <div class="rule-content">
+                            <h4>Progression naturelle</h4>
+                            <p>La maîtrise des sorts se fait avec le temps et l'entraînement. Pas de magie surpuissante dès le début.</p>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-num">3.2</span>
+                        <div class="rule-content">
+                            <h4>Limites de mana</h4>
+                            <p>Chaque sort consomme du mana. Respecte tes limites et les temps de récupération.</p>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-num">3.3</span>
+                        <div class="rule-content">
+                            <h4>Combats équilibrés</h4>
+                            <p>Lors des duels, accepte les échecs et les réussites. Les combats doivent être équitables et narratifs.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="rule-card">
-                <div class="rule-number">04</div>
-                <h3>Immersion Avant Tout</h3>
-                <p>Reste dans ton rôle, utilise /hors-jeu pour les discussions externes au RP.</p>
+
+            <!-- Sanctions -->
+            <div class="rule-category sanctions">
+                <div class="category-header">
+                    <span class="category-icon">⚠️</span>
+                    <h3>Système de Sanctions</h3>
+                </div>
+                <div class="rule-list">
+                    <div class="rule-item">
+                        <span class="rule-num">4.1</span>
+                        <div class="rule-content">
+                            <h4>Avertissement</h4>
+                            <p>Infraction mineure → Avertissement du staff avec explication.</p>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-num">4.2</span>
+                        <div class="rule-content">
+                            <h4>Kick temporaire</h4>
+                            <p>Récidive ou infraction moyenne → Exclusion temporaire de 24h à 7 jours.</p>
+                        </div>
+                    </div>
+                    <div class="rule-item">
+                        <span class="rule-num">4.3</span>
+                        <div class="rule-content">
+                            <h4>Ban permanent</h4>
+                            <p>Infraction grave ou récidives multiples → Bannissement définitif du serveur.</p>
+                        </div>
+                    </div>
+                </div>
             </div>
+        </div>
+
+        <div class="reglement-footer">
+            <p>⚡ En jouant sur School RP FR, tu acceptes l'intégralité de ce règlement.</p>
+            <p>Le staff se réserve le droit de modifier ces règles à tout moment.</p>
+        </div>
+    </section>
+
+    <!-- Whitelist Section -->
+    <section id="whitelist" class="section dark whitelist-section">
+        <div class="section-header">
+            <span class="section-tag">📝 Rejoins-nous</span>
+            <h2>Demande de Whitelist</h2>
+            <div class="divider"></div>
+        </div>
+
+        <div class="whitelist-intro">
+            <p>Pour rejoindre School RP FR, tu dois d'abord faire une demande de whitelist. Remplis ce formulaire avec soin et sois honnête dans tes réponses.</p>
+        </div>
+
+        <div class="form-container">
+            <form id="whitelistForm" class="whitelist-form">
+                <!-- Informations Personnelles -->
+                <div class="form-section">
+                    <h3><span class="form-icon">👤</span> Informations Personnelles</h3>
+                    
+                    <div class="form-group">
+                        <label for="pseudo">Pseudo Roblox *</label>
+                        <input type="text" id="pseudo" name="pseudo" required placeholder="Ton pseudo exact sur Roblox">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="discord">Nom Discord *</label>
+                        <input type="text" id="discord" name="discord" required placeholder="exemple#1234">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="age">Âge *</label>
+                        <input type="number" id="age" name="age" required min="10" max="99" placeholder="Ton âge">
+                    </div>
+                </div>
+
+                <!-- Expérience RP -->
+                <div class="form-section">
+                    <h3><span class="form-icon">🎭</span> Expérience Roleplay</h3>
+                    
+                    <div class="form-group">
+                        <label for="experience">As-tu déjà fait du RP ? *</label>
+                        <select id="experience" name="experience" required>
+                            <option value="">-- Sélectionne --</option>
+                            <option value="Jamais">Non, jamais</option>
+                            <option value="Débutant">Oui, quelques fois</option>
+                            <option value="Intermédiaire">Oui, régulièrement</option>
+                            <option value="Expérimenté">Oui, je suis expérimenté</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="serveurs">Sur quels serveurs RP as-tu joué ? (optionnel)</label>
+                        <textarea id="serveurs" name="serveurs" rows="3" placeholder="Nomme quelques serveurs RP où tu as joué..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Personnage -->
+                <div class="form-section">
+                    <h3><span class="form-icon">✨</span> Ton Personnage</h3>
+                    
+                    <div class="form-group">
+                        <label for="prenom">Prénom du personnage *</label>
+                        <input type="text" id="prenom" name="prenom" required placeholder="Le prénom de ton personnage">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="nom">Nom du personnage *</label>
+                        <input type="text" id="nom" name="nom" required placeholder="Le nom de ton personnage">
+                    </div>
+
+                    <div class="form-group">
+                        <label for="magie">Type de magie souhaité *</label>
+                        <select id="magie" name="magie" required>
+                            <option value="">-- Sélectionne --</option>
+                            <option value="Offensive">🔥 Magie Offensive</option>
+                            <option value="Défensive">🛡️ Magie Défensive</option>
+                            <option value="Utilitaire">🌿 Magie Utilitaire</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="background">Background de ton personnage * (minimum 100 caractères)</label>
+                        <textarea id="background" name="background" rows="6" required minlength="100" placeholder="Décris l'histoire de ton personnage, son passé, ses motivations..."></textarea>
+                        <small class="char-counter">0 / 100 caractères minimum</small>
+                    </div>
+                </div>
+
+                <!-- Motivations -->
+                <div class="form-section">
+                    <h3><span class="form-icon">💭</span> Motivations</h3>
+                    
+                    <div class="form-group">
+                        <label for="motivation">Pourquoi veux-tu rejoindre School RP FR ? *</label>
+                        <textarea id="motivation" name="motivation" rows="4" required minlength="50" placeholder="Explique ce qui t'attire dans notre serveur..."></textarea>
+                    </div>
+
+                    <div class="form-group checkbox-group">
+                        <label>
+                            <input type="checkbox" id="reglement" name="reglement" required>
+                            <span>J'ai lu et j'accepte le règlement du serveur *</span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <button type="submit" class="btn primary large">
+                        <span class="btn-icon">📨</span>
+                        <span>Envoyer ma candidature</span>
+                    </button>
+                </div>
+
+                <div class="form-message" id="formMessage"></div>
+            </form>
         </div>
     </section>
 
@@ -282,7 +521,8 @@
                 <ul>
                     <li><a href="#univers">Univers</a></li>
                     <li><a href="#magies">Magies</a></li>
-                    <li><a href="#regles">Règles</a></li>
+                    <li><a href="#regles">Règlement</a></li>
+                    <li><a href="#whitelist">Whitelist</a></li>
                     <li><a href="#staff">Staff</a></li>
                 </ul>
             </div>
