@@ -1,303 +1,198 @@
-// ========== NAVBAR SCROLL EFFECT ==========
-const navbar = document.querySelector('.navbar');
-let lastScroll = 0;
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>School RP FR | Accueil</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="logo">🪄 School RP FR</div>
+            <ul class="nav-menu">
+                <li><a href="index.html" class="active">Accueil</a></li>
+                <li><a href="reglement.html">Règlement</a></li>
+                <li><a href="whitelist.html">Whitelist</a></li>
+                <li><a href="staff.html">Staff</a></li>
+            </ul>
+            <div class="burger">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+        </div>
+    </nav>
 
-if (navbar && !navbar.classList.contains('scrolled')) {
-    window.addEventListener('scroll', () => {
-        const currentScroll = window.pageYOffset;
-        
-        if (currentScroll > 100) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-        
-        lastScroll = currentScroll;
-    });
-}
+    <!-- Hero Section -->
+    <header class="hero">
+        <div class="particles"></div>
+        <div class="overlay"></div>
+        <div class="hero-content">
+            <div class="hero-badge">✨ Serveur Français Premium</div>
+            <h1 class="hero-title">
+                <span class="title-line">School RP FR</span>
+            </h1>
+            <p class="hero-subtitle">L'école de magie où ton histoire commence</p>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-number">500+</span>
+                    <span class="stat-label">Joueurs actifs</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">50+</span>
+                    <span class="stat-label">Sorts disponibles</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number">24/7</span>
+                    <span class="stat-label">Serveur en ligne</span>
+                </div>
+            </div>
+            <div class="buttons">
+                <a href="#" class="btn primary">
+                    <span class="btn-icon">🎮</span>
+                    <span>Jouer sur Roblox</span>
+                </a>
+                <a href="#" class="btn secondary">
+                    <span class="btn-icon">💬</span>
+                    <span>Rejoindre le Discord</span>
+                </a>
+            </div>
+        </div>
+        <div class="scroll-indicator">
+            <span></span>
+        </div>
+    </header>
 
-// ========== MOBILE MENU TOGGLE ==========
-const burger = document.querySelector('.burger');
-const navMenu = document.querySelector('.nav-menu');
-const navLinks = document.querySelectorAll('.nav-menu a');
+    <!-- L'Univers Section -->
+    <section class="section">
+        <div class="section-header">
+            <span class="section-tag">🧙‍♂️ Découvre</span>
+            <h2>L'Univers Magique</h2>
+            <div class="divider"></div>
+        </div>
+        <div class="content-grid">
+            <div class="content-text">
+                <p class="lead-text">
+                    Bienvenue à School RP FR, une école de magie française où les élèves
+                    apprennent l'art des sorts, des potions et du roleplay immersif.
+                </p>
+                <p>
+                    Plonge dans un monde où la magie prend vie. Choisis ta voie,
+                    progresse à travers les années scolaires, participe à des événements épiques 
+                    et écris ta propre légende dans notre univers unique.
+                </p>
+                <div class="features-list">
+                    <div class="feature-item">
+                        <span class="feature-icon">⚡</span>
+                        <span>Système de progression unique</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">🏆</span>
+                        <span>Événements réguliers</span>
+                    </div>
+                    <div class="feature-item">
+                        <span class="feature-icon">👥</span>
+                        <span>Communauté active et bienveillante</span>
+                    </div>
+                </div>
+            </div>
+            <div class="content-image">
+                <div class="image-wrapper">
+                    <div class="image-glow"></div>
+                    <div class="placeholder-image">
+                        <span class="placeholder-icon">🏰</span>
+                        <p>L'école de magie</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 
-if (burger && navMenu) {
-    burger.addEventListener('click', () => {
-        burger.classList.toggle('active');
-        navMenu.classList.toggle('active');
-    });
-
-    // Close menu when clicking on a link
-    navLinks.forEach(link => {
-        link.addEventListener('click', () => {
-            burger.classList.remove('active');
-            navMenu.classList.remove('active');
-        });
-    });
-
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!burger.contains(e.target) && !navMenu.contains(e.target)) {
-            burger.classList.remove('active');
-            navMenu.classList.remove('active');
-        }
-    });
-}
-
-// ========== MAGIC PARTICLE EFFECT ==========
-function createMagicParticles() {
-    const hero = document.querySelector('.hero');
-    if (!hero) return;
-    
-    const particleCount = 30;
-    
-    for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'magic-particle';
-        particle.style.cssText = `
-            position: absolute;
-            width: ${Math.random() * 4 + 2}px;
-            height: ${Math.random() * 4 + 2}px;
-            background: ${Math.random() > 0.5 ? '#caa45d' : '#6fa8dc'};
-            border-radius: 50%;
-            left: ${Math.random() * 100}%;
-            top: ${Math.random() * 100}%;
-            opacity: ${Math.random() * 0.5 + 0.3};
-            animation: float ${Math.random() * 10 + 5}s linear infinite;
-            box-shadow: 0 0 10px currentColor;
-        `;
-        hero.appendChild(particle);
-    }
-}
-
-// Add floating animation
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes float {
-        0%, 100% {
-            transform: translateY(0) translateX(0);
-        }
-        25% {
-            transform: translateY(-20px) translateX(10px);
-        }
-        50% {
-            transform: translateY(-40px) translateX(-10px);
-        }
-        75% {
-            transform: translateY(-20px) translateX(5px);
-        }
-    }
-`;
-document.head.appendChild(style);
-
-createMagicParticles();
-
-// ========== SCROLL TO TOP BUTTON ==========
-const scrollTopBtn = document.createElement('button');
-scrollTopBtn.innerHTML = '↑';
-scrollTopBtn.className = 'scroll-top';
-scrollTopBtn.style.cssText = `
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 50px;
-    height: 50px;
-    background: var(--primary-gold);
-    color: #000;
-    border: none;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    cursor: pointer;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.3s ease;
-    z-index: 1000;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-`;
-
-document.body.appendChild(scrollTopBtn);
-
-window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 500) {
-        scrollTopBtn.style.opacity = '1';
-        scrollTopBtn.style.pointerEvents = 'auto';
-    } else {
-        scrollTopBtn.style.opacity = '0';
-        scrollTopBtn.style.pointerEvents = 'none';
-    }
-});
-
-scrollTopBtn.addEventListener('click', () => {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
-});
-
-scrollTopBtn.addEventListener('mouseenter', () => {
-    scrollTopBtn.style.transform = 'scale(1.1)';
-});
-
-scrollTopBtn.addEventListener('mouseleave', () => {
-    scrollTopBtn.style.transform = 'scale(1)';
-});
-
-// ========== PARALLAX EFFECT ==========
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const heroContent = document.querySelector('.hero-content');
-    
-    if (heroContent && scrolled < window.innerHeight) {
-        heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
-        heroContent.style.opacity = 1 - (scrolled / window.innerHeight);
-    }
-});
-
-// ========== STATS COUNTER ANIMATION ==========
-const stats = document.querySelectorAll('.stat-number');
-
-const countUp = (element, target) => {
-    const duration = 2000;
-    const increment = target / (duration / 16);
-    let current = 0;
-    
-    const timer = setInterval(() => {
-        current += increment;
-        if (current >= target) {
-            element.textContent = target;
-            clearInterval(timer);
-        } else {
-            element.textContent = Math.floor(current) + '+';
-        }
-    }, 16);
-};
-
-const statsObserver = new IntersectionObserver((entries) => {
-    entries.forEach(entry => {
-        if (entry.isIntersecting) {
-            const target = entry.target.textContent.replace('+', '');
-            if (target.includes('/')) {
-                // Skip 24/7
-                return;
-            }
-            countUp(entry.target, parseInt(target));
-            statsObserver.unobserve(entry.target);
-        }
-    });
-}, { threshold: 0.5 });
-
-stats.forEach(stat => {
-    statsObserver.observe(stat);
-});
-
-// ========== WHITELIST FORM HANDLING ==========
-const whitelistForm = document.getElementById('whitelistForm');
-const backgroundTextarea = document.getElementById('background');
-const charCounter = document.querySelector('.char-counter');
-const formMessage = document.getElementById('formMessage');
-
-// Character counter for background
-if (backgroundTextarea && charCounter) {
-    backgroundTextarea.addEventListener('input', () => {
-        const length = backgroundTextarea.value.length;
-        charCounter.textContent = `${length} / 100 caractères minimum`;
-        
-        if (length >= 100) {
-            charCounter.classList.add('valid');
-        } else {
-            charCounter.classList.remove('valid');
-        }
-    });
-}
-
-// Form submission
-if (whitelistForm) {
-    whitelistForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        
-        // Show loading message
-        formMessage.className = 'form-message loading';
-        formMessage.textContent = '📤 Envoi de ta candidature en cours...';
-        
-        // Get form data
-        const formData = new FormData(whitelistForm);
-        const data = {};
-        formData.forEach((value, key) => {
-            data[key] = value;
-        });
-        
-        // Create Discord embed
-        const embed = {
-            embeds: [{
-                title: "🆕 Nouvelle Demande de Whitelist",
-                color: 0xcaa45d, // Gold color
-                fields: [
-                    {
-                        name: "👤 Informations Personnelles",
-                        value: `**Pseudo Roblox:** ${data.pseudo}\n**Discord:** ${data.discord}\n**Âge:** ${data.age} ans`,
-                        inline: false
-                    },
-                    {
-                        name: "🎭 Expérience RP",
-                        value: `**Niveau:** ${data.experience}\n**Serveurs précédents:** ${data.serveurs || 'Aucun spécifié'}`,
-                        inline: false
-                    },
-                    {
-                        name: "✨ Personnage",
-                        value: `**Nom complet:** ${data.prenom} ${data.nom}`,
-                        inline: false
-                    },
-                    {
-                        name: "📖 Background",
-                        value: data.background.substring(0, 1000) + (data.background.length > 1000 ? '...' : ''),
-                        inline: false
-                    },
-                    {
-                        name: "💭 Motivation",
-                        value: data.motivation.substring(0, 1000) + (data.motivation.length > 1000 ? '...' : ''),
-                        inline: false
-                    }
-                ],
-                footer: {
-                    text: "School RP FR - Système de Whitelist"
-                },
-                timestamp: new Date().toISOString()
-            }]
-        };
-        
-        try {
-            const webhookUrl = 'https://discord.com/api/webhooks/1466897477704745015/g-o7oRLfaqg0rwiKlahwOdX0FU9Yau9NYcKGy9TLXUeWde_YT7AuZfeKEKYfXRRKsulD';
+    <!-- Quick Links Section -->
+    <section class="section dark">
+        <div class="section-header">
+            <span class="section-tag">🚀 Navigation Rapide</span>
+            <h2>Explore le Serveur</h2>
+            <div class="divider"></div>
+        </div>
+        <div class="quick-links-grid">
+            <a href="reglement.html" class="quick-link-card">
+                <div class="card-icon">📜</div>
+                <h3>Règlement</h3>
+                <p>Consulte toutes les règles du serveur</p>
+                <span class="link-arrow">→</span>
+            </a>
             
-            const response = await fetch(webhookUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(embed)
-            });
+            <a href="whitelist.html" class="quick-link-card featured">
+                <div class="featured-badge">⭐ Important</div>
+                <div class="card-icon">📝</div>
+                <h3>Demande de Whitelist</h3>
+                <p>Rejoins-nous en faisant ta candidature</p>
+                <span class="link-arrow">→</span>
+            </a>
             
-            if (response.ok) {
-                // Success
-                formMessage.className = 'form-message success';
-                formMessage.textContent = '✅ Ta candidature a été envoyée avec succès ! Le staff te contactera bientôt sur Discord.';
-                whitelistForm.reset();
-                if (charCounter) {
-                    charCounter.textContent = '0 / 100 caractères minimum';
-                    charCounter.classList.remove('valid');
-                }
-                
-                // Scroll to message
-                formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
-            } else {
-                throw new Error('Erreur lors de l\'envoi');
-            }
-        } catch (error) {
-            // Error
-            formMessage.className = 'form-message error';
-            formMessage.textContent = '❌ Une erreur est survenue. Vérifie ta connexion et réessaye.';
-            console.error('Erreur:', error);
-        }
-    });
-}
+            <a href="staff.html" class="quick-link-card">
+                <div class="card-icon">👑</div>
+                <h3>Notre Staff</h3>
+                <p>Découvre l'équipe qui gère le serveur</p>
+                <span class="link-arrow">→</span>
+            </a>
+        </div>
+    </section>
 
-console.log('🪄 School RP FR - Site web chargé avec succès!');
+    <!-- CTA Section -->
+    <section class="cta-section">
+        <div class="cta-content">
+            <h2>Prêt à Commencer Ton Aventure ?</h2>
+            <p>Rejoins des centaines de sorciers et écris ta propre histoire magique</p>
+            <div class="buttons">
+                <a href="whitelist.html" class="btn primary large">
+                    <span class="btn-icon">📝</span>
+                    <span>Faire ma Demande</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>🪄 School RP FR</h3>
+                <p>L'école de magie française la plus immersive sur Roblox.</p>
+                <div class="social-links">
+                    <a href="#" class="social-link">Discord</a>
+                    <a href="#" class="social-link">Roblox</a>
+                    <a href="#" class="social-link">YouTube</a>
+                </div>
+            </div>
+            <div class="footer-section">
+                <h4>Navigation</h4>
+                <ul>
+                    <li><a href="index.html">Accueil</a></li>
+                    <li><a href="reglement.html">Règlement</a></li>
+                    <li><a href="whitelist.html">Whitelist</a></li>
+                    <li><a href="staff.html">Staff</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h4>Communauté</h4>
+                <ul>
+                    <li><a href="#">Discord</a></li>
+                    <li><a href="#">Forum</a></li>
+                    <li><a href="#">Wiki</a></li>
+                    <li><a href="#">Support</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 School RP FR — Développé avec 🪄 par un sorcier Roblox</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
