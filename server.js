@@ -392,3 +392,111 @@ window.addEventListener('scroll', debounce(() => {
 }, 10));
 
 console.log('🪄 School RP FR - Site web chargé avec succès!');
+
+// ========== WHITELIST FORM HANDLING ==========
+const whitelistForm = document.getElementById('whitelistForm');
+const backgroundTextarea = document.getElementById('background');
+const charCounter = document.querySelector('.char-counter');
+const formMessage = document.getElementById('formMessage');
+
+// Character counter for background
+if (backgroundTextarea && charCounter) {
+    backgroundTextarea.addEventListener('input', () => {
+        const length = backgroundTextarea.value.length;
+        charCounter.textContent = `${length} / 100 caractères minimum`;
+        
+        if (length >= 100) {
+            charCounter.classList.add('valid');
+        } else {
+            charCounter.classList.remove('valid');
+        }
+    });
+}
+
+// Form submission
+if (whitelistForm) {
+    whitelistForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Show loading message
+        formMessage.className = 'form-message loading';
+        formMessage.textContent = '📤 Envoi de ta candidature en cours...';
+        
+        // Get form data
+        const formData = new FormData(whitelistForm);
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+        
+        // Create Discord embed
+        const embed = {
+            embeds: [{
+                title: "🆕 Nouvelle Demande de Whitelist",
+                color: 0xcaa45d, // Gold color
+                fields: [
+                    {
+                        name: "👤 Informations Personnelles",
+                        value: `**Pseudo Roblox:** ${data.pseudo}\n**Discord:** ${data.discord}\n**Âge:** ${data.age} ans`,
+                        inline: false
+                    },
+                    {
+                        name: "🎭 Expérience RP",
+                        value: `**Niveau:** ${data.experience}\n**Serveurs précédents:** ${data.serveurs || 'Aucun spécifié'}`,
+                        inline: false
+                    },
+                    {
+                        name: "✨ Personnage",
+                        value: `**Nom complet:** ${data.prenom} ${data.nom}\n**Type de magie:** ${data.magie}`,
+                        inline: false
+                    },
+                    {
+                        name: "📖 Background",
+                        value: data.background.substring(0, 1000) + (data.background.length > 1000 ? '...' : ''),
+                        inline: false
+                    },
+                    {
+                        name: "💭 Motivation",
+                        value: data.motivation.substring(0, 1000) + (data.motivation.length > 1000 ? '...' : ''),
+                        inline: false
+                    }
+                ],
+                footer: {
+                    text: "School RP FR - Système de Whitelist"
+                },
+                timestamp: new Date().toISOString()
+            }]
+        };
+        
+        try {
+            const webhookUrl = 'https://discord.com/api/webhooks/1466897477704745015/g-o7oRLfaqg0rwiKlahwOdX0FU9Yau9NYcKGy9TLXUeWde_YT7AuZfeKEKYfXRRKsulD';
+            
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(embed)
+            });
+            
+            if (response.ok) {
+                // Success
+                formMessage.className = 'form-message success';
+                formMessage.textContent = '✅ Ta candidature a été envoyée avec succès ! Le staff te contactera bientôt sur Discord.';
+                whitelistForm.reset();
+                charCounter.textContent = '0 / 100 caractères minimum';
+                charCounter.classList.remove('valid');
+                
+                // Scroll to message
+                formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                throw new Error('Erreur lors de l\'envoi');
+            }
+        } catch (error) {
+            // Error
+            formMessage.className = 'form-message error';
+            formMessage.textContent = '❌ Une erreur est survenue. Vérifie ta connexion et réessaye.';
+            console.error('Erreur:', error);
+        }
+    });
+}
