@@ -1,546 +1,303 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>School RP FR | École de Magie</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400&display=swap" rel="stylesheet">
-</head>
-<body>
-    <!-- Navigation -->
-    <nav class="navbar">
-        <div class="nav-container">
-            <div class="logo">🪄 School RP FR</div>
-            <ul class="nav-menu">
-                <li><a href="#univers">Univers</a></li>
-                <li><a href="#magies">Magies</a></li>
-                <li><a href="#regles">Règlement</a></li>
-                <li><a href="#whitelist">Whitelist</a></li>
-                <li><a href="#staff">Staff</a></li>
-            </ul>
-            <div class="burger">
-                <span></span>
-                <span></span>
-                <span></span>
-            </div>
-        </div>
-    </nav>
+// ========== NAVBAR SCROLL EFFECT ==========
+const navbar = document.querySelector('.navbar');
+let lastScroll = 0;
 
-    <!-- Hero Section -->
-    <header class="hero">
-        <div class="particles"></div>
-        <div class="overlay"></div>
-        <div class="hero-content">
-            <div class="hero-badge">✨ Serveur Français Premium</div>
-            <h1 class="hero-title">
-                <span class="title-line">School RP FR</span>
-            </h1>
-            <p class="hero-subtitle">L'école de magie où ton histoire commence</p>
-            <div class="hero-stats">
-                <div class="stat">
-                    <span class="stat-number">500+</span>
-                    <span class="stat-label">Joueurs actifs</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number">50+</span>
-                    <span class="stat-label">Sorts disponibles</span>
-                </div>
-                <div class="stat">
-                    <span class="stat-number">24/7</span>
-                    <span class="stat-label">Serveur en ligne</span>
-                </div>
-            </div>
-            <div class="buttons">
-                <a href="#" class="btn primary">
-                    <span class="btn-icon">🎮</span>
-                    <span>Jouer sur Roblox</span>
-                </a>
-                <a href="#" class="btn secondary">
-                    <span class="btn-icon">💬</span>
-                    <span>Rejoindre le Discord</span>
-                </a>
-            </div>
-        </div>
-        <div class="scroll-indicator">
-            <span></span>
-        </div>
-    </header>
-
-    <!-- L'Univers Section -->
-    <section id="univers" class="section">
-        <div class="section-header">
-            <span class="section-tag">🧙‍♂️ Découvre</span>
-            <h2>L'Univers Magique</h2>
-            <div class="divider"></div>
-        </div>
-        <div class="content-grid">
-            <div class="content-text">
-                <p class="lead-text">
-                    Bienvenue à School RP FR, une école de magie française où les élèves
-                    apprennent l'art des sorts, des potions et du roleplay immersif.
-                </p>
-                <p>
-                    Plonge dans un monde où la magie prend vie. Choisis ta voie entre l'offensive,
-                    la défensive ou l'utilitaire. Progresse à travers les années scolaires,
-                    participe à des événements épiques et écris ta propre légende.
-                </p>
-                <div class="features-list">
-                    <div class="feature-item">
-                        <span class="feature-icon">⚡</span>
-                        <span>Système de progression unique</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon">🏆</span>
-                        <span>Événements réguliers</span>
-                    </div>
-                    <div class="feature-item">
-                        <span class="feature-icon">👥</span>
-                        <span>Communauté active et bienveillante</span>
-                    </div>
-                </div>
-            </div>
-            <div class="content-image">
-                <div class="image-wrapper">
-                    <div class="image-glow"></div>
-                    <div class="placeholder-image">
-                        <span class="placeholder-icon">🏰</span>
-                        <p>L'école de magie</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Les Magies Section -->
-    <section id="magies" class="section dark">
-        <div class="section-header">
-            <span class="section-tag">✨ Explore</span>
-            <h2>Les Magies</h2>
-            <div class="divider"></div>
-        </div>
-        <div class="cards">
-            <div class="card" data-magic="fire">
-                <div class="card-icon">🔥</div>
-                <h3>Magie Offensive</h3>
-                <p>Maîtrise les sorts de feu, éclairs et attaques puissantes pour dominer tes adversaires.</p>
-                <div class="card-stats">
-                    <div class="stat-bar">
-                        <span class="stat-label">Puissance</span>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: 95%"></div>
-                        </div>
-                    </div>
-                    <div class="stat-bar">
-                        <span class="stat-label">Défense</span>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: 40%"></div>
-                        </div>
-                    </div>
-                </div>
-                <button class="card-btn">En savoir plus →</button>
-            </div>
-            
-            <div class="card featured" data-magic="shield">
-                <div class="featured-badge">⭐ Populaire</div>
-                <div class="card-icon">🛡️</div>
-                <h3>Magie Défensive</h3>
-                <p>Crée des boucliers impénétrables, protège tes alliés et contre les sorts ennemis.</p>
-                <div class="card-stats">
-                    <div class="stat-bar">
-                        <span class="stat-label">Puissance</span>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: 55%"></div>
-                        </div>
-                    </div>
-                    <div class="stat-bar">
-                        <span class="stat-label">Défense</span>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: 95%"></div>
-                        </div>
-                    </div>
-                </div>
-                <button class="card-btn">En savoir plus →</button>
-            </div>
-            
-            <div class="card" data-magic="utility">
-                <div class="card-icon">🌿</div>
-                <h3>Magie Utilitaire</h3>
-                <p>Soigne tes compagnons, déplace-toi instantanément et apporte un soutien magique précieux.</p>
-                <div class="card-stats">
-                    <div class="stat-bar">
-                        <span class="stat-label">Puissance</span>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: 65%"></div>
-                        </div>
-                    </div>
-                    <div class="stat-bar">
-                        <span class="stat-label">Défense</span>
-                        <div class="progress">
-                            <div class="progress-bar" style="width: 70%"></div>
-                        </div>
-                    </div>
-                </div>
-                <button class="card-btn">En savoir plus →</button>
-            </div>
-        </div>
-    </section>
-
-    <!-- Règlement Section -->
-    <section id="regles" class="section reglement-section">
-        <div class="section-header">
-            <span class="section-tag">📜 Lis Attentivement</span>
-            <h2>Règlement du Serveur</h2>
-            <div class="divider"></div>
-        </div>
+if (navbar && !navbar.classList.contains('scrolled')) {
+    window.addEventListener('scroll', () => {
+        const currentScroll = window.pageYOffset;
         
-        <div class="reglement-container">
-            <!-- Règles Générales -->
-            <div class="rule-category">
-                <div class="category-header">
-                    <span class="category-icon">⚖️</span>
-                    <h3>Règles Générales</h3>
-                </div>
-                <div class="rule-list">
-                    <div class="rule-item">
-                        <span class="rule-num">1.1</span>
-                        <div class="rule-content">
-                            <h4>Respect de la communauté</h4>
-                            <p>Aucune forme de discrimination, harcèlement ou toxicité ne sera tolérée. Respecte tous les joueurs.</p>
-                        </div>
-                    </div>
-                    <div class="rule-item">
-                        <span class="rule-num">1.2</span>
-                        <div class="rule-content">
-                            <h4>Langue française</h4>
-                            <p>Le serveur est francophone. Utilise uniquement le français dans les discussions RP et HRP.</p>
-                        </div>
-                    </div>
-                    <div class="rule-item">
-                        <span class="rule-num">1.3</span>
-                        <div class="rule-content">
-                            <h4>Publicité interdite</h4>
-                            <p>La publicité pour d'autres serveurs ou contenus externes est strictement interdite.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+        if (currentScroll > 100) {
+            navbar.classList.add('scrolled');
+        } else {
+            navbar.classList.remove('scrolled');
+        }
+        
+        lastScroll = currentScroll;
+    });
+}
 
-            <!-- Règles RP -->
-            <div class="rule-category">
-                <div class="category-header">
-                    <span class="category-icon">🎭</span>
-                    <h3>Règles Roleplay</h3>
-                </div>
-                <div class="rule-list">
-                    <div class="rule-item">
-                        <span class="rule-num">2.1</span>
-                        <div class="rule-content">
-                            <h4>Immersion obligatoire</h4>
-                            <p>Reste dans ton rôle en permanence. Utilise /hors-jeu ou /hj pour les discussions HRP.</p>
-                        </div>
-                    </div>
-                    <div class="rule-item">
-                        <span class="rule-num">2.2</span>
-                        <div class="rule-content">
-                            <h4>Pas de Powergaming</h4>
-                            <p>Ton personnage a des limites. Ne te rends pas invincible ou tout-puissant sans raison valable.</p>
-                        </div>
-                    </div>
-                    <div class="rule-item">
-                        <span class="rule-num">2.3</span>
-                        <div class="rule-content">
-                            <h4>Pas de Metagaming</h4>
-                            <p>N'utilise pas d'informations HRP dans ton RP. Ce que tu sais ≠ ce que ton personnage sait.</p>
-                        </div>
-                    </div>
-                    <div class="rule-item">
-                        <span class="rule-num">2.4</span>
-                        <div class="rule-content">
-                            <h4>Background cohérent</h4>
-                            <p>Crée un personnage avec une histoire logique et respectueuse du lore de l'école.</p>
-                        </div>
-                    </div>
-                    <div class="rule-item">
-                        <span class="rule-num">2.5</span>
-                        <div class="rule-content">
-                            <h4>Actions /me</h4>
-                            <p>Décris tes actions avec /me. Laisse aux autres la possibilité de réagir. Pas de forçage RP.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+// ========== MOBILE MENU TOGGLE ==========
+const burger = document.querySelector('.burger');
+const navMenu = document.querySelector('.nav-menu');
+const navLinks = document.querySelectorAll('.nav-menu a');
 
-            <!-- Règles des Magies -->
-            <div class="rule-category">
-                <div class="category-header">
-                    <span class="category-icon">✨</span>
-                    <h3>Règles des Magies</h3>
-                </div>
-                <div class="rule-list">
-                    <div class="rule-item">
-                        <span class="rule-num">3.1</span>
-                        <div class="rule-content">
-                            <h4>Progression naturelle</h4>
-                            <p>La maîtrise des sorts se fait avec le temps et l'entraînement. Pas de magie surpuissante dès le début.</p>
-                        </div>
-                    </div>
-                    <div class="rule-item">
-                        <span class="rule-num">3.2</span>
-                        <div class="rule-content">
-                            <h4>Limites de mana</h4>
-                            <p>Chaque sort consomme du mana. Respecte tes limites et les temps de récupération.</p>
-                        </div>
-                    </div>
-                    <div class="rule-item">
-                        <span class="rule-num">3.3</span>
-                        <div class="rule-content">
-                            <h4>Combats équilibrés</h4>
-                            <p>Lors des duels, accepte les échecs et les réussites. Les combats doivent être équitables et narratifs.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
+if (burger && navMenu) {
+    burger.addEventListener('click', () => {
+        burger.classList.toggle('active');
+        navMenu.classList.toggle('active');
+    });
 
-            <!-- Sanctions -->
-            <div class="rule-category sanctions">
-                <div class="category-header">
-                    <span class="category-icon">⚠️</span>
-                    <h3>Système de Sanctions</h3>
-                </div>
-                <div class="rule-list">
-                    <div class="rule-item">
-                        <span class="rule-num">4.1</span>
-                        <div class="rule-content">
-                            <h4>Avertissement</h4>
-                            <p>Infraction mineure → Avertissement du staff avec explication.</p>
-                        </div>
-                    </div>
-                    <div class="rule-item">
-                        <span class="rule-num">4.2</span>
-                        <div class="rule-content">
-                            <h4>Kick temporaire</h4>
-                            <p>Récidive ou infraction moyenne → Exclusion temporaire de 24h à 7 jours.</p>
-                        </div>
-                    </div>
-                    <div class="rule-item">
-                        <span class="rule-num">4.3</span>
-                        <div class="rule-content">
-                            <h4>Ban permanent</h4>
-                            <p>Infraction grave ou récidives multiples → Bannissement définitif du serveur.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+    // Close menu when clicking on a link
+    navLinks.forEach(link => {
+        link.addEventListener('click', () => {
+            burger.classList.remove('active');
+            navMenu.classList.remove('active');
+        });
+    });
 
-        <div class="reglement-footer">
-            <p>⚡ En jouant sur School RP FR, tu acceptes l'intégralité de ce règlement.</p>
-            <p>Le staff se réserve le droit de modifier ces règles à tout moment.</p>
-        </div>
-    </section>
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+        if (!burger.contains(e.target) && !navMenu.contains(e.target)) {
+            burger.classList.remove('active');
+            navMenu.classList.remove('active');
+        }
+    });
+}
 
-    <!-- Whitelist Section -->
-    <section id="whitelist" class="section dark whitelist-section">
-        <div class="section-header">
-            <span class="section-tag">📝 Rejoins-nous</span>
-            <h2>Demande de Whitelist</h2>
-            <div class="divider"></div>
-        </div>
+// ========== MAGIC PARTICLE EFFECT ==========
+function createMagicParticles() {
+    const hero = document.querySelector('.hero');
+    if (!hero) return;
+    
+    const particleCount = 30;
+    
+    for (let i = 0; i < particleCount; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'magic-particle';
+        particle.style.cssText = `
+            position: absolute;
+            width: ${Math.random() * 4 + 2}px;
+            height: ${Math.random() * 4 + 2}px;
+            background: ${Math.random() > 0.5 ? '#caa45d' : '#6fa8dc'};
+            border-radius: 50%;
+            left: ${Math.random() * 100}%;
+            top: ${Math.random() * 100}%;
+            opacity: ${Math.random() * 0.5 + 0.3};
+            animation: float ${Math.random() * 10 + 5}s linear infinite;
+            box-shadow: 0 0 10px currentColor;
+        `;
+        hero.appendChild(particle);
+    }
+}
 
-        <div class="whitelist-intro">
-            <p>Pour rejoindre School RP FR, tu dois d'abord faire une demande de whitelist. Remplis ce formulaire avec soin et sois honnête dans tes réponses.</p>
-        </div>
+// Add floating animation
+const style = document.createElement('style');
+style.textContent = `
+    @keyframes float {
+        0%, 100% {
+            transform: translateY(0) translateX(0);
+        }
+        25% {
+            transform: translateY(-20px) translateX(10px);
+        }
+        50% {
+            transform: translateY(-40px) translateX(-10px);
+        }
+        75% {
+            transform: translateY(-20px) translateX(5px);
+        }
+    }
+`;
+document.head.appendChild(style);
 
-        <div class="form-container">
-            <form id="whitelistForm" class="whitelist-form">
-                <!-- Informations Personnelles -->
-                <div class="form-section">
-                    <h3><span class="form-icon">👤</span> Informations Personnelles</h3>
-                    
-                    <div class="form-group">
-                        <label for="pseudo">Pseudo Roblox *</label>
-                        <input type="text" id="pseudo" name="pseudo" required placeholder="Ton pseudo exact sur Roblox">
-                    </div>
+createMagicParticles();
 
-                    <div class="form-group">
-                        <label for="discord">Nom Discord *</label>
-                        <input type="text" id="discord" name="discord" required placeholder="exemple#1234">
-                    </div>
+// ========== SCROLL TO TOP BUTTON ==========
+const scrollTopBtn = document.createElement('button');
+scrollTopBtn.innerHTML = '↑';
+scrollTopBtn.className = 'scroll-top';
+scrollTopBtn.style.cssText = `
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 50px;
+    height: 50px;
+    background: var(--primary-gold);
+    color: #000;
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: all 0.3s ease;
+    z-index: 1000;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+`;
 
-                    <div class="form-group">
-                        <label for="age">Âge *</label>
-                        <input type="number" id="age" name="age" required min="10" max="99" placeholder="Ton âge">
-                    </div>
-                </div>
+document.body.appendChild(scrollTopBtn);
 
-                <!-- Expérience RP -->
-                <div class="form-section">
-                    <h3><span class="form-icon">🎭</span> Expérience Roleplay</h3>
-                    
-                    <div class="form-group">
-                        <label for="experience">As-tu déjà fait du RP ? *</label>
-                        <select id="experience" name="experience" required>
-                            <option value="">-- Sélectionne --</option>
-                            <option value="Jamais">Non, jamais</option>
-                            <option value="Débutant">Oui, quelques fois</option>
-                            <option value="Intermédiaire">Oui, régulièrement</option>
-                            <option value="Expérimenté">Oui, je suis expérimenté</option>
-                        </select>
-                    </div>
+window.addEventListener('scroll', () => {
+    if (window.pageYOffset > 500) {
+        scrollTopBtn.style.opacity = '1';
+        scrollTopBtn.style.pointerEvents = 'auto';
+    } else {
+        scrollTopBtn.style.opacity = '0';
+        scrollTopBtn.style.pointerEvents = 'none';
+    }
+});
 
-                    <div class="form-group">
-                        <label for="serveurs">Sur quels serveurs RP as-tu joué ? (optionnel)</label>
-                        <textarea id="serveurs" name="serveurs" rows="3" placeholder="Nomme quelques serveurs RP où tu as joué..."></textarea>
-                    </div>
-                </div>
+scrollTopBtn.addEventListener('click', () => {
+    window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+    });
+});
 
-                <!-- Personnage -->
-                <div class="form-section">
-                    <h3><span class="form-icon">✨</span> Ton Personnage</h3>
-                    
-                    <div class="form-group">
-                        <label for="prenom">Prénom du personnage *</label>
-                        <input type="text" id="prenom" name="prenom" required placeholder="Le prénom de ton personnage">
-                    </div>
+scrollTopBtn.addEventListener('mouseenter', () => {
+    scrollTopBtn.style.transform = 'scale(1.1)';
+});
 
-                    <div class="form-group">
-                        <label for="nom">Nom du personnage *</label>
-                        <input type="text" id="nom" name="nom" required placeholder="Le nom de ton personnage">
-                    </div>
+scrollTopBtn.addEventListener('mouseleave', () => {
+    scrollTopBtn.style.transform = 'scale(1)';
+});
 
-                    <div class="form-group">
-                        <label for="magie">Type de magie souhaité *</label>
-                        <select id="magie" name="magie" required>
-                            <option value="">-- Sélectionne --</option>
-                            <option value="Offensive">🔥 Magie Offensive</option>
-                            <option value="Défensive">🛡️ Magie Défensive</option>
-                            <option value="Utilitaire">🌿 Magie Utilitaire</option>
-                        </select>
-                    </div>
+// ========== PARALLAX EFFECT ==========
+window.addEventListener('scroll', () => {
+    const scrolled = window.pageYOffset;
+    const heroContent = document.querySelector('.hero-content');
+    
+    if (heroContent && scrolled < window.innerHeight) {
+        heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
+        heroContent.style.opacity = 1 - (scrolled / window.innerHeight);
+    }
+});
 
-                    <div class="form-group">
-                        <label for="background">Background de ton personnage * (minimum 100 caractères)</label>
-                        <textarea id="background" name="background" rows="6" required minlength="100" placeholder="Décris l'histoire de ton personnage, son passé, ses motivations..."></textarea>
-                        <small class="char-counter">0 / 100 caractères minimum</small>
-                    </div>
-                </div>
+// ========== STATS COUNTER ANIMATION ==========
+const stats = document.querySelectorAll('.stat-number');
 
-                <!-- Motivations -->
-                <div class="form-section">
-                    <h3><span class="form-icon">💭</span> Motivations</h3>
-                    
-                    <div class="form-group">
-                        <label for="motivation">Pourquoi veux-tu rejoindre School RP FR ? *</label>
-                        <textarea id="motivation" name="motivation" rows="4" required minlength="50" placeholder="Explique ce qui t'attire dans notre serveur..."></textarea>
-                    </div>
+const countUp = (element, target) => {
+    const duration = 2000;
+    const increment = target / (duration / 16);
+    let current = 0;
+    
+    const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+            element.textContent = target;
+            clearInterval(timer);
+        } else {
+            element.textContent = Math.floor(current) + '+';
+        }
+    }, 16);
+};
 
-                    <div class="form-group checkbox-group">
-                        <label>
-                            <input type="checkbox" id="reglement" name="reglement" required>
-                            <span>J'ai lu et j'accepte le règlement du serveur *</span>
-                        </label>
-                    </div>
-                </div>
+const statsObserver = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+        if (entry.isIntersecting) {
+            const target = entry.target.textContent.replace('+', '');
+            if (target.includes('/')) {
+                // Skip 24/7
+                return;
+            }
+            countUp(entry.target, parseInt(target));
+            statsObserver.unobserve(entry.target);
+        }
+    });
+}, { threshold: 0.5 });
 
-                <div class="form-actions">
-                    <button type="submit" class="btn primary large">
-                        <span class="btn-icon">📨</span>
-                        <span>Envoyer ma candidature</span>
-                    </button>
-                </div>
+stats.forEach(stat => {
+    statsObserver.observe(stat);
+});
 
-                <div class="form-message" id="formMessage"></div>
-            </form>
-        </div>
-    </section>
+// ========== WHITELIST FORM HANDLING ==========
+const whitelistForm = document.getElementById('whitelistForm');
+const backgroundTextarea = document.getElementById('background');
+const charCounter = document.querySelector('.char-counter');
+const formMessage = document.getElementById('formMessage');
 
-    <!-- Staff Section -->
-    <section id="staff" class="section dark">
-        <div class="section-header">
-            <span class="section-tag">👑 Rencontre</span>
-            <h2>Notre Staff</h2>
-            <div class="divider"></div>
-        </div>
-        <div class="staff-grid">
-            <div class="staff-card">
-                <div class="staff-avatar">
-                    <div class="avatar-placeholder">👨‍💼</div>
-                    <div class="status-badge online"></div>
-                </div>
-                <h3>Fondateur</h3>
-                <p class="staff-role">Créateur & Développeur</p>
-            </div>
-            <div class="staff-card">
-                <div class="staff-avatar">
-                    <div class="avatar-placeholder">👩‍💼</div>
-                    <div class="status-badge online"></div>
-                </div>
-                <h3>Co-Fondateur</h3>
-                <p class="staff-role">Administrateur Principal</p>
-            </div>
-            <div class="staff-card">
-                <div class="staff-avatar">
-                    <div class="avatar-placeholder">🧙</div>
-                    <div class="status-badge away"></div>
-                </div>
-                <h3>Modérateurs</h3>
-                <p class="staff-role">Équipe de modération</p>
-            </div>
-        </div>
-    </section>
+// Character counter for background
+if (backgroundTextarea && charCounter) {
+    backgroundTextarea.addEventListener('input', () => {
+        const length = backgroundTextarea.value.length;
+        charCounter.textContent = `${length} / 100 caractères minimum`;
+        
+        if (length >= 100) {
+            charCounter.classList.add('valid');
+        } else {
+            charCounter.classList.remove('valid');
+        }
+    });
+}
 
-    <!-- CTA Section -->
-    <section class="cta-section">
-        <div class="cta-content">
-            <h2>Prêt à Commencer Ton Aventure ?</h2>
-            <p>Rejoins des centaines de sorciers et écris ta propre histoire magique</p>
-            <div class="buttons">
-                <a href="#" class="btn primary large">
-                    <span class="btn-icon">🎮</span>
-                    <span>Jouer Maintenant</span>
-                </a>
-            </div>
-        </div>
-    </section>
+// Form submission
+if (whitelistForm) {
+    whitelistForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        // Show loading message
+        formMessage.className = 'form-message loading';
+        formMessage.textContent = '📤 Envoi de ta candidature en cours...';
+        
+        // Get form data
+        const formData = new FormData(whitelistForm);
+        const data = {};
+        formData.forEach((value, key) => {
+            data[key] = value;
+        });
+        
+        // Create Discord embed
+        const embed = {
+            embeds: [{
+                title: "🆕 Nouvelle Demande de Whitelist",
+                color: 0xcaa45d, // Gold color
+                fields: [
+                    {
+                        name: "👤 Informations Personnelles",
+                        value: `**Pseudo Roblox:** ${data.pseudo}\n**Discord:** ${data.discord}\n**Âge:** ${data.age} ans`,
+                        inline: false
+                    },
+                    {
+                        name: "🎭 Expérience RP",
+                        value: `**Niveau:** ${data.experience}\n**Serveurs précédents:** ${data.serveurs || 'Aucun spécifié'}`,
+                        inline: false
+                    },
+                    {
+                        name: "✨ Personnage",
+                        value: `**Nom complet:** ${data.prenom} ${data.nom}`,
+                        inline: false
+                    },
+                    {
+                        name: "📖 Background",
+                        value: data.background.substring(0, 1000) + (data.background.length > 1000 ? '...' : ''),
+                        inline: false
+                    },
+                    {
+                        name: "💭 Motivation",
+                        value: data.motivation.substring(0, 1000) + (data.motivation.length > 1000 ? '...' : ''),
+                        inline: false
+                    }
+                ],
+                footer: {
+                    text: "School RP FR - Système de Whitelist"
+                },
+                timestamp: new Date().toISOString()
+            }]
+        };
+        
+        try {
+            const webhookUrl = 'https://discord.com/api/webhooks/1466897477704745015/g-o7oRLfaqg0rwiKlahwOdX0FU9Yau9NYcKGy9TLXUeWde_YT7AuZfeKEKYfXRRKsulD';
+            
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(embed)
+            });
+            
+            if (response.ok) {
+                // Success
+                formMessage.className = 'form-message success';
+                formMessage.textContent = '✅ Ta candidature a été envoyée avec succès ! Le staff te contactera bientôt sur Discord.';
+                whitelistForm.reset();
+                if (charCounter) {
+                    charCounter.textContent = '0 / 100 caractères minimum';
+                    charCounter.classList.remove('valid');
+                }
+                
+                // Scroll to message
+                formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            } else {
+                throw new Error('Erreur lors de l\'envoi');
+            }
+        } catch (error) {
+            // Error
+            formMessage.className = 'form-message error';
+            formMessage.textContent = '❌ Une erreur est survenue. Vérifie ta connexion et réessaye.';
+            console.error('Erreur:', error);
+        }
+    });
+}
 
-    <!-- Footer -->
-    <footer>
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>🪄 School RP FR</h3>
-                <p>L'école de magie française la plus immersive sur Roblox.</p>
-                <div class="social-links">
-                    <a href="#" class="social-link">Discord</a>
-                    <a href="#" class="social-link">Roblox</a>
-                    <a href="#" class="social-link">YouTube</a>
-                </div>
-            </div>
-            <div class="footer-section">
-                <h4>Navigation</h4>
-                <ul>
-                    <li><a href="#univers">Univers</a></li>
-                    <li><a href="#magies">Magies</a></li>
-                    <li><a href="#regles">Règlement</a></li>
-                    <li><a href="#whitelist">Whitelist</a></li>
-                    <li><a href="#staff">Staff</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h4>Communauté</h4>
-                <ul>
-                    <li><a href="#">Discord</a></li>
-                    <li><a href="#">Forum</a></li>
-                    <li><a href="#">Wiki</a></li>
-                    <li><a href="#">Support</a></li>
-                </ul>
-            </div>
-        </div>
-        <div class="footer-bottom">
-            <p>© 2026 School RP FR — Développé avec 🪄 par un sorcier Roblox</p>
-        </div>
-    </footer>
-
-    <script src="script.js"></script>
-</body>
-</html>
+console.log('🪄 School RP FR - Site web chargé avec succès!');
