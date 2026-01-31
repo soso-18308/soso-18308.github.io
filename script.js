@@ -209,7 +209,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 const text = e.target.value.trim();
                 if (text.length > 0) {
                     const wordCount = text.split(/\s+/).length;
-                    if (wordCount < 200) {
+                    if (wordCount < 10) {
                         alert(`⚠️ Ton background est trop court !\n\nIl contient ${wordCount} mots, mais nous demandons au minimum 200 mots pour avoir suffisamment de détails sur ton personnage.`);
                     }
                 }
