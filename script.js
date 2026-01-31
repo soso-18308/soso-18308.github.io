@@ -1,303 +1,280 @@
-// ========== NAVBAR SCROLL EFFECT ==========
-const navbar = document.querySelector('.navbar');
-let lastScroll = 0;
+// ============================================
+// NAVIGATION MOBILE (BURGER MENU)
+// ============================================
 
-if (navbar && !navbar.classList.contains('scrolled')) {
-    window.addEventListener('scroll', () => {
-        const currentScroll = window.pageYOffset;
-        
-        if (currentScroll > 100) {
-            navbar.classList.add('scrolled');
-        } else {
-            navbar.classList.remove('scrolled');
-        }
-        
-        lastScroll = currentScroll;
-    });
-}
-
-// ========== MOBILE MENU TOGGLE ==========
 const burger = document.querySelector('.burger');
 const navMenu = document.querySelector('.nav-menu');
-const navLinks = document.querySelectorAll('.nav-menu a');
 
-if (burger && navMenu) {
+if (burger) {
     burger.addEventListener('click', () => {
         burger.classList.toggle('active');
         navMenu.classList.toggle('active');
     });
 
-    // Close menu when clicking on a link
-    navLinks.forEach(link => {
+    // Fermer le menu quand on clique sur un lien
+    document.querySelectorAll('.nav-menu a').forEach(link => {
         link.addEventListener('click', () => {
             burger.classList.remove('active');
             navMenu.classList.remove('active');
         });
     });
-
-    // Close menu when clicking outside
-    document.addEventListener('click', (e) => {
-        if (!burger.contains(e.target) && !navMenu.contains(e.target)) {
-            burger.classList.remove('active');
-            navMenu.classList.remove('active');
-        }
-    });
 }
 
-// ========== MAGIC PARTICLE EFFECT ==========
-function createMagicParticles() {
-    const hero = document.querySelector('.hero');
-    if (!hero) return;
-    
-    const particleCount = 30;
-    
-    for (let i = 0; i < particleCount; i++) {
-        const particle = document.createElement('div');
-        particle.className = 'magic-particle';
-        particle.style.cssText = `
-            position: absolute;
-            width: ${Math.random() * 4 + 2}px;
-            height: ${Math.random() * 4 + 2}px;
-            background: ${Math.random() > 0.5 ? '#caa45d' : '#6fa8dc'};
-            border-radius: 50%;
-            left: ${Math.random() * 100}%;
-            top: ${Math.random() * 100}%;
-            opacity: ${Math.random() * 0.5 + 0.3};
-            animation: float ${Math.random() * 10 + 5}s linear infinite;
-            box-shadow: 0 0 10px currentColor;
-        `;
-        hero.appendChild(particle);
-    }
-}
+// ============================================
+// ANIMATIONS AU SCROLL
+// ============================================
 
-// Add floating animation
-const style = document.createElement('style');
-style.textContent = `
-    @keyframes float {
-        0%, 100% {
-            transform: translateY(0) translateX(0);
-        }
-        25% {
-            transform: translateY(-20px) translateX(10px);
-        }
-        50% {
-            transform: translateY(-40px) translateX(-10px);
-        }
-        75% {
-            transform: translateY(-20px) translateX(5px);
-        }
-    }
-`;
-document.head.appendChild(style);
-
-createMagicParticles();
-
-// ========== SCROLL TO TOP BUTTON ==========
-const scrollTopBtn = document.createElement('button');
-scrollTopBtn.innerHTML = '↑';
-scrollTopBtn.className = 'scroll-top';
-scrollTopBtn.style.cssText = `
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 50px;
-    height: 50px;
-    background: var(--primary-gold);
-    color: #000;
-    border: none;
-    border-radius: 50%;
-    font-size: 1.5rem;
-    cursor: pointer;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.3s ease;
-    z-index: 1000;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
-`;
-
-document.body.appendChild(scrollTopBtn);
-
-window.addEventListener('scroll', () => {
-    if (window.pageYOffset > 500) {
-        scrollTopBtn.style.opacity = '1';
-        scrollTopBtn.style.pointerEvents = 'auto';
-    } else {
-        scrollTopBtn.style.opacity = '0';
-        scrollTopBtn.style.pointerEvents = 'none';
-    }
-});
-
-scrollTopBtn.addEventListener('click', () => {
-    window.scrollTo({
-        top: 0,
-        behavior: 'smooth'
-    });
-});
-
-scrollTopBtn.addEventListener('mouseenter', () => {
-    scrollTopBtn.style.transform = 'scale(1.1)';
-});
-
-scrollTopBtn.addEventListener('mouseleave', () => {
-    scrollTopBtn.style.transform = 'scale(1)';
-});
-
-// ========== PARALLAX EFFECT ==========
-window.addEventListener('scroll', () => {
-    const scrolled = window.pageYOffset;
-    const heroContent = document.querySelector('.hero-content');
-    
-    if (heroContent && scrolled < window.innerHeight) {
-        heroContent.style.transform = `translateY(${scrolled * 0.5}px)`;
-        heroContent.style.opacity = 1 - (scrolled / window.innerHeight);
-    }
-});
-
-// ========== STATS COUNTER ANIMATION ==========
-const stats = document.querySelectorAll('.stat-number');
-
-const countUp = (element, target) => {
-    const duration = 2000;
-    const increment = target / (duration / 16);
-    let current = 0;
-    
-    const timer = setInterval(() => {
-        current += increment;
-        if (current >= target) {
-            element.textContent = target;
-            clearInterval(timer);
-        } else {
-            element.textContent = Math.floor(current) + '+';
-        }
-    }, 16);
+const observerOptions = {
+    threshold: 0.1,
+    rootMargin: '0px 0px -50px 0px'
 };
 
-const statsObserver = new IntersectionObserver((entries) => {
+const observer = new IntersectionObserver((entries) => {
     entries.forEach(entry => {
         if (entry.isIntersecting) {
-            const target = entry.target.textContent.replace('+', '');
-            if (target.includes('/')) {
-                // Skip 24/7
-                return;
-            }
-            countUp(entry.target, parseInt(target));
-            statsObserver.unobserve(entry.target);
+            entry.target.style.opacity = '1';
+            entry.target.style.transform = 'translateY(0)';
         }
     });
-}, { threshold: 0.5 });
+}, observerOptions);
 
-stats.forEach(stat => {
-    statsObserver.observe(stat);
+// Animer les cartes au scroll
+document.querySelectorAll('.quick-link-card, .staff-card, .rule-card').forEach(card => {
+    card.style.opacity = '0';
+    card.style.transform = 'translateY(20px)';
+    card.style.transition = 'all 0.6s ease';
+    observer.observe(card);
 });
 
-// ========== WHITELIST FORM HANDLING ==========
-const whitelistForm = document.getElementById('whitelistForm');
-const backgroundTextarea = document.getElementById('background');
-const charCounter = document.querySelector('.char-counter');
-const formMessage = document.getElementById('formMessage');
+// ============================================
+// PARTICULES (EFFET VISUEL HEADER)
+// ============================================
 
-// Character counter for background
-if (backgroundTextarea && charCounter) {
-    backgroundTextarea.addEventListener('input', () => {
-        const length = backgroundTextarea.value.length;
-        charCounter.textContent = `${length} / 100 caractères minimum`;
-        
-        if (length >= 100) {
-            charCounter.classList.add('valid');
-        } else {
-            charCounter.classList.remove('valid');
-        }
-    });
+const particlesContainer = document.querySelector('.particles');
+
+if (particlesContainer) {
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        particle.className = 'particle';
+        particle.style.left = Math.random() * 100 + '%';
+        particle.style.top = Math.random() * 100 + '%';
+        particle.style.animationDelay = Math.random() * 20 + 's';
+        particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+        particlesContainer.appendChild(particle);
+    }
 }
 
-// Form submission
+// ============================================
+// FORMULAIRE WHITELIST - ENVOI VERS DISCORD
+// ============================================
+
+const whitelistForm = document.getElementById('whitelistForm');
+
 if (whitelistForm) {
     whitelistForm.addEventListener('submit', async (e) => {
         e.preventDefault();
-        
-        // Show loading message
-        formMessage.className = 'form-message loading';
-        formMessage.textContent = '📤 Envoi de ta candidature en cours...';
-        
-        // Get form data
-        const formData = new FormData(whitelistForm);
-        const data = {};
-        formData.forEach((value, key) => {
-            data[key] = value;
-        });
-        
-        // Create Discord embed
+
+        // Récupérer toutes les données du formulaire
+        const formData = {
+            pseudo: document.getElementById('pseudo').value,
+            age: document.getElementById('age').value,
+            roblox: document.getElementById('roblox').value,
+            experience: document.getElementById('experience').value,
+            nom: document.getElementById('nom').value,
+            agePerso: document.getElementById('age-perso').value,
+            maison: document.getElementById('maison').value || 'Aucune préférence',
+            background: document.getElementById('background').value,
+            motivation: document.getElementById('motivation').value,
+            comment: document.getElementById('comment').value,
+            scenario1: document.getElementById('scenario1').value,
+            scenario2: document.getElementById('scenario2').value
+        };
+
+        // Webhook Discord
+        const webhookURL = 'https://discord.com/api/webhooks/1466897477704745015/g-o7oRLfaqg0rwiKlahwOdX0FU9Yau9NYcKGy9TLXUeWde_YT7AuZfeKEKYfXRRKsulD';
+
+        // Créer l'embed Discord
         const embed = {
             embeds: [{
-                title: "🆕 Nouvelle Demande de Whitelist",
-                color: 0xcaa45d, // Gold color
+                title: '📝 Nouvelle Demande de Whitelist',
+                color: 0x9b59b6, // Couleur violette magique
                 fields: [
                     {
-                        name: "👤 Informations Personnelles",
-                        value: `**Pseudo Roblox:** ${data.pseudo}\n**Discord:** ${data.discord}\n**Âge:** ${data.age} ans`,
+                        name: '👤 Informations Personnelles',
+                        value: `**Discord:** ${formData.pseudo}\n**Âge:** ${formData.age} ans\n**Roblox:** ${formData.roblox}\n**Expérience RP:** ${formData.experience}`,
                         inline: false
                     },
                     {
-                        name: "🎭 Expérience RP",
-                        value: `**Niveau:** ${data.experience}\n**Serveurs précédents:** ${data.serveurs || 'Aucun spécifié'}`,
+                        name: '📖 Personnage',
+                        value: `**Nom:** ${formData.nom}\n**Âge:** ${formData.agePerso} ans\n**Maison préférée:** ${formData.maison}`,
                         inline: false
                     },
                     {
-                        name: "✨ Personnage",
-                        value: `**Nom complet:** ${data.prenom} ${data.nom}`,
+                        name: '📜 Background du Personnage',
+                        value: formData.background.length > 1024 
+                            ? formData.background.substring(0, 1021) + '...' 
+                            : formData.background,
                         inline: false
                     },
                     {
-                        name: "📖 Background",
-                        value: data.background.substring(0, 1000) + (data.background.length > 1000 ? '...' : ''),
+                        name: '💭 Motivation',
+                        value: formData.motivation.length > 1024 
+                            ? formData.motivation.substring(0, 1021) + '...' 
+                            : formData.motivation,
                         inline: false
                     },
                     {
-                        name: "💭 Motivation",
-                        value: data.motivation.substring(0, 1000) + (data.motivation.length > 1000 ? '...' : ''),
+                        name: '🔍 Découverte',
+                        value: formData.comment,
+                        inline: true
+                    },
+                    {
+                        name: '🎭 Scénario 1 - Duel',
+                        value: formData.scenario1.length > 1024 
+                            ? formData.scenario1.substring(0, 1021) + '...' 
+                            : formData.scenario1,
+                        inline: false
+                    },
+                    {
+                        name: '🎭 Scénario 2 - Passage Secret',
+                        value: formData.scenario2.length > 1024 
+                            ? formData.scenario2.substring(0, 1021) + '...' 
+                            : formData.scenario2,
                         inline: false
                     }
                 ],
                 footer: {
-                    text: "School RP FR - Système de Whitelist"
+                    text: 'School RP FR - Système de Whitelist'
                 },
                 timestamp: new Date().toISOString()
             }]
         };
-        
+
+        // Désactiver le bouton pendant l'envoi
+        const submitButton = whitelistForm.querySelector('button[type="submit"]');
+        const originalButtonText = submitButton.innerHTML;
+        submitButton.disabled = true;
+        submitButton.innerHTML = '<span>⏳ Envoi en cours...</span>';
+
         try {
-            const webhookUrl = 'https://discord.com/api/webhooks/1466897477704745015/g-o7oRLfaqg0rwiKlahwOdX0FU9Yau9NYcKGy9TLXUeWde_YT7AuZfeKEKYfXRRKsulD';
-            
-            const response = await fetch(webhookUrl, {
+            // Envoyer vers Discord
+            const response = await fetch(webhookURL, {
                 method: 'POST',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Content-Type': 'application/json'
                 },
                 body: JSON.stringify(embed)
             });
-            
+
             if (response.ok) {
-                // Success
-                formMessage.className = 'form-message success';
-                formMessage.textContent = '✅ Ta candidature a été envoyée avec succès ! Le staff te contactera bientôt sur Discord.';
+                // Succès
+                alert('✅ Candidature envoyée avec succès !\n\nNous traiterons ta demande dans les 24 à 72 heures.\n\nTu recevras une réponse sur Discord.');
                 whitelistForm.reset();
-                if (charCounter) {
-                    charCounter.textContent = '0 / 100 caractères minimum';
-                    charCounter.classList.remove('valid');
-                }
-                
-                // Scroll to message
-                formMessage.scrollIntoView({ behavior: 'smooth', block: 'center' });
             } else {
+                // Erreur
                 throw new Error('Erreur lors de l\'envoi');
             }
         } catch (error) {
-            // Error
-            formMessage.className = 'form-message error';
-            formMessage.textContent = '❌ Une erreur est survenue. Vérifie ta connexion et réessaye.';
             console.error('Erreur:', error);
+            alert('❌ Une erreur est survenue lors de l\'envoi de ta candidature.\n\nVérifie ta connexion internet et réessaie.\n\nSi le problème persiste, contacte-nous sur Discord.');
+        } finally {
+            // Réactiver le bouton
+            submitButton.disabled = false;
+            submitButton.innerHTML = originalButtonText;
         }
     });
 }
 
-console.log('🪄 School RP FR - Site web chargé avec succès!');
+// ============================================
+// VALIDATION DU FORMULAIRE
+// ============================================
+
+if (whitelistForm) {
+    // Validation de l'âge du personnage
+    const agePersoInput = document.getElementById('age-perso');
+    if (agePersoInput) {
+        agePersoInput.addEventListener('input', (e) => {
+            const value = parseInt(e.target.value);
+            if (value < 11 || value > 18) {
+                e.target.setCustomValidity('L\'âge doit être entre 11 et 18 ans');
+            } else {
+                e.target.setCustomValidity('');
+            }
+        });
+    }
+
+    // Validation du background (minimum 200 mots)
+    const backgroundInput = document.getElementById('background');
+    if (backgroundInput) {
+        backgroundInput.addEventListener('blur', (e) => {
+            const wordCount = e.target.value.trim().split(/\s+/).length;
+            if (wordCount < 200) {
+                alert(`⚠️ Ton background est trop court !\n\nIl contient ${wordCount} mots, mais nous demandons au minimum 200 mots pour avoir suffisamment de détails sur ton personnage.`);
+            }
+        });
+    }
+}
+
+// ============================================
+// SMOOTH SCROLL
+// ============================================
+
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+            });
+        }
+    });
+});
+
+// ============================================
+// SCROLL INDICATOR (HOMEPAGE)
+// ============================================
+
+const scrollIndicator = document.querySelector('.scroll-indicator');
+if (scrollIndicator) {
+    scrollIndicator.addEventListener('click', () => {
+        window.scrollTo({
+            top: window.innerHeight,
+            behavior: 'smooth'
+        });
+    });
+
+    // Cacher l'indicateur après scroll
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 100) {
+            scrollIndicator.style.opacity = '0';
+        } else {
+            scrollIndicator.style.opacity = '1';
+        }
+    });
+}
+
+// ============================================
+// COMPTEUR DE CARACTÈRES (TEXTAREA)
+// ============================================
+
+document.querySelectorAll('textarea').forEach(textarea => {
+    const maxLength = textarea.getAttribute('maxlength');
+    if (maxLength) {
+        const counter = document.createElement('div');
+        counter.className = 'char-counter';
+        counter.style.cssText = 'text-align: right; font-size: 12px; color: #888; margin-top: 5px;';
+        textarea.parentNode.appendChild(counter);
+
+        const updateCounter = () => {
+            const current = textarea.value.length;
+            counter.textContent = `${current} / ${maxLength} caractères`;
+        };
+
+        textarea.addEventListener('input', updateCounter);
+        updateCounter();
+    }
+});
+
+console.log('🪄 School RP FR - Script chargé avec succès !');
