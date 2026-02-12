@@ -1,19 +1,106 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <meta charset="UTF-8" />
-  <title>ENTITY</title>
-  <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Jaguar</title>
+<style>
+body{font-family:sans-serif;margin:0;padding:0;}
+nav{background:#333;color:#fff;padding:10px;}
+section{padding:10px;}
+#chatMessages{height:200px;overflow-y:auto;border:1px solid #ccc;padding:5px;margin-bottom:5px;}
+.task, .event{border:1px solid #ccc;padding:5px;margin:5px 0;}
+</style>
 </head>
 <body>
 
-<canvas id="entity"></canvas>
+<nav>
+  Jaguar - <span id="userDisplay"></span>
+</nav>
 
-<div class="ui">
-  <div id="reply">Parle-moi.</div>
-  <input id="input" placeholder="Écris quelque chose…" />
-</div>
+<section id="loginSection">
+  <h3>Login</h3>
+  <input id="username" placeholder="Nom d'utilisateur">
+  <button onclick="login()">Se connecter</button>
+</section>
 
-<script src="main.js"></script>
+<section id="mainSection" style="display:none">
+  <h3>Chat</h3>
+  <div id="chatMessages"></div>
+  <input id="chatInput" placeholder="Message"><button onclick="sendChat()">Envoyer</button>
+
+  <h3>Tâches</h3>
+  <input id="taskInput" placeholder="Nouvelle tâche"><button onclick="addTask()">Ajouter</button>
+  <div id="tasksList"></div>
+
+  <h3>Calendrier</h3>
+  <input id="eventInput" placeholder="Nouvel événement"><button onclick="addEvent()">Ajouter</button>
+  <div id="eventsList"></div>
+</section>
+
+<script src="/socket.io/socket.io.js"></script>
+<script>
+let user;
+const socket = io();
+
+// --- Login ---
+function login(){
+  const username = document.getElementById('username').value;
+  fetch('/login',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({username})})
+  .then(r=>r.json())
+  .then(data=>{
+    if(data.success){
+      user = data.user;
+      document.getElementById('userDisplay').innerText = user.username;
+      document.getElementById('loginSection').style.display='none';
+      document.getElementById('mainSection').style.display='block';
+      loadTasks(); loadEvents();
+    } else alert('Utilisateur non trouvé');
+  });
+}
+
+// --- Chat ---
+socket.on('chatHistory', msgs => { msgs.forEach(addChatMessage); });
+socket.on('chatMessage', addChatMessage);
+
+function sendChat(){
+  const msg = {user:user.username,text:document.getElementById('chatInput').value};
+  socket.emit('chatMessage', msg);
+  document.getElementById('chatInput').value='';
+}
+
+function addChatMessage(msg){
+  const div = document.createElement('div');
+  div.innerText = msg.user + ': ' + msg.text;
+  document.getElementById('chatMessages').appendChild(div);
+}
+
+// --- Tâches ---
+function loadTasks(){
+  fetch('/tasks').then(r=>r.json()).then(tasks=>{
+    const list = document.getElementById('tasksList'); list.innerHTML='';
+    tasks.forEach(t=>{ const div=document.createElement('div'); div.className='task'; div.innerText=t.text; list.appendChild(div); });
+  });
+}
+
+function addTask(){
+  const text=document.getElementById('taskInput').value;
+  fetch('/tasks',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,user:user.username})})
+  .then(()=>{ document.getElementById('taskInput').value=''; loadTasks(); });
+}
+
+// --- Événements ---
+function loadEvents(){
+  fetch('/events').then(r=>r.json()).then(events=>{
+    const list = document.getElementById('eventsList'); list.innerHTML='';
+    events.forEach(e=>{ const div=document.createElement('div'); div.className='event'; div.innerText=e.text; list.appendChild(div); });
+  });
+}
+
+function addEvent(){
+  const text=document.getElementById('eventInput').value;
+  fetch('/events',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({text,user:user.username})})
+  .then(()=>{ document.getElementById('eventInput').value=''; loadEvents(); });
+}
+</script>
 </body>
 </html>
