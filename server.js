@@ -1,20 +1,32 @@
+// server.js
 const express = require('express');
 const bodyParser = require('body-parser');
 const fs = require('fs');
-const app = express();
-const http = require('http').createServer(app);
-const io = require('socket.io')(http);
-const PORT = process.env.PORT || 3000;
-http.listen(PORT, () => console.log(`Jaguar running on port ${PORT}`));
+const http = require('http');
+const { Server } = require('socket.io');
 
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// --- Crée le serveur HTTP et Socket.IO ---
+const server = http.createServer(app);
+const io = new Server(server);
+
+// --- Fichier de données ---
 const DATA_FILE = './data.json';
 
+// --- Middlewares ---
 app.use(bodyParser.json());
-app.use(express.static('.')); // sert index.html et style.css
+app.use(express.static('public')); // sert index.html, style.css et autres fichiers statiques
 
 // --- Helpers ---
 function readData() {
-  if(!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, JSON.stringify({users:[], tasks:[], events:[], messages:[]}, null, 2));
+  if (!fs.existsSync(DATA_FILE)) {
+    fs.writeFileSync(
+      DATA_FILE,
+      JSON.stringify({ users: [], tasks: [], events: [], messages: [] }, null, 2)
+    );
+  }
   return JSON.parse(fs.readFileSync(DATA_FILE));
 }
 
@@ -27,7 +39,7 @@ app.post('/login', (req, res) => {
   const { username } = req.body;
   const data = readData();
   const user = data.users.find(u => u.username === username);
-  if(user) res.json({ success: true, user });
+  if (user) res.json({ success: true, user });
   else res.json({ success: false });
 });
 
@@ -35,11 +47,11 @@ app.post('/login', (req, res) => {
 app.post('/users', (req, res) => {
   const { user } = req.body;
   const data = readData();
-  if(!data.users.find(u => u.username === user.username)){
+  if (!data.users.find(u => u.username === user.username)) {
     data.users.push(user);
     writeData(data);
     res.json({ success: true });
-  } else res.json({ success: false, msg: "Utilisateur existe" });
+  } else res.json({ success: false, msg: 'Utilisateur existe' });
 });
 
 // --- Tâches ---
@@ -50,8 +62,7 @@ app.get('/tasks', (req, res) => {
 
 app.post('/tasks', (req, res) => {
   const data = readData();
-  const task = req.body;
-  data.tasks.push(task);
+  data.tasks.push(req.body);
   writeData(data);
   res.json({ success: true });
 });
@@ -82,4 +93,7 @@ io.on('connection', socket => {
   });
 });
 
-http.listen(3000, () => console.log('Jaguar running on http://localhost:3000'));
+// --- Démarrage du serveur ---
+server.listen(PORT, () => {
+  console.log(`Jaguar running on port ${PORT}`);
+});
