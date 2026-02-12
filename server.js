@@ -8,10 +8,11 @@ const io = require('socket.io')(http);
 const DATA_FILE = './data.json';
 
 app.use(bodyParser.json());
-app.use(express.static('.')); // sert index.html
+app.use(express.static('.')); // sert index.html et style.css
 
 // --- Helpers ---
 function readData() {
+  if(!fs.existsSync(DATA_FILE)) fs.writeFileSync(DATA_FILE, JSON.stringify({users:[], tasks:[], events:[], messages:[]}, null, 2));
   return JSON.parse(fs.readFileSync(DATA_FILE));
 }
 
@@ -72,6 +73,7 @@ io.on('connection', socket => {
   socket.emit('chatHistory', data.messages);
 
   socket.on('chatMessage', msg => {
+    const data = readData(); // recharger pour éviter conflits
     data.messages.push(msg);
     writeData(data);
     io.emit('chatMessage', msg);
