@@ -4,6 +4,8 @@ const fs = require('fs');
 const app = express();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
+const PORT = process.env.PORT || 3000;
+http.listen(PORT, () => console.log(`Jaguar running on port ${PORT}`));
 
 const DATA_FILE = './data.json';
 
