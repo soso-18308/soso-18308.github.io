@@ -1,0 +1,12 @@
+{
+  "users": [
+    {
+      "username": "soso",
+      "role": "zaa0291jzao902190",
+      "permissions": ["create_task","edit_task","delete_task","edit_event"]
+    }
+  ],
+  "tasks": [],
+  "events": [],
+  "messages": []
+}
