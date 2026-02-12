@@ -1,0 +1,37 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background:#f2f2f2;
+}
+
+nav {
+  background:#111;
+  color:#fff;
+  padding:10px;
+  font-weight:bold;
+}
+
+section {
+  padding:10px;
+  max-width:600px;
+  margin:auto;
+}
+
+#chatMessages {
+  height:200px;
+  overflow-y:auto;
+  border:1px solid #ccc;
+  padding:5px;
+  background:#fff;
+}
+
+input {padding:5px;margin:5px 0;}
+button {padding:5px 10px; margin-left:5px; cursor:pointer;}
+
+.task, .event {
+  border:1px solid #ccc;
+  padding:5px;
+  margin:5px 0;
+  background:#fff;
+}
