@@ -1,0 +1,819 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Shugo Suna - Archives judiciaires</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f0b06;--bg2:#1c1408;--bg3:#271c0c;--bg4:#342510;
+  --sand:#c8a040;--sand2:#a07828;--sand3:#604810;--sand4:#3a2c08;
+  --blood:#7a1515;--blood2:#a01c1c;--blood3:#c02424;
+  --text:#e8d8b0;--text2:#a08848;--text3:#604828;
+  --green:#1a4a1a;--green2:#2a7a2a;--green3:#50c050;
+  --border:rgba(200,160,64,.18);--border2:rgba(200,160,64,.35);--border3:rgba(200,160,64,.55);
+}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;font-size:14px}
+
+#pw{min-height:600px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:0}
+.pw-logo{text-align:center;margin-bottom:32px}
+.pw-kanji{font-size:64px;color:var(--sand2);line-height:1;margin-bottom:8px;opacity:.8}
+.pw-title{font-family:'Cinzel',serif;font-size:20px;letter-spacing:.5em;color:var(--sand);margin-bottom:4px}
+.pw-sub{font-size:11px;letter-spacing:.4em;color:var(--text3);font-family:'Cinzel',serif}
+.pw-box{background:var(--bg2);border:1px solid var(--border2);border-radius:6px;padding:32px 40px;width:360px;text-align:center}
+.pw-lbl{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.35em;color:var(--text3);text-transform:uppercase;margin-bottom:16px}
+.pw-inp{width:100%;background:var(--bg);border:1px solid var(--border2);color:var(--sand);font-family:'Cinzel',serif;font-size:16px;letter-spacing:.5em;text-align:center;padding:10px 16px;border-radius:4px;outline:none;margin-bottom:12px;transition:border-color .2s}
+.pw-inp:focus{border-color:var(--sand)}
+.pw-inp::placeholder{color:var(--text3);letter-spacing:.2em;font-size:13px}
+.pw-btn{width:100%;background:var(--sand3);border:1px solid var(--sand2);color:var(--sand);font-family:'Cinzel',serif;font-size:11px;letter-spacing:.3em;text-transform:uppercase;padding:11px;border-radius:4px;cursor:pointer;transition:all .2s}
+.pw-btn:hover{background:var(--sand2);color:var(--bg)}
+.pw-err{color:var(--blood3);font-size:12px;margin-top:10px;min-height:18px;font-style:italic}
+.pw-hint{font-size:11px;color:var(--text3);margin-top:12px;font-style:italic}
+
+#app{display:none;min-height:600px}
+.topbar{background:var(--bg2);border-bottom:1px solid var(--border);padding:0 20px;display:flex;align-items:stretch;justify-content:space-between;height:48px}
+.tlogo{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.25em;color:var(--sand2);display:flex;align-items:center;gap:10px}
+.tlogo-dot{width:6px;height:6px;background:var(--sand3);border-radius:50%}
+.syncstatus{font-size:10px;letter-spacing:.08em;color:var(--text3);border:1px solid var(--border);border-radius:3px;padding:3px 7px}
+.syncstatus.on{color:var(--green3);border-color:rgba(80,176,80,.35)}
+.syncstatus.err{color:var(--blood3);border-color:rgba(192,64,64,.35)}
+.tnav{display:flex;gap:2px;align-items:center}
+.tnbtn{background:none;border:none;color:var(--text3);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;cursor:pointer;padding:0 14px;height:100%;border-bottom:2px solid transparent;transition:all .2s}
+.tnbtn:hover{color:var(--sand);background:rgba(200,160,64,.05)}
+.tnbtn.act{color:var(--sand);border-bottom-color:var(--sand)}
+.tnbtn.danger{color:var(--blood3)}
+.tnbtn.danger:hover{color:#e04040;background:rgba(160,28,28,.1)}
+
+.view{display:none;padding:20px}
+.view.act{display:block}
+
+.ph{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.ptitle{font-family:'Cinzel',serif;font-size:16px;color:var(--sand);letter-spacing:.15em}
+.psub{font-size:12px;color:var(--text3);margin-top:4px}
+.abtn{border:1px solid var(--border2);background:transparent;color:var(--sand2);font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;padding:8px 16px;border-radius:4px;cursor:pointer;transition:all .2s;white-space:nowrap}
+.abtn:hover{background:rgba(200,160,64,.1);border-color:var(--border3);color:var(--sand)}
+.abtn.prim{background:var(--blood);border-color:var(--blood2);color:#ffcccc}
+.abtn.prim:hover{background:var(--blood2)}
+.abtn.grn{background:var(--green);border-color:var(--green2);color:var(--green3)}
+.abtn.grn:hover{background:var(--green2)}
+.abtn.sml{padding:5px 10px;font-size:9px}
+.abtn.red{border-color:rgba(160,28,28,.5);color:var(--blood3)}
+.abtn.red:hover{background:rgba(160,28,28,.15)}
+
+.srch{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:9px 14px;border-radius:4px;outline:none;margin-bottom:16px;transition:border-color .2s}
+.srch:focus{border-color:var(--border2)}
+.srch::placeholder{color:var(--text3)}
+
+.clist{display:flex;flex-direction:column;gap:8px}
+.ccard{background:var(--bg2);border:1px solid var(--border);border-radius:6px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:all .2s}
+.ccard:hover{border-color:var(--border2);background:var(--bg3)}
+.ccard-av{width:46px;height:46px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:'Cinzel',serif;font-size:16px;color:var(--sand3)}
+.ccard-av img{width:100%;height:100%;object-fit:cover}
+.ccard-info{flex:1;min-width:0}
+.ccard-name{font-family:'Cinzel',serif;font-size:14px;color:var(--sand)}
+.ccard-meta{font-size:12px;color:var(--text3);margin-top:2px}
+.ccard-tags{display:flex;gap:5px;margin-top:6px;flex-wrap:wrap}
+.tag{font-size:10px;letter-spacing:.05em;padding:2px 7px;border-radius:3px;font-weight:500}
+.tag-i{background:rgba(160,120,40,.25);color:#d4a820;border:1px solid rgba(212,168,32,.3)}
+.tag-d{background:rgba(180,80,20,.25);color:#e07030;border:1px solid rgba(224,112,48,.3)}
+.tag-c{background:rgba(120,20,20,.3);color:#d04040;border:1px solid rgba(192,64,64,.3)}
+.tag-r{background:rgba(20,60,20,.3);color:#50b050;border:1px solid rgba(80,176,80,.3)}
+.tag-p{background:rgba(40,60,120,.3);color:#6090d0;border:1px solid rgba(96,144,208,.3)}
+.ccard-right{text-align:right;flex-shrink:0}
+.ccard-ryo{font-family:'Cinzel',serif;font-size:15px;color:var(--sand)}
+.ccard-ryo-lbl{font-size:10px;color:var(--text3);margin-top:2px}
+.empty{text-align:center;padding:40px;color:var(--text3);font-style:italic;font-size:13px}
+
+.fsect{margin-bottom:20px}
+.fsect-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.3em;color:var(--sand2);text-transform:uppercase;margin-bottom:12px;padding-bottom:6px;border-bottom:1px solid var(--border)}
+.fgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.fgrid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px}
+.flbl{font-size:11px;color:var(--text2);display:block;margin-bottom:5px;letter-spacing:.05em}
+.finput{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:8px 11px;border-radius:4px;outline:none;transition:border-color .2s}
+.finput:focus{border-color:var(--border2)}
+.finput::placeholder{color:var(--text3)}
+.fselect{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:8px 11px;border-radius:4px;outline:none;cursor:pointer;appearance:none;-webkit-appearance:none}
+.fselect:focus{border-color:var(--border2)}
+.fta{width:100%;background:var(--bg2);border:1px solid var(--border);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:8px 11px;border-radius:4px;outline:none;resize:vertical;min-height:70px}
+.fta:focus{border-color:var(--border2)}
+
+.toggle-row{display:flex;align-items:center;gap:12px;padding:10px 14px;background:var(--bg2);border:1px solid var(--border);border-radius:4px;cursor:pointer;transition:all .2s}
+.toggle-row:hover{border-color:var(--border2)}
+.toggle-row.on{background:rgba(40,80,120,.2);border-color:rgba(96,144,208,.4)}
+.tog-dot{width:32px;height:18px;border-radius:9px;background:var(--bg3);border:1px solid var(--border2);position:relative;transition:background .2s;flex-shrink:0}
+.tog-dot::after{content:'';position:absolute;top:2px;left:2px;width:12px;height:12px;border-radius:50%;background:var(--text3);transition:all .2s}
+.toggle-row.on .tog-dot{background:#1a4080;border-color:#4080c0}
+.toggle-row.on .tog-dot::after{left:16px;background:#80b8e0}
+.tog-label{font-size:13px;color:var(--text)}
+.tog-sublabel{font-size:11px;color:var(--text3);margin-top:1px}
+
+.grade-grid{display:grid;grid-template-columns:repeat(5,1fr);gap:6px}
+.grade-btn{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:8px 6px;text-align:center;cursor:pointer;transition:all .2s}
+.grade-btn:hover{border-color:var(--border2);background:var(--bg3)}
+.grade-btn.sel{background:var(--sand4);border-color:var(--sand2)}
+.grade-name{font-family:'Cinzel',serif;font-size:11px;color:var(--sand);line-height:1.3}
+.grade-mult{font-size:10px;color:var(--text3);margin-top:3px}
+.grade-btn.sel .grade-mult{color:var(--sand2)}
+
+.icat-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.25em;text-transform:uppercase;padding:6px 10px;margin-bottom:5px;display:flex;align-items:center;gap:6px}
+.icat-i{color:#d4a820;border-left:2px solid #d4a820;background:rgba(160,120,40,.1)}
+.icat-d{color:#e07030;border-left:2px solid #e07030;background:rgba(180,80,20,.1)}
+.icat-c{color:#d04040;border-left:2px solid #d04040;background:rgba(120,20,20,.1)}
+.iitem{display:flex;align-items:center;gap:10px;padding:8px 10px;border-radius:3px;cursor:pointer;border:1px solid transparent;margin-bottom:3px;transition:all .15s}
+.iitem:hover{background:rgba(200,160,64,.06)}
+.iitem.sel{background:rgba(200,160,64,.1);border-color:var(--border)}
+.ichk{width:16px;height:16px;border:1px solid var(--border2);border-radius:2px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10px;background:var(--bg2);color:var(--sand)}
+.iitem.sel .ichk{background:var(--sand3);border-color:var(--sand2)}
+.iname{flex:1;font-size:13px;color:var(--text)}
+.iprice{font-family:'Cinzel',serif;font-size:12px;color:var(--text3)}
+
+.totalbox{background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:14px 18px;display:flex;align-items:center;justify-content:space-between;margin:16px 0}
+.total-left{}
+.total-lbl{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;color:var(--text3)}
+.total-detail{font-size:11px;color:var(--text3);margin-top:3px;font-style:italic}
+.total-amt{font-family:'Cinzel',serif;font-size:26px;color:var(--sand)}
+.total-unit{font-size:13px;color:var(--text3);margin-left:4px}
+.factions{display:flex;gap:8px;justify-content:flex-end;margin-top:8px}
+
+.bbtn{background:none;border:none;color:var(--text3);cursor:pointer;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.2em;display:inline-flex;align-items:center;gap:6px;margin-bottom:16px;text-transform:uppercase;padding:0}
+.bbtn:hover{color:var(--sand)}
+
+.dh{display:grid;grid-template-columns:auto 1fr auto;gap:16px;align-items:start;margin-bottom:20px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.dphoto{width:90px;height:110px;border-radius:4px;border:1px solid var(--border);flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:'Cinzel',serif;font-size:24px;color:var(--sand3)}
+.dphoto img{width:100%;height:100%;object-fit:cover}
+.dname{font-family:'Cinzel',serif;font-size:20px;color:var(--sand);margin-bottom:8px}
+.dfield{font-size:13px;color:var(--text3);margin-bottom:4px}
+.dfield b{color:var(--text);font-weight:400}
+.dstats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:10px}
+.dstat{background:var(--bg3);border:1px solid var(--border);border-radius:4px;padding:8px 6px;text-align:center}
+.dstat-lbl{font-size:10px;color:var(--text3);letter-spacing:.05em;margin-bottom:3px}
+.dstat-val{font-family:'Cinzel',serif;font-size:15px}
+.dright{display:flex;flex-direction:column;gap:6px;align-items:flex-end}
+.amende-box{background:var(--blood);border:1px solid var(--blood2);border-radius:4px;padding:10px 16px;text-align:center}
+.amende-lbl{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.25em;color:rgba(255,180,180,.6);margin-bottom:2px}
+.amende-val{font-family:'Cinzel',serif;font-size:18px;color:#ffa0a0}
+.section-h{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.25em;color:var(--sand2);text-transform:uppercase;margin:16px 0 8px;padding-bottom:5px;border-bottom:1px solid var(--border)}
+.dinfitem{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;border-radius:3px;margin-bottom:3px;background:var(--bg2);border:1px solid var(--border)}
+
+.rpcard{background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:12px 14px;margin-bottom:8px}
+.rp-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px}
+.rp-date{font-family:'Cinzel',serif;font-size:10px;color:var(--sand2);letter-spacing:.1em}
+.rp-agent{font-size:11px;color:var(--text3);font-style:italic}
+.rp-body{font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap}
+.inc-total{font-family:'Cinzel',serif;font-size:15px;color:var(--sand);white-space:nowrap}
+.inc-meta{font-size:11px;color:var(--text3);margin-top:3px}
+.rp-textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:8px 11px;border-radius:3px;outline:none;resize:vertical;min-height:70px;display:none}
+.rp-textarea:focus{border-color:var(--border3)}
+.rp-saveline{display:none;gap:6px;justify-content:flex-end;margin-top:6px}
+
+.photoz{border:1px dashed var(--border2);border-radius:4px;padding:24px;text-align:center;cursor:pointer;background:var(--bg2);transition:border-color .2s;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.photoz:hover{border-color:var(--border3)}
+
+@media (max-width:720px){
+  #pw{padding:20px}
+  .pw-box{width:100%;max-width:360px;padding:26px 22px}
+  .pw-title{letter-spacing:.35em}
+  .topbar{height:auto;min-height:48px;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 14px}
+  .tnav{width:100%;justify-content:space-between}
+  .tnbtn{height:38px;padding:0 8px;letter-spacing:.08em}
+  .view{padding:14px}
+  .ph,.ccard,.totalbox{align-items:stretch;flex-direction:column}
+  .ccard-right{text-align:left}
+  .fgrid,.fgrid3,.dh,.dstats{grid-template-columns:1fr}
+  .grade-grid{grid-template-columns:repeat(2,1fr)}
+  .dright{align-items:stretch}
+  .factions{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<div id="pw">
+  <div class="pw-logo">
+    <div class="pw-kanji">砂</div>
+    <div class="pw-title">Shugo</div>
+    <div class="pw-sub">Archives Judiciaires · Suna</div>
+  </div>
+  <div class="pw-box">
+    <div class="pw-lbl">Accès Restreint</div>
+    <input class="pw-inp" type="password" id="pi" placeholder="Mot de passe" />
+    <button class="pw-btn" onclick="chkpw()">Accéder aux archives</button>
+    <div class="pw-err" id="pe"></div>
+    <div class="pw-hint">Agents Shugo autorisés uniquement</div>
+  </div>
+</div>
+
+<div id="app">
+  <div class="topbar">
+    <div class="tlogo">
+      <div class="tlogo-dot"></div>
+      <span style="font-family:'Cinzel',serif;letter-spacing:.3em">SHUGO</span>
+      <span style="color:var(--text3);font-size:11px;letter-spacing:.1em">Archives · Suna</span>
+      <span class="syncstatus" id="sync-status">Local</span>
+    </div>
+    <div class="tnav">
+      <button class="tnbtn act" id="nb0" onclick="sv('list',0)">Casiers</button>
+      <button class="tnbtn" id="nb1" onclick="openNew(true)">Nouveau dossier</button>
+      <button class="tnbtn danger" onclick="lock()">Verrouiller</button>
+    </div>
+  </div>
+
+  <div id="vlist" class="view act">
+    <div class="ph">
+      <div><div class="ptitle">Casiers Judiciaires</div><div class="psub" id="ccount">—</div></div>
+      <button class="abtn" onclick="openNew(true)">+ Nouveau dossier</button>
+    </div>
+    <input class="srch" type="text" id="srch" placeholder="Rechercher par nom..." oninput="filt()" />
+    <div class="clist" id="clist"></div>
+  </div>
+
+  <div id="vdetail" class="view">
+    <button class="bbtn" onclick="sv('list',0)">← Retour</button>
+    <div id="dcontent"></div>
+  </div>
+
+  <div id="vnew" class="view">
+    <div class="ph">
+      <div><div class="ptitle" id="ftitle">Nouveau Dossier</div><div class="psub">Enregistrement d'interpellation</div></div>
+    </div>
+
+    <div class="fsect">
+      <div class="fsect-title">Identité du Prévenu</div>
+      <div class="fgrid" style="margin-bottom:10px">
+        <div><label class="flbl">Nom complet</label><input class="finput" id="fn" type="text" placeholder="Nom du shinobi" /></div>
+        <div><label class="flbl">Village d'origine</label><input class="finput" id="fv" type="text" placeholder="Suna, Konoha..." /></div>
+      </div>
+      <div class="fgrid" style="margin-bottom:10px">
+        <div><label class="flbl">Date d'interpellation</label><input class="finput" id="fd" type="date" /></div>
+        <div></div>
+      </div>
+      <label class="flbl" style="margin-bottom:8px;display:block">Grade du prévenu</label>
+      <div class="grade-grid" id="grade-grid"></div>
+    </div>
+
+    <div class="fsect">
+      <div class="fsect-title">Agents Impliqués</div>
+      <div class="fgrid" style="margin-bottom:10px">
+        <div><label class="flbl">Nom de l'agent responsable</label><input class="finput" id="fa-nom" type="text" placeholder="Nom de l'agent" /></div>
+        <div><label class="flbl">Grade de l'agent</label><input class="finput" id="fa-grade" type="text" placeholder="Ex: Chunin, Jonin..." /></div>
+      </div>
+      <div><label class="flbl">Agents présents lors de l'interpellation <span style="color:var(--text3)">(optionnel)</span></label><input class="finput" id="fa-autres" type="text" placeholder="Noms des autres agents séparés par des virgules" /></div>
+    </div>
+
+    <div class="fsect">
+      <div class="fsect-title">Photo du Suspect</div>
+      <div class="photoz" onclick="document.getElementById('pf').click()">
+        <img id="pp" src="" alt="" style="max-width:100%;max-height:180px;border-radius:2px;display:none" />
+        <div id="pph" style="color:var(--text3);font-size:13px;font-style:italic">
+          <div style="font-size:28px;opacity:.35;margin-bottom:6px">📷</div>
+          Cliquer pour ajouter une photo
+        </div>
+      </div>
+      <input type="file" id="pf" accept="image/*" style="display:none" onchange="prevPhoto(event)" />
+    </div>
+
+    <div class="fsect">
+      <div class="fsect-title">Infractions Commises</div>
+      <div style="margin-bottom:10px">
+        <div class="icat-title icat-i">◆ Infractions</div>
+        <div id="ii"></div>
+      </div>
+      <div style="margin-bottom:10px">
+        <div class="icat-title icat-d">◆ Délits</div>
+        <div id="id"></div>
+      </div>
+      <div>
+        <div class="icat-title icat-c">◆ Crimes</div>
+        <div id="ic"></div>
+      </div>
+    </div>
+
+    <div class="totalbox">
+      <div class="total-left">
+        <div class="total-lbl">Amende Totale</div>
+        <div class="total-detail" id="total-detail">0 infraction · Grade: —</div>
+      </div>
+      <div>
+        <span class="total-amt" id="tamt">0</span>
+        <span class="total-unit">♦ Ryos</span>
+      </div>
+    </div>
+    <div style="margin-bottom:8px">
+      <div id="base-line" style="font-size:12px;color:var(--text3);text-align:right;font-style:italic"></div>
+    </div>
+    <div class="factions">
+      <button class="abtn" onclick="cancelForm()">Annuler</button>
+      <button class="abtn prim" id="save-btn" onclick="saveCasier()">Enregistrer le dossier</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const PWD="sabaku";
+const STORAGE_KEY="sg_v3";
+
+// Pour une sauvegarde partagée sur GitHub Pages:
+// 1. Crée un projet Supabase.
+// 2. Crée la table avec le SQL donné plus bas dans ma réponse.
+// 3. Remplace les deux valeurs ci-dessous par celles de ton projet.
+const SUPABASE_URL="https://sgxcsrwurhjvnkalpxun.supabase.co";
+const SUPABASE_ANON_KEY="sb_publishable_hvgD-ZPp-pqArTYKaTBaEg_b4fz386Z";
+const SUPABASE_TABLE="shugo_data";
+const SUPABASE_ROW_ID="casiers";
+const GRADES=[
+  {name:"Genin App.",key:"ga",mult:1.00},
+  {name:"Genin Conf.",key:"gc",mult:1.20},
+  {name:"Chunin",key:"ch",mult:2.00},
+  {name:"Chunin C.",key:"cc",mult:2.50},
+  {name:"TKJ",key:"tk",mult:3.20}
+];
+const INF={
+  infractions:[
+    {n:"Saut de chakra / course de chakra",p:1000},
+    {n:"Utilisation de techniques (Jutsu, Kenjutsu, Taijutsu...) dans l'enceinte du village",p:1400},
+    {n:"Intrusion dans un bâtiment privé sans autorisation",p:1200},
+    {n:"Port d'un masque sans autorisation préalable",p:1200},
+    {n:"Circuler sur les toits ou remparts",p:800},
+    {n:"Perturber l'ordre public",p:1000}
+  ],
+  delits:[
+    {n:"Manque de respect envers un membre de la Shugo",p:3000},
+    {n:"Vol ou arnaque / Jeu d'argent non déclaré",p:3000},
+    {n:"Dégradation de bien public",p:6000},
+    {n:"Manque de respect envers un supérieur",p:3000}
+  ],
+  crimes:[
+    {n:"Acte de rébellion",p:150000},
+    {n:"Assassinat / Homicide volontaire",p:50000},
+    {n:"Trahison envers le village",p:100000}
+  ]
+};
+
+let casiers=[];
+let editIdx=-1;
+let addIncidentIdx=-1;
+let selInf={};
+let photoData=null;
+let selGrade=null;
+let storageMode='local';
+
+function esc(v){
+  return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
+}
+function normalizeCasier(c){
+  c=c&&typeof c==='object'?c:{};
+  c.nom=String(c.nom||'Sans nom');
+  c.village=String(c.village||'');
+  c.date=String(c.date||'');
+  c.gradeName=String(c.gradeName||'—');
+  c.gradeMult=Number(c.gradeMult)||1;
+  c.agent=c.agent&&typeof c.agent==='object'?c.agent:{};
+  c.agent.nom=String(c.agent.nom||'');
+  c.agent.grade=String(c.agent.grade||'');
+  c.agent.autres=String(c.agent.autres||'');
+  c.photo=c.photo||null;
+  c.infractions=Array.isArray(c.infractions)?c.infractions:[];
+  c.incidents=Array.isArray(c.incidents)&&c.incidents.length?c.incidents:[{
+    date:c.date,
+    grade:c.grade||null,
+    gradeName:c.gradeName,
+    gradeMult:c.gradeMult,
+    agent:c.agent,
+    infractions:c.infractions,
+    baseTotal:Number(c.baseTotal)||0,
+    total:Number(c.total)||0
+  }];
+  c.incidents=c.incidents.map(normalizeIncident);
+  updateTotals(c);
+  return c;
+}
+function normalizeIncident(inc){
+  inc=inc&&typeof inc==='object'?inc:{};
+  inc.date=String(inc.date||'');
+  inc.grade=inc.grade||null;
+  inc.gradeName=String(inc.gradeName||'—');
+  inc.gradeMult=Number(inc.gradeMult)||1;
+  inc.agent=inc.agent&&typeof inc.agent==='object'?inc.agent:{};
+  inc.agent.nom=String(inc.agent.nom||'');
+  inc.agent.grade=String(inc.agent.grade||'');
+  inc.agent.autres=String(inc.agent.autres||'');
+  inc.infractions=Array.isArray(inc.infractions)?inc.infractions:[];
+  inc.baseTotal=Number(inc.baseTotal)||0;
+  inc.total=Number(inc.total)||0;
+  return inc;
+}
+function updateTotals(c){
+  c.incidents=Array.isArray(c.incidents)?c.incidents.map(normalizeIncident):[];
+  c.infractions=c.incidents.flatMap(inc=>inc.infractions);
+  c.baseTotal=c.incidents.reduce((sum,inc)=>sum+(Number(inc.baseTotal)||0),0);
+  c.total=c.incidents.reduce((sum,inc)=>sum+(Number(inc.total)||0),0);
+  const latest=c.incidents[0]||{};
+  c.date=latest.date||c.date||'';
+  c.grade=latest.grade||c.grade||null;
+  c.gradeName=latest.gradeName||c.gradeName||'—';
+  c.gradeMult=latest.gradeMult||c.gradeMult||1;
+  c.agent=latest.agent||c.agent||{};
+  return c;
+}
+function supabaseReady(){
+  return SUPABASE_URL.startsWith('https://')&&SUPABASE_ANON_KEY.length>20;
+}
+function setSyncStatus(text,cls=''){
+  const el=document.getElementById('sync-status');
+  if(!el)return;
+  el.textContent=text;
+  el.className='syncstatus '+cls;
+}
+function loadLocal(){
+  try{const r=localStorage.getItem(STORAGE_KEY);return r?JSON.parse(r).map(normalizeCasier):[];}catch(e){return [];}
+}
+function saveLocal(){
+  try{localStorage.setItem(STORAGE_KEY,JSON.stringify(casiers));}catch(e){}
+}
+async function loadRemote(){
+  const url=`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?id=eq.${encodeURIComponent(SUPABASE_ROW_ID)}&select=data`;
+  const res=await fetch(url,{headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${SUPABASE_ANON_KEY}`}});
+  if(!res.ok)throw new Error('Lecture Supabase impossible');
+  const rows=await res.json();
+  return rows&&rows[0]&&Array.isArray(rows[0].data)?rows[0].data.map(normalizeCasier):[];
+}
+async function saveRemote(){
+  const url=`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`;
+  const res=await fetch(url,{
+    method:'POST',
+    headers:{
+      apikey:SUPABASE_ANON_KEY,
+      Authorization:`Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type':'application/json',
+      Prefer:'resolution=merge-duplicates'
+    },
+    body:JSON.stringify({id:SUPABASE_ROW_ID,data:casiers,updated_at:new Date().toISOString()})
+  });
+  if(!res.ok)throw new Error('Sauvegarde Supabase impossible');
+}
+async function ld(){
+  if(!supabaseReady()){
+    casiers=loadLocal();
+    storageMode='local';
+    setSyncStatus('Local');
+    return;
+  }
+  try{
+    casiers=await loadRemote();
+    storageMode='remote';
+    setSyncStatus('Partagé','on');
+    if(casiers.length===0){
+      const local=loadLocal();
+      if(local.length){casiers=local;await saveRemote();}
+    }
+    saveLocal();
+  }catch(e){
+    casiers=loadLocal();
+    storageMode='local';
+    setSyncStatus('Local secours','err');
+  }
+}
+async function sd(){
+  saveLocal();
+  if(storageMode==='remote'&&supabaseReady()){
+    try{await saveRemote();setSyncStatus('Partagé','on');}
+    catch(e){setSyncStatus('Erreur sync','err');}
+  }
+}
+
+async function chkpw(){
+  const v=document.getElementById('pi').value.trim().toLowerCase();
+  if(v===PWD){
+    document.getElementById('pw').style.display='none';
+    document.getElementById('app').style.display='block';
+    setSyncStatus('Chargement...');
+    await ld();buildGrades();buildInf();renderList();
+  } else {
+    document.getElementById('pe').textContent='Accès refusé — mot de passe incorrect.';
+    document.getElementById('pi').value='';
+    setTimeout(()=>document.getElementById('pe').textContent='',3000);
+  }
+}
+document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('pw').style.display!=='none')chkpw();});
+function lock(){document.getElementById('pw').style.display='flex';document.getElementById('app').style.display='none';document.getElementById('pi').value='';}
+
+function sv(name,nbIdx){
+  document.querySelectorAll('.view').forEach(v=>v.classList.remove('act'));
+  document.querySelectorAll('.tnbtn').forEach(b=>b.classList.remove('act'));
+  document.getElementById('v'+name).classList.add('act');
+  if(nbIdx!==undefined&&nbIdx!==null){const nb=document.getElementById('nb'+nbIdx);if(nb)nb.classList.add('act');}
+}
+
+function openNew(fresh=false){
+  if(fresh||editIdx<0)resetForm();
+  document.getElementById('ftitle').textContent=editIdx>=0?'Modifier le Dossier':'Nouveau Dossier';
+  document.querySelector('#vnew .psub').textContent=editIdx>=0?"Modification du profil et du dernier incident":"Enregistrement d'interpellation";
+  document.getElementById('save-btn').textContent=editIdx>=0?'Enregistrer les modifications':'Enregistrer le dossier';
+  sv('new',1);
+}
+
+function buildGrades(){
+  const g=document.getElementById('grade-grid');
+  g.innerHTML='';
+  GRADES.forEach((gr,i)=>{
+    const d=document.createElement('div');
+    d.className='grade-btn';d.id='gb-'+gr.key;
+    d.onclick=()=>selGradeF(gr.key);
+    d.innerHTML=`<div class="grade-name">${gr.name}</div><div class="grade-mult">×${gr.mult.toFixed(2)}</div>`;
+    g.appendChild(d);
+  });
+}
+
+function selGradeF(key){
+  selGrade=key;
+  document.querySelectorAll('.grade-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('gb-'+key).classList.add('sel');
+  updTotal();
+}
+
+function buildInf(){
+  const cats=['infractions','delits','crimes'];
+  const elIds=['ii','id','ic'];
+  cats.forEach((cat,ci)=>{
+    const c=document.getElementById(elIds[ci]);
+    c.innerHTML='';
+    INF[cat].forEach((inf,i)=>{
+      const key=cat+'_'+i;
+      const d=document.createElement('div');
+      d.className='iitem';d.id='it-'+key;
+      d.onclick=()=>togInf(key,inf.p,d);
+      d.innerHTML=`<div class="ichk" id="ck-${key}"></div><div class="iname">${inf.n}</div><div class="iprice">${inf.p.toLocaleString('fr-FR')} ♦</div>`;
+      c.appendChild(d);
+    });
+  });
+}
+
+function togInf(key,price,el){
+  if(selInf[key]){delete selInf[key];el.classList.remove('sel');document.getElementById('ck-'+key).textContent='';}
+  else{selInf[key]=price;el.classList.add('sel');document.getElementById('ck-'+key).textContent='✓';}
+  updTotal();
+}
+
+function updTotal(){
+  const base=Object.values(selInf).reduce((a,b)=>a+b,0);
+  const grade=GRADES.find(g=>g.key===selGrade);
+  const mult=grade?grade.mult:1;
+  const total=Math.round(base*mult);
+  const cnt=Object.keys(selInf).length;
+  document.getElementById('tamt').textContent=total.toLocaleString('fr-FR');
+  document.getElementById('total-detail').textContent=cnt+' infraction(s) · Grade: '+(grade?grade.name:'non sélectionné');
+  if(base>0&&mult!==1){
+    document.getElementById('base-line').textContent='Base: '+base.toLocaleString('fr-FR')+' ♦ × '+mult.toFixed(2)+' = '+total.toLocaleString('fr-FR')+' ♦';
+  } else {
+    document.getElementById('base-line').textContent='';
+  }
+}
+
+function prevPhoto(e){
+  const f=e.target.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    photoData=ev.target.result;
+    document.getElementById('pp').src=photoData;
+    document.getElementById('pp').style.display='block';
+    document.getElementById('pph').style.display='none';
+  };
+  r.readAsDataURL(f);
+}
+
+function cancelForm(){
+  const detailIdx=addIncidentIdx;
+  resetForm();
+  if(detailIdx>=0)showDetail(detailIdx);else sv('list',0);
+}
+
+function resetForm(){
+  ['fn','fv','fd','fa-nom','fa-grade','fa-autres'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  selInf={};photoData=null;editIdx=-1;addIncidentIdx=-1;selGrade=null;
+  document.getElementById('pp').style.display='none';
+  document.getElementById('pph').style.display='block';
+  document.getElementById('pp').src='';
+  document.getElementById('pf').value='';
+  document.querySelectorAll('.iitem').forEach(el=>el.classList.remove('sel'));
+  document.querySelectorAll('.ichk').forEach(el=>el.textContent='');
+  document.querySelectorAll('.grade-btn').forEach(el=>el.classList.remove('sel'));
+  document.querySelector('#vnew .psub').textContent="Enregistrement d'interpellation";
+  document.getElementById('save-btn').textContent='Enregistrer le dossier';
+  updTotal();
+}
+
+function buildIncident(){
+  const base=Object.values(selInf).reduce((a,b)=>a+b,0);
+  const grade=GRADES.find(g=>g.key===selGrade);
+  const mult=grade?grade.mult:1;
+  const total=Math.round(base*mult);
+  const inf_list=[];
+  ['infractions','delits','crimes'].forEach(cat=>{
+    INF[cat].forEach((inf,i)=>{
+      const key=cat+'_'+i;
+      if(selInf[key])inf_list.push({cat,name:inf.n,price:inf.p});
+    });
+  });
+  return {
+    date:(document.getElementById('fd').value||''),
+    grade:selGrade,
+    gradeName:grade?grade.name:'—',
+    gradeMult:mult,
+    agent:{
+      nom:(document.getElementById('fa-nom').value||'').trim(),
+      grade:(document.getElementById('fa-grade').value||'').trim(),
+      autres:(document.getElementById('fa-autres').value||'').trim()
+    },
+    infractions:inf_list,
+    baseTotal:base,
+    total
+  };
+}
+
+async function saveCasier(){
+  const nom=(document.getElementById('fn').value||'').trim();
+  if(!nom){alert('Le nom du prévenu est requis.');return;}
+  const incident=buildIncident();
+  if(addIncidentIdx>=0){
+    const c=casiers[addIncidentIdx];
+    c.nom=nom;
+    c.village=(document.getElementById('fv').value||'').trim();
+    if(photoData!==null)c.photo=photoData;
+    c.incidents.unshift(incident);
+    updateTotals(c);
+    await sd();renderList();const idx=addIncidentIdx;resetForm();showDetail(idx);return;
+  }
+  const record={
+    nom,
+    village:(document.getElementById('fv').value||'').trim(),
+    photo:photoData,
+    incidents:[incident]
+  };
+  updateTotals(record);
+  if(editIdx>=0){
+    record.incidents=casiers[editIdx].incidents&&casiers[editIdx].incidents.length?casiers[editIdx].incidents:[incident];
+    record.incidents[0]=incident;
+    if(photoData===null)record.photo=casiers[editIdx].photo;
+    updateTotals(record);
+    casiers[editIdx]=record;
+  } else {
+    casiers.unshift(record);
+  }
+  await sd();renderList();resetForm();sv('list',0);
+}
+
+function renderList(filter=''){
+  const list=document.getElementById('clist');
+  const fil=casiers.filter(c=>!filter||c.nom.toLowerCase().includes(filter.toLowerCase()));
+  document.getElementById('ccount').textContent=casiers.length+' dossier(s) enregistré(s)';
+  if(fil.length===0){list.innerHTML='<div class="empty">'+(filter?'Aucun résultat.':'Aucun casier enregistré. Créez le premier dossier.')+'</div>';return;}
+  list.innerHTML='';
+  fil.forEach(c=>{
+    const ri=casiers.indexOf(c);
+    const haCr=c.infractions.some(i=>i.cat==='crimes');
+    const haDe=c.infractions.some(i=>i.cat==='delits');
+    const haIn=c.infractions.some(i=>i.cat==='infractions');
+    const incCount=c.incidents&&c.incidents.length?c.incidents.length:1;
+    const tags=[];
+    if(haCr)tags.push('<span class="tag tag-c">Crime</span>');
+    if(haDe)tags.push('<span class="tag tag-d">Délit</span>');
+    if(haIn)tags.push('<span class="tag tag-i">Infraction</span>');
+    tags.push('<span class="tag tag-r">'+incCount+' incident(s)</span>');
+    const init=c.nom.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';
+    const av=c.photo?`<img src="${esc(c.photo)}" alt="" />`:esc(init);
+    const el=document.createElement('div');
+    el.className='ccard';el.onclick=()=>showDetail(ri);
+    el.innerHTML=`<div class="ccard-av">${av}</div>
+      <div class="ccard-info">
+        <div class="ccard-name">${esc(c.nom)}</div>
+        <div class="ccard-meta">${esc(c.gradeName||'—')} · ${esc(c.village||'—')} · ${esc(c.date||'Date inconnue')}</div>
+        <div class="ccard-tags">${tags.join('')}</div>
+      </div>
+      <div class="ccard-right">
+        <div class="ccard-ryo">${c.total.toLocaleString('fr-FR')} ♦</div>
+        <div class="ccard-ryo-lbl">Ryos dûs</div>
+      </div>`;
+    list.appendChild(el);
+  });
+}
+function filt(){renderList(document.getElementById('srch').value);}
+
+function showDetail(idx){
+  const c=casiers[idx];
+  updateTotals(c);
+  const init=c.nom.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';
+  const phEl=c.photo?`<img src="${esc(c.photo)}" alt="" />`:esc(init);
+  const nCr=c.infractions.filter(i=>i.cat==='crimes').length;
+  const nDe=c.infractions.filter(i=>i.cat==='delits').length;
+  const nIn=c.infractions.filter(i=>i.cat==='infractions').length;
+  const autresAgents=c.agent&&c.agent.autres?c.agent.autres:'—';
+  document.getElementById('dcontent').innerHTML=`
+    <div class="dh">
+      <div class="dphoto">${phEl}</div>
+      <div>
+        <div class="dname">${esc(c.nom)}</div>
+        <div class="dfield">Grade : <b>${esc(c.gradeName||'—')}</b></div>
+        <div class="dfield">Village : <b>${esc(c.village||'—')}</b></div>
+        <div class="dfield">Dernier incident : <b>${esc(c.date||'—')}</b></div>
+        <div class="dstats">
+          <div class="dstat"><div class="dstat-lbl">Infractions</div><div class="dstat-val" style="color:#d4a820">${nIn}</div></div>
+          <div class="dstat"><div class="dstat-lbl">Délits</div><div class="dstat-val" style="color:#e07030">${nDe}</div></div>
+          <div class="dstat"><div class="dstat-lbl">Crimes</div><div class="dstat-val" style="color:#d04040">${nCr}</div></div>
+          <div class="dstat"><div class="dstat-lbl">Incidents</div><div class="dstat-val" style="color:var(--sand)">${c.incidents.length}</div></div>
+        </div>
+      </div>
+      <div class="dright">
+        <div class="amende-box">
+          <div class="amende-lbl">Amende Totale</div>
+          <div class="amende-val">${c.total.toLocaleString('fr-FR')} ♦</div>
+          <div style="font-size:10px;color:rgba(255,160,160,.5);margin-top:2px">${c.incidents.length} incident(s)</div>
+        </div>
+        <button class="abtn grn" onclick="openIncident(${idx})" style="width:100%;text-align:center">Ajouter un incident</button>
+        <button class="abtn" onclick="editCasier(${idx})" style="width:100%;text-align:center">Modifier profil</button>
+        <button class="abtn red" onclick="delCasier(${idx})" style="width:100%;text-align:center">Supprimer</button>
+      </div>
+    </div>
+
+    <div class="section-h">Agents impliqués</div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:12px 14px;margin-bottom:4px">
+      <div class="dfield">Agent responsable : <b>${esc(c.agent&&c.agent.nom?c.agent.nom:'—')}</b> ${c.agent&&c.agent.grade?'<span style="color:var(--text3);font-size:12px">('+esc(c.agent.grade)+')</span>':''}</div>
+      <div class="dfield">Autres agents : <b>${esc(autresAgents)}</b></div>
+    </div>
+
+    <div class="section-h">Incidents enregistrés</div>
+    <div id="incident-list">${renderIncidents(c.incidents)}</div>
+  `;
+  sv('detail',null);
+}
+
+function renderIncidents(incidents){
+  if(!incidents||incidents.length===0)return '<div style="color:var(--text3);font-style:italic;font-size:13px;padding:6px 0">Aucun incident enregistré.</div>';
+  return incidents.map((inc,i)=>{
+    const infRows=inc.infractions.map(inf=>{
+      const cl=inf.cat==='crimes'?'tag-c':inf.cat==='delits'?'tag-d':'tag-i';
+      const lb=inf.cat==='crimes'?'Crime':inf.cat==='delits'?'Délit':'Infraction';
+      return `<div class="dinfitem"><div><span style="font-size:13px">${esc(inf.name)}</span> <span class="tag ${cl}" style="margin-left:6px">${lb}</span></div><div style="font-family:'Cinzel',serif;font-size:12px;color:var(--text3)">${Number(inf.price||0).toLocaleString('fr-FR')} ♦</div></div>`;
+    }).join('');
+    const agent=inc.agent||{};
+    return `<div class="rpcard">
+      <div class="rp-top">
+        <div>
+          <span class="rp-date">Incident ${incidents.length-i} · ${esc(inc.date||'Date inconnue')}</span>
+          <div class="inc-meta">Grade: ${esc(inc.gradeName||'—')} · Agent: ${esc(agent.nom||'—')}${agent.grade?' ('+esc(agent.grade)+')':''}</div>
+        </div>
+        <div class="inc-total">${Number(inc.total||0).toLocaleString('fr-FR')} ♦</div>
+      </div>
+      ${inc.gradeMult&&inc.gradeMult!==1?`<div class="inc-meta" style="margin-bottom:8px">Base: ${Number(inc.baseTotal||0).toLocaleString('fr-FR')} ♦ × ${Number(inc.gradeMult||1).toFixed(2)}</div>`:''}
+      ${infRows||'<div style="color:var(--text3);font-style:italic;font-size:13px;padding:6px 0">Aucune infraction notée pour cet incident.</div>'}
+    </div>`;
+  }).join('');
+}
+
+function openIncident(idx){
+  const c=casiers[idx];
+  resetForm();
+  addIncidentIdx=idx;
+  document.getElementById('ftitle').textContent='Nouvel Incident';
+  document.querySelector('#vnew .psub').textContent='Nouvelle interpellation pour ce profil';
+  document.getElementById('save-btn').textContent="Ajouter l'incident";
+  document.getElementById('fn').value=c.nom||'';
+  document.getElementById('fv').value=c.village||'';
+  if(c.photo){document.getElementById('pp').src=c.photo;document.getElementById('pp').style.display='block';document.getElementById('pph').style.display='none';}
+  sv('new',1);
+}
+function editCasier(idx){
+  const c=casiers[idx];editIdx=idx;
+  addIncidentIdx=-1;
+  document.querySelector('#vnew .psub').textContent="Modification du profil et du dernier incident";
+  const inc=c.incidents&&c.incidents.length?c.incidents[0]:c;
+  document.getElementById('fn').value=c.nom||'';
+  document.getElementById('fv').value=c.village||'';
+  document.getElementById('fd').value=inc.date||'';
+  document.getElementById('fa-nom').value=inc.agent?inc.agent.nom||'':'';
+  document.getElementById('fa-grade').value=inc.agent?inc.agent.grade||'':'';
+  document.getElementById('fa-autres').value=inc.agent?inc.agent.autres||'':'';
+  photoData=null;
+  if(c.photo){document.getElementById('pp').src=c.photo;document.getElementById('pp').style.display='block';document.getElementById('pph').style.display='none';}
+  else{document.getElementById('pp').style.display='none';document.getElementById('pph').style.display='flex';}
+  selGrade=inc.grade||null;
+  document.querySelectorAll('.grade-btn').forEach(el=>el.classList.remove('sel'));
+  if(selGrade)document.getElementById('gb-'+selGrade).classList.add('sel');
+  selInf={};
+  document.querySelectorAll('.iitem').forEach(el=>el.classList.remove('sel'));
+  document.querySelectorAll('.ichk').forEach(el=>el.textContent='');
+  inc.infractions.forEach(inf=>{
+    const cat=inf.cat;const i=INF[cat].findIndex(x=>x.n===inf.name);
+    if(i>=0){const key=cat+'_'+i;selInf[key]=inf.price;const el=document.getElementById('it-'+key);if(el){el.classList.add('sel');document.getElementById('ck-'+key).textContent='✓';}}
+  });
+  updTotal();
+  openNew();
+}
+async function delCasier(idx){
+  if(confirm('Supprimer définitivement ce casier ?')){casiers.splice(idx,1);await sd();renderList();sv('list',0);}
+}
+ld().catch(()=>{});
+</script>
+</body>
+</html>
