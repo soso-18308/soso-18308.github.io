@@ -164,12 +164,30 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .rp-body{font-size:13px;color:var(--text);line-height:1.6;white-space:pre-wrap}
 .inc-total{font-family:'Cinzel',serif;font-size:15px;color:var(--sand);white-space:nowrap}
 .inc-meta{font-size:11px;color:var(--text3);margin-top:3px}
+
+/* Agent card styles - MODIFIÉ: avec photo */
+.agent-card{background:var(--bg2);border:1px solid var(--border);border-radius:5px;padding:14px 16px;margin-bottom:10px}
+.agent-head{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:10px}
+.agent-head-left{display:flex;align-items:center;gap:12px;flex:1}
+.agent-avatar{width:52px;height:52px;border-radius:50%;border:1px solid var(--border2);flex-shrink:0;background:var(--bg3);display:flex;align-items:center;justify-content:center;overflow:hidden;font-family:'Cinzel',serif;font-size:18px;color:var(--sand3);cursor:pointer;position:relative;transition:border-color .2s}
+.agent-avatar:hover{border-color:var(--border3)}
+.agent-avatar img{width:100%;height:100%;object-fit:cover}
+.agent-avatar-hint{position:absolute;bottom:0;left:0;right:0;background:rgba(0,0,0,.6);font-size:8px;text-align:center;color:var(--sand2);padding:2px 0;letter-spacing:.05em;opacity:0;transition:opacity .2s}
+.agent-avatar:hover .agent-avatar-hint{opacity:1}
+.agent-info{}
+.agent-name{font-family:'Cinzel',serif;font-size:15px;color:var(--sand);letter-spacing:.08em}
+.agent-count{font-size:11px;color:var(--text3);margin-top:3px}
+.agent-role-tag{font-size:10px;color:var(--text3);margin-top:2px;font-style:italic}
+
 .rp-textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'Inter',sans-serif;font-size:13px;padding:8px 11px;border-radius:3px;outline:none;resize:vertical;min-height:70px;display:none}
 .rp-textarea:focus{border-color:var(--border3)}
 .rp-saveline{display:none;gap:6px;justify-content:flex-end;margin-top:6px}
 
 .photoz{border:1px dashed var(--border2);border-radius:4px;padding:24px;text-align:center;cursor:pointer;background:var(--bg2);transition:border-color .2s;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .photoz:hover{border-color:var(--border3)}
+
+/* Badge agent secondaire */
+.tag-sec{background:rgba(60,40,120,.3);color:#9080d0;border:1px solid rgba(144,128,208,.3)}
 
 @media (max-width:720px){
   #pw{padding:20px}
@@ -216,6 +234,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="tnav">
       <button class="tnbtn act" id="nb0" onclick="sv('list',0)">Casiers</button>
       <button class="tnbtn" id="nb1" onclick="openNew(true)">Nouveau dossier</button>
+      <button class="tnbtn" id="nb2" onclick="sv('reports',2)">Rapports</button>
       <button class="tnbtn danger" onclick="lock()">Verrouiller</button>
     </div>
   </div>
@@ -232,6 +251,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   <div id="vdetail" class="view">
     <button class="bbtn" onclick="sv('list',0)">← Retour</button>
     <div id="dcontent"></div>
+  </div>
+
+  <div id="vreports" class="view">
+    <div class="ph">
+      <div><div class="ptitle">Rapports Agents</div><div class="psub" id="agent-count">—</div></div>
+    </div>
+    <input class="srch" type="text" id="agent-srch" placeholder="Rechercher un agent..." oninput="renderReports(this.value)" />
+    <div id="agent-reports"></div>
   </div>
 
   <div id="vnew" class="view">
@@ -256,9 +283,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div class="fsect">
       <div class="fsect-title">Agents Impliqués</div>
       <div class="fgrid" style="margin-bottom:10px">
-        <div><label class="flbl">Nom de l'agent responsable</label><input class="finput" id="fa-nom" type="text" placeholder="Nom de l'agent" /></div>
+        <div><label class="flbl">Nom de l'agent responsable</label><input class="finput" id="fa-nom" type="text" list="agent-options" placeholder="Nom de l'agent" /></div>
         <div><label class="flbl">Grade de l'agent</label><input class="finput" id="fa-grade" type="text" placeholder="Ex: Chunin, Jonin..." /></div>
       </div>
+      <datalist id="agent-options"></datalist>
       <div><label class="flbl">Agents présents lors de l'interpellation <span style="color:var(--text3)">(optionnel)</span></label><input class="finput" id="fa-autres" type="text" placeholder="Noms des autres agents séparés par des virgules" /></div>
     </div>
 
@@ -310,14 +338,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   </div>
 </div>
 
+<!-- Input caché pour photo d'agent -->
+<input type="file" id="agent-photo-input" accept="image/*" style="display:none" onchange="saveAgentPhoto(event)" />
+
 <script>
 const PWD="sabaku";
 const STORAGE_KEY="sg_v3";
+const AGENT_PHOTOS_KEY="sg_agent_photos_v1";
 
-// Pour une sauvegarde partagée sur GitHub Pages:
-// 1. Crée un projet Supabase.
-// 2. Crée la table avec le SQL donné plus bas dans ma réponse.
-// 3. Remplace les deux valeurs ci-dessous par celles de ton projet.
 const SUPABASE_URL="https://sgxcsrwurhjvnkalpxun.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_hvgD-ZPp-pqArTYKaTBaEg_b4fz386Z";
 const SUPABASE_TABLE="shugo_data";
@@ -358,6 +386,38 @@ let selInf={};
 let photoData=null;
 let selGrade=null;
 let storageMode='local';
+
+// Photos des agents stockées séparément (clé = nom normalisé)
+let agentPhotos={};
+let currentAgentPhotoKey=null;
+
+function loadAgentPhotos(){
+  try{const r=localStorage.getItem(AGENT_PHOTOS_KEY);agentPhotos=r?JSON.parse(r):{};}catch(e){agentPhotos={};}
+}
+function saveAgentPhotos(){
+  try{localStorage.setItem(AGENT_PHOTOS_KEY,JSON.stringify(agentPhotos));}catch(e){}
+}
+function agentPhotoKey(name){
+  return String(name||'').trim().toLowerCase();
+}
+function getAgentPhoto(name){
+  return agentPhotos[agentPhotoKey(name)]||null;
+}
+function openAgentPhotoUpload(agentName){
+  currentAgentPhotoKey=agentPhotoKey(agentName);
+  document.getElementById('agent-photo-input').value='';
+  document.getElementById('agent-photo-input').click();
+}
+function saveAgentPhoto(e){
+  const f=e.target.files[0];if(!f||!currentAgentPhotoKey)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    agentPhotos[currentAgentPhotoKey]=ev.target.result;
+    saveAgentPhotos();
+    renderReports(document.getElementById('agent-srch')?.value||'');
+  };
+  r.readAsDataURL(f);
+}
 
 function esc(v){
   return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));
@@ -454,6 +514,7 @@ async function saveRemote(){
   if(!res.ok)throw new Error('Sauvegarde Supabase impossible');
 }
 async function ld(){
+  loadAgentPhotos();
   if(!supabaseReady()){
     casiers=loadLocal();
     storageMode='local';
@@ -489,7 +550,7 @@ async function chkpw(){
     document.getElementById('pw').style.display='none';
     document.getElementById('app').style.display='block';
     setSyncStatus('Chargement...');
-    await ld();buildGrades();buildInf();renderList();
+    await ld();buildGrades();buildInf();refreshAgentOptions();renderList();renderReports();
   } else {
     document.getElementById('pe').textContent='Accès refusé — mot de passe incorrect.';
     document.getElementById('pi').value='';
@@ -504,6 +565,7 @@ function sv(name,nbIdx){
   document.querySelectorAll('.tnbtn').forEach(b=>b.classList.remove('act'));
   document.getElementById('v'+name).classList.add('act');
   if(nbIdx!==undefined&&nbIdx!==null){const nb=document.getElementById('nb'+nbIdx);if(nb)nb.classList.add('act');}
+  if(name==='reports')renderReports(document.getElementById('agent-srch')?.value||'');
 }
 
 function openNew(fresh=false){
@@ -548,6 +610,119 @@ function buildInf(){
       c.appendChild(d);
     });
   });
+}
+
+function agentKey(name){
+  return String(name||'').trim().toLowerCase();
+}
+
+// Retourne tous les agents (responsables + secondaires) avec leurs incidents
+function getAgentGroups(){
+  const groups=new Map();
+
+  casiers.forEach(c=>{
+    updateTotals(c);
+    c.incidents.forEach(inc=>{
+      // Agent responsable
+      const raw=inc.agent&&inc.agent.nom?inc.agent.nom.trim():'';
+      if(raw){
+        const key=agentKey(raw);
+        if(!groups.has(key))groups.set(key,{name:raw,grade:inc.agent.grade||'',items:[]});
+        const group=groups.get(key);
+        if(!group.grade&&inc.agent.grade)group.grade=inc.agent.grade;
+        group.items.push({casier:c,incident:inc,role:'responsable'});
+      }
+
+      // Agents secondaires (autres agents présents)
+      const autresRaw=inc.agent&&inc.agent.autres?inc.agent.autres:'';
+      if(autresRaw){
+        autresRaw.split(',').forEach(anom=>{
+          const trimmed=anom.trim();
+          if(!trimmed)return;
+          const key=agentKey(trimmed);
+          if(!groups.has(key))groups.set(key,{name:trimmed,grade:'',items:[]});
+          const group=groups.get(key);
+          group.items.push({casier:c,incident:inc,role:'secondaire'});
+        });
+      }
+    });
+  });
+
+  return [...groups.values()].sort((a,b)=>a.name.localeCompare(b.name,'fr'));
+}
+
+function refreshAgentOptions(){
+  const dl=document.getElementById('agent-options');
+  if(!dl)return;
+  dl.innerHTML=getAgentGroups().map(g=>`<option value="${esc(g.name)}"></option>`).join('');
+}
+
+function renderReports(filter=''){
+  const root=document.getElementById('agent-reports');
+  const count=document.getElementById('agent-count');
+  if(!root)return;
+  const q=filter.trim().toLowerCase();
+  const groups=getAgentGroups().filter(g=>!q||g.name.toLowerCase().includes(q));
+  if(count)count.textContent=groups.length+' agent(s) avec incident(s)';
+  if(groups.length===0){
+    root.innerHTML='<div class="empty">'+(filter?'Aucun agent trouvé.':'Aucun incident avec agent responsable pour le moment.')+'</div>';
+    return;
+  }
+  root.innerHTML=groups.map(g=>{
+    // Compter par rôle
+    const nbResp=g.items.filter(it=>it.role==='responsable').length;
+    const nbSec=g.items.filter(it=>it.role==='secondaire').length;
+    const totalAmendes=g.items.filter(it=>it.role==='responsable').reduce((sum,it)=>sum+(Number(it.incident.total)||0),0);
+
+    // Photo de l'agent
+    const photo=getAgentPhoto(g.name);
+    const init=g.name.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';
+    const avatarContent=photo
+      ?`<img src="${esc(photo)}" alt="" />`
+      :esc(init);
+
+    // Comptage label
+    let countParts=[];
+    if(nbResp>0)countParts.push(nbResp+' arrestation(s) en tant que responsable');
+    if(nbSec>0)countParts.push(nbSec+' présence(s) en tant que secondaire');
+    const countLabel=countParts.join(' · ')+(g.grade?' · '+esc(g.grade):'');
+
+    const rows=g.items.map(it=>{
+      const inc=it.incident;
+      const c=it.casier;
+      const infractions=inc.infractions&&inc.infractions.length?inc.infractions.map(inf=>esc(inf.name)).join(', '):'Aucune infraction notée';
+      const roleTag=it.role==='secondaire'
+        ?`<span class="tag tag-sec" style="margin-left:6px">Secondaire</span>`
+        :`<span class="tag tag-r" style="margin-left:6px">Responsable</span>`;
+      const amendeStr=it.role==='responsable'?`<div style="font-family:'Cinzel',serif;font-size:12px;color:var(--text3)">${Number(inc.total||0).toLocaleString('fr-FR')} ♦</div>`:'';
+      return `<div class="dinfitem">
+        <div>
+          <span style="font-size:13px">A interpellé <b>${esc(c.nom)}</b>${roleTag}</span>
+          <div class="inc-meta">${esc(inc.date||'Date inconnue')} · Pour: ${infractions}</div>
+        </div>
+        ${amendeStr}
+      </div>`;
+    }).join('');
+
+    const totalLine=nbResp>0?`<div class="inc-total">${totalAmendes.toLocaleString('fr-FR')} ♦</div>`:'<div class="inc-total" style="color:var(--text3);font-size:12px">—</div>';
+
+    return `<div class="agent-card">
+      <div class="agent-head">
+        <div class="agent-head-left">
+          <div class="agent-avatar" onclick="openAgentPhotoUpload('${esc(g.name)}')" title="Cliquer pour ajouter une photo">
+            ${avatarContent}
+            <div class="agent-avatar-hint">📷 Photo</div>
+          </div>
+          <div class="agent-info">
+            <div class="agent-name">${esc(g.name)}</div>
+            <div class="agent-count">${countLabel}</div>
+          </div>
+        </div>
+        ${totalLine}
+      </div>
+      ${rows}
+    </div>`;
+  }).join('');
 }
 
 function togInf(key,price,el){
@@ -643,7 +818,7 @@ async function saveCasier(){
     if(photoData!==null)c.photo=photoData;
     c.incidents.unshift(incident);
     updateTotals(c);
-    await sd();renderList();const idx=addIncidentIdx;resetForm();showDetail(idx);return;
+    await sd();refreshAgentOptions();renderList();renderReports();const idx=addIncidentIdx;resetForm();showDetail(idx);return;
   }
   const record={
     nom,
@@ -661,7 +836,7 @@ async function saveCasier(){
   } else {
     casiers.unshift(record);
   }
-  await sd();renderList();resetForm();sv('list',0);
+  await sd();refreshAgentOptions();renderList();renderReports();resetForm();sv('list',0);
 }
 
 function renderList(filter=''){
@@ -811,7 +986,7 @@ function editCasier(idx){
   openNew();
 }
 async function delCasier(idx){
-  if(confirm('Supprimer définitivement ce casier ?')){casiers.splice(idx,1);await sd();renderList();sv('list',0);}
+  if(confirm('Supprimer définitivement ce casier ?')){casiers.splice(idx,1);await sd();refreshAgentOptions();renderList();renderReports();sv('list',0);}
 }
 ld().catch(()=>{});
 </script>
