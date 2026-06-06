@@ -236,8 +236,138 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   .rpt-stats{flex-wrap:wrap}
 }
 </style>
+
+<style>
+/* ── DESERT BACKGROUND ── */
+#desert-canvas{
+  position:fixed;top:0;left:0;width:100%;height:100%;
+  z-index:-1;pointer-events:none;
+}
+/* Floating dust motes */
+.dust{
+  position:fixed;border-radius:50%;
+  background:rgba(232,184,75,.18);
+  animation:dustFloat linear infinite;
+  pointer-events:none;z-index:0;
+  filter:blur(1px);
+}
+@keyframes dustFloat{
+  0%{transform:translateY(0) translateX(0) scale(1);opacity:0}
+  10%{opacity:1}
+  90%{opacity:.6}
+  100%{transform:translateY(-100vh) translateX(var(--dx)) scale(.4);opacity:0}
+}
+/* Heat shimmer lines */
+.shimmer-line{
+  position:fixed;left:0;right:0;height:1px;
+  background:linear-gradient(90deg,transparent,rgba(232,184,75,.06),transparent);
+  animation:shimmerMove linear infinite;
+  pointer-events:none;z-index:0;
+}
+@keyframes shimmerMove{
+  0%{transform:translateX(-100%) scaleX(.5);opacity:0}
+  40%{opacity:1}
+  100%{transform:translateX(100%) scaleX(1.5);opacity:0}
+}
+/* Sand grain particles */
+.grain{
+  position:fixed;width:1px;height:1px;
+  background:rgba(196,144,48,.5);
+  animation:grainDrift linear infinite;
+  pointer-events:none;z-index:0;
+}
+@keyframes grainDrift{
+  0%{transform:translate(0,0);opacity:0}
+  5%{opacity:.8}
+  95%{opacity:.4}
+  100%{transform:translate(var(--gx),var(--gy));opacity:0}
+}
+/* Glow pulse on login kanji */
+@keyframes kanjiPulse{
+  0%,100%{text-shadow:0 0 30px rgba(232,184,75,.25),0 0 60px rgba(232,184,75,.1)}
+  50%{text-shadow:0 0 50px rgba(232,184,75,.5),0 0 100px rgba(232,184,75,.2),0 0 160px rgba(232,184,75,.08)}
+}
+.pw-kanji{animation:kanjiPulse 4s ease-in-out infinite}
+/* Topbar logo dot pulse */
+@keyframes dotPulse{
+  0%,100%{box-shadow:0 0 6px rgba(232,184,75,.4)}
+  50%{box-shadow:0 0 14px rgba(232,184,75,.8),0 0 28px rgba(232,184,75,.3)}
+}
+.tlogo-dot{animation:dotPulse 3s ease-in-out infinite}
+/* Card hover lift */
+.ccard{transition:all .25s cubic-bezier(.2,.8,.4,1)}
+.ccard:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(0,0,0,.45),0 0 0 1px rgba(232,184,75,.2)}
+/* Tag shimmer on hover */
+.tag{transition:all .2s}
+.ccard:hover .tag{filter:brightness(1.15)}
+/* Amende box heartbeat */
+@keyframes amendeHeart{
+  0%,100%{box-shadow:0 4px 16px rgba(138,26,26,.4)}
+  50%{box-shadow:0 4px 30px rgba(184,32,32,.7),0 0 0 2px rgba(184,32,32,.2)}
+}
+.amende-box{animation:amendeHeart 3s ease-in-out infinite}
+/* Totalbox glow */
+@keyframes totalGlow{
+  0%,100%{box-shadow:0 4px 20px rgba(0,0,0,.3)}
+  50%{box-shadow:0 4px 30px rgba(0,0,0,.4),0 0 20px rgba(232,184,75,.12)}
+}
+.totalbox{animation:totalGlow 4s ease-in-out infinite}
+/* Sand dune wave in app background */
+#app{position:relative}
+#app::before{
+  content:'';position:fixed;bottom:0;left:0;right:0;height:280px;
+  background:
+    radial-gradient(ellipse 80% 60% at 20% 100%,rgba(122,88,32,.18) 0%,transparent 70%),
+    radial-gradient(ellipse 60% 50% at 60% 100%,rgba(196,144,48,.12) 0%,transparent 70%),
+    radial-gradient(ellipse 50% 40% at 85% 100%,rgba(122,88,32,.15) 0%,transparent 70%);
+  pointer-events:none;z-index:0;
+  animation:duneShift 20s ease-in-out infinite;
+}
+@keyframes duneShift{
+  0%,100%{opacity:.6;transform:scaleX(1)}
+  50%{opacity:1;transform:scaleX(1.03)}
+}
+/* Stars twinkling on pw screen */
+.star{
+  position:fixed;border-radius:50%;
+  background:rgba(232,184,75,.7);
+  animation:starTwinkle ease-in-out infinite;
+  pointer-events:none;z-index:0;
+}
+@keyframes starTwinkle{
+  0%,100%{opacity:.15;transform:scale(1)}
+  50%{opacity:.9;transform:scale(1.4)}
+}
+/* Grade button select animation */
+.grade-btn{transition:all .2s cubic-bezier(.2,.8,.4,1)}
+.grade-btn.sel{animation:gradeSel .3s ease-out forwards}
+@keyframes gradeSel{
+  0%{transform:scale(.95)}
+  60%{transform:scale(1.04)}
+  100%{transform:scale(1)}
+}
+/* Village button */
+.village-btn{transition:all .2s cubic-bezier(.2,.8,.4,1)}
+.village-btn.sel-suna,.village-btn.sel-konoha{animation:villSel .3s ease-out}
+@keyframes villSel{
+  0%{transform:scale(.97)}
+  60%{transform:scale(1.03)}
+  100%{transform:scale(1)}
+}
+/* Scan line overlay */
+#app::after{
+  content:'';position:fixed;top:0;left:0;right:0;bottom:0;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(0,0,0,.03) 2px,rgba(0,0,0,.03) 4px);
+  pointer-events:none;z-index:1;
+}
+/* Ensure content is above overlays */
+.topbar,.view,.pw-box,.pw-logo{position:relative;z-index:2}
+</style>
+
 </head>
 <body>
+
+<canvas id="desert-canvas"></canvas>
 
 <div id="pw">
   <div class="pw-logo">
@@ -1142,6 +1272,228 @@ async function delCasier(idx){
   if(confirm('Supprimer définitivement ce casier ?')){casiers.splice(idx,1);await sd();refreshAgentOptions();renderList();renderReports();sv('list',0);}
 }
 ld().catch(()=>{});
+
+
+// ── DESERT BACKGROUND ENGINE ──
+(function(){
+  const canvas = document.getElementById('desert-canvas');
+  const ctx = canvas.getContext('2d');
+  let W, H, dunes = [], stars2d = [];
+
+  function resize(){
+    W = canvas.width = window.innerWidth;
+    H = canvas.height = window.innerHeight;
+  }
+  resize();
+  window.addEventListener('resize', resize);
+
+  // Dune shapes
+  function makeDunes(){
+    dunes = [];
+    const layers = [
+      {y:.75, amp:0.055, freq:.0018, speed:.00008, alpha:.22, color:'rgba(122,88,20,'},
+      {y:.80, amp:0.040, freq:.0024, speed:.00013, alpha:.30, color:'rgba(156,110,32,'},
+      {y:.85, amp:0.028, freq:.0032, speed:.00020, alpha:.40, color:'rgba(180,128,40,'},
+      {y:.90, amp:0.018, freq:.0042, speed:.00030, alpha:.55, color:'rgba(196,144,48,'},
+      {y:.95, amp:0.010, freq:.0060, speed:.00045, alpha:.70, color:'rgba(210,158,55,'},
+    ];
+    layers.forEach(l => dunes.push({...l, offset:Math.random()*1000}));
+  }
+  makeDunes();
+
+  // 2D star field (shown always, subtle on app screen)
+  function makeStars(){
+    stars2d = [];
+    for(let i=0;i<80;i++){
+      stars2d.push({
+        x:Math.random(),y:Math.random()*.65,
+        r:Math.random()*.8+.2,
+        phase:Math.random()*Math.PI*2,
+        speed:Math.random()*.008+.003
+      });
+    }
+  }
+  makeStars();
+
+  let t = 0;
+  // Moon position
+  const moonX = 0.82, moonY = 0.12;
+
+  function draw(){
+    t += 0.008;
+    ctx.clearRect(0,0,W,H);
+
+    // Sky gradient
+    const sky = ctx.createLinearGradient(0,0,0,H*.9);
+    sky.addColorStop(0,'#050302');
+    sky.addColorStop(.35,'#0d0804');
+    sky.addColorStop(.65,'#160e06');
+    sky.addColorStop(1,'#241508');
+    ctx.fillStyle = sky;
+    ctx.fillRect(0,0,W,H);
+
+    // Stars
+    stars2d.forEach(s=>{
+      const bright = .15 + .75*(Math.sin(s.phase + t*s.speed*10)+1)/2;
+      ctx.beginPath();
+      ctx.arc(s.x*W, s.y*H, s.r, 0, Math.PI*2);
+      ctx.fillStyle = `rgba(232,200,140,${bright})`;
+      ctx.fill();
+    });
+
+    // Moon glow
+    const mx = moonX*W, my = moonY*H;
+    const moonGlow = ctx.createRadialGradient(mx,my,0,mx,my,W*.18);
+    moonGlow.addColorStop(0,'rgba(232,184,75,.04)');
+    moonGlow.addColorStop(.5,'rgba(196,140,40,.02)');
+    moonGlow.addColorStop(1,'transparent');
+    ctx.fillStyle = moonGlow;
+    ctx.fillRect(0,0,W,H);
+
+    // Moon body
+    const mr = W*.028;
+    const mg = ctx.createRadialGradient(mx-mr*.25,my-mr*.25,0,mx,my,mr);
+    mg.addColorStop(0,'rgba(255,235,180,.95)');
+    mg.addColorStop(.6,'rgba(232,184,75,.85)');
+    mg.addColorStop(1,'rgba(180,120,30,.6)');
+    ctx.beginPath();
+    ctx.arc(mx,my,mr,0,Math.PI*2);
+    ctx.fillStyle = mg;
+    ctx.fill();
+    // Moon crescent shadow
+    ctx.beginPath();
+    ctx.arc(mx+mr*.3,my-mr*.1,mr*.78,0,Math.PI*2);
+    ctx.fillStyle='rgba(5,3,2,.7)';
+    ctx.fill();
+
+    // Horizon haze
+    const haze = ctx.createLinearGradient(0,H*.6,0,H*.75);
+    haze.addColorStop(0,'transparent');
+    haze.addColorStop(.5,'rgba(122,80,20,.06)');
+    haze.addColorStop(1,'transparent');
+    ctx.fillStyle=haze;
+    ctx.fillRect(0,H*.6,W,H*.15);
+
+    // Dune layers
+    dunes.forEach((d,i)=>{
+      const baseY = d.y * H;
+      ctx.beginPath();
+      ctx.moveTo(0, H);
+      for(let x=0;x<=W;x+=3){
+        const wave1 = Math.sin(x*d.freq + t*d.speed*60 + d.offset)*d.amp*H;
+        const wave2 = Math.sin(x*d.freq*1.7 + t*d.speed*40 + d.offset+2)*d.amp*.4*H;
+        const wave3 = Math.sin(x*d.freq*.6 + t*d.speed*25 + d.offset+5)*d.amp*.25*H;
+        ctx.lineTo(x, baseY + wave1 + wave2 + wave3);
+      }
+      ctx.lineTo(W, H);
+      ctx.closePath();
+
+      // Dune gradient — lit from upper right (moon)
+      const g = ctx.createLinearGradient(W*.8, baseY-d.amp*H, 0, H);
+      g.addColorStop(0, d.color+(d.alpha*1.4)+')');
+      g.addColorStop(.4, d.color+d.alpha+')');
+      g.addColorStop(1, d.color+(d.alpha*.5)+')');
+      ctx.fillStyle = g;
+      ctx.fill();
+
+      // Crest highlight
+      if(i >= 2){
+        ctx.beginPath();
+        ctx.moveTo(0,H);
+        for(let x=0;x<=W;x+=3){
+          const wave1 = Math.sin(x*d.freq + t*d.speed*60 + d.offset)*d.amp*H;
+          const wave2 = Math.sin(x*d.freq*1.7 + t*d.speed*40 + d.offset+2)*d.amp*.4*H;
+          const wave3 = Math.sin(x*d.freq*.6 + t*d.speed*25 + d.offset+5)*d.amp*.25*H;
+          ctx.lineTo(x, baseY + wave1 + wave2 + wave3 - 2);
+        }
+        ctx.lineTo(W,baseY);
+        ctx.closePath();
+        ctx.strokeStyle = d.color+(d.alpha*.6)+')';
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+    });
+
+    requestAnimationFrame(draw);
+  }
+  draw();
+
+  // Spawn floating dust motes
+  function spawnDust(){
+    const el = document.createElement('div');
+    el.className = 'dust';
+    const size = Math.random()*4+1;
+    const dur = Math.random()*18+10;
+    const dx = (Math.random()-0.5)*200;
+    el.style.cssText = `
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}vw;
+      bottom:${Math.random()*30}vh;
+      --dx:${dx}px;
+      animation-duration:${dur}s;
+      animation-delay:${Math.random()*10}s;
+      opacity:0;
+    `;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), (dur+10)*1000);
+  }
+  for(let i=0;i<18;i++) spawnDust();
+  setInterval(spawnDust, 2500);
+
+  // Spawn micro grain particles
+  function spawnGrain(){
+    const el = document.createElement('div');
+    el.className = 'grain';
+    const dur = Math.random()*8+4;
+    const gx = (Math.random()-0.5)*120;
+    const gy = -(Math.random()*60+20);
+    el.style.cssText = `
+      left:${Math.random()*100}vw;
+      bottom:${Math.random()*40}vh;
+      --gx:${gx}px;--gy:${gy}px;
+      animation-duration:${dur}s;
+      animation-delay:${Math.random()*5}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), (dur+5)*1000);
+  }
+  for(let i=0;i<40;i++) spawnGrain();
+  setInterval(spawnGrain, 800);
+
+  // Spawn shimmer heat lines
+  function spawnShimmer(){
+    const el = document.createElement('div');
+    el.className = 'shimmer-line';
+    const dur = Math.random()*6+4;
+    el.style.cssText = `
+      top:${50+Math.random()*45}vh;
+      animation-duration:${dur}s;
+      animation-delay:${Math.random()*4}s;
+    `;
+    document.body.appendChild(el);
+    setTimeout(()=>el.remove(), (dur+4)*1000);
+  }
+  for(let i=0;i<6;i++) spawnShimmer();
+  setInterval(spawnShimmer, 3000);
+
+  // Spawn CSS stars on pw screen
+  function spawnStar(){
+    const el = document.createElement('div');
+    el.className = 'star';
+    const size = Math.random()*2+.5;
+    const dur = Math.random()*4+2;
+    el.style.cssText = `
+      width:${size}px;height:${size}px;
+      left:${Math.random()*100}vw;
+      top:${Math.random()*65}vh;
+      animation-duration:${dur}s;
+      animation-delay:${Math.random()*4}s;
+    `;
+    document.body.appendChild(el);
+  }
+  for(let i=0;i<60;i++) spawnStar();
+})();
+
 </script>
 </body>
 </html>
