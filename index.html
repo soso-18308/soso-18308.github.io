@@ -391,11 +391,38 @@ let storageMode='local';
 let agentPhotos={};
 let currentAgentPhotoKey=null;
 
-function loadAgentPhotos(){
+function loadAgentPhotosLocal(){
   try{const r=localStorage.getItem(AGENT_PHOTOS_KEY);agentPhotos=r?JSON.parse(r):{};}catch(e){agentPhotos={};}
 }
-function saveAgentPhotos(){
+function saveAgentPhotosLocal(){
   try{localStorage.setItem(AGENT_PHOTOS_KEY,JSON.stringify(agentPhotos));}catch(e){}
+}
+async function loadAgentPhotosRemote(){
+  const url=`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?id=eq.agent_photos&select=data`;
+  const res=await fetch(url,{headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${SUPABASE_ANON_KEY}`}});
+  if(!res.ok)throw new Error('Lecture photos impossible');
+  const rows=await res.json();
+  return rows&&rows[0]&&rows[0].data&&typeof rows[0].data==='object'?rows[0].data:{};
+}
+async function saveAgentPhotosRemote(){
+  const url=`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`;
+  const res=await fetch(url,{
+    method:'POST',
+    headers:{
+      apikey:SUPABASE_ANON_KEY,
+      Authorization:`Bearer ${SUPABASE_ANON_KEY}`,
+      'Content-Type':'application/json',
+      Prefer:'resolution=merge-duplicates'
+    },
+    body:JSON.stringify({id:'agent_photos',data:agentPhotos,updated_at:new Date().toISOString()})
+  });
+  if(!res.ok)throw new Error('Sauvegarde photos impossible');
+}
+async function saveAgentPhotos(){
+  saveAgentPhotosLocal();
+  if(storageMode==='remote'&&supabaseReady()){
+    try{await saveAgentPhotosRemote();}catch(e){console.error('Sync photos failed',e);}
+  }
 }
 function agentPhotoKey(name){
   return String(name||'').trim().toLowerCase();
@@ -411,9 +438,9 @@ function openAgentPhotoUpload(agentName){
 function saveAgentPhoto(e){
   const f=e.target.files[0];if(!f||!currentAgentPhotoKey)return;
   const r=new FileReader();
-  r.onload=ev=>{
+  r.onload=async ev=>{
     agentPhotos[currentAgentPhotoKey]=ev.target.result;
-    saveAgentPhotos();
+    await saveAgentPhotos();
     renderReports(document.getElementById('agent-srch')?.value||'');
   };
   r.readAsDataURL(f);
@@ -514,7 +541,7 @@ async function saveRemote(){
   if(!res.ok)throw new Error('Sauvegarde Supabase impossible');
 }
 async function ld(){
-  loadAgentPhotos();
+  loadAgentPhotosLocal();
   if(!supabaseReady()){
     casiers=loadLocal();
     storageMode='local';
@@ -522,7 +549,9 @@ async function ld(){
     return;
   }
   try{
-    casiers=await loadRemote();
+    const [remoteCasiers,remotePhotos]=await Promise.all([loadRemote(),loadAgentPhotosRemote()]);
+    casiers=remoteCasiers;
+    agentPhotos=Object.keys(remotePhotos).length?remotePhotos:agentPhotos;
     storageMode='remote';
     setSyncStatus('Partagé','on');
     if(casiers.length===0){
@@ -530,6 +559,7 @@ async function ld(){
       if(local.length){casiers=local;await saveRemote();}
     }
     saveLocal();
+    saveAgentPhotosLocal();
   }catch(e){
     casiers=loadLocal();
     storageMode='local';
