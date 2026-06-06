@@ -918,12 +918,12 @@ function showDetail(idx){
     </div>
 
     <div class="section-h">Incidents enregistrés</div>
-    <div id="incident-list">${renderIncidents(c.incidents)}</div>
+    <div id="incident-list">${renderIncidents(c.incidents, idx)}</div>
   `;
   sv('detail',null);
 }
 
-function renderIncidents(incidents){
+function renderIncidents(incidents, casierIdx){
   if(!incidents||incidents.length===0)return '<div style="color:var(--text3);font-style:italic;font-size:13px;padding:6px 0">Aucun incident enregistré.</div>';
   return incidents.map((inc,i)=>{
     const infRows=inc.infractions.map(inf=>{
@@ -932,13 +932,19 @@ function renderIncidents(incidents){
       return `<div class="dinfitem"><div><span style="font-size:13px">${esc(inf.name)}</span> <span class="tag ${cl}" style="margin-left:6px">${lb}</span></div><div style="font-family:'Cinzel',serif;font-size:12px;color:var(--text3)">${Number(inf.price||0).toLocaleString('fr-FR')} ♦</div></div>`;
     }).join('');
     const agent=inc.agent||{};
+    const delBtn=casierIdx!==undefined
+      ?`<button class="abtn red sml" onclick="delIncident(${casierIdx},${i})" style="margin-left:8px;flex-shrink:0">Supprimer</button>`
+      :'';
     return `<div class="rpcard">
       <div class="rp-top">
         <div>
           <span class="rp-date">Incident ${incidents.length-i} · ${esc(inc.date||'Date inconnue')}</span>
           <div class="inc-meta">Grade: ${esc(inc.gradeName||'—')} · Agent: ${esc(agent.nom||'—')}${agent.grade?' ('+esc(agent.grade)+')':''}</div>
         </div>
-        <div class="inc-total">${Number(inc.total||0).toLocaleString('fr-FR')} ♦</div>
+        <div style="display:flex;align-items:center">
+          <div class="inc-total">${Number(inc.total||0).toLocaleString('fr-FR')} ♦</div>
+          ${delBtn}
+        </div>
       </div>
       ${inc.gradeMult&&inc.gradeMult!==1?`<div class="inc-meta" style="margin-bottom:8px">Base: ${Number(inc.baseTotal||0).toLocaleString('fr-FR')} ♦ × ${Number(inc.gradeMult||1).toFixed(2)}</div>`:''}
       ${infRows||'<div style="color:var(--text3);font-style:italic;font-size:13px;padding:6px 0">Aucune infraction notée pour cet incident.</div>'}
@@ -984,6 +990,22 @@ function editCasier(idx){
   });
   updTotal();
   openNew();
+}
+async function delIncident(casierIdx,incidentIdx){
+  const c=casiers[casierIdx];
+  if(!c||!c.incidents)return;
+  if(c.incidents.length===1){
+    if(confirm('Seul incident du casier : supprimer le casier entier ?')){
+      casiers.splice(casierIdx,1);
+      await sd();refreshAgentOptions();renderList();renderReports();sv('list',0);
+    }
+    return;
+  }
+  if(confirm('Supprimer cet incident ?')){
+    c.incidents.splice(incidentIdx,1);
+    updateTotals(c);
+    await sd();refreshAgentOptions();renderList();renderReports();showDetail(casierIdx);
+  }
 }
 async function delCasier(idx){
   if(confirm('Supprimer définitivement ce casier ?')){casiers.splice(idx,1);await sd();refreshAgentOptions();renderList();renderReports();sv('list',0);}
