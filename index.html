@@ -186,8 +186,35 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .photoz{border:1px dashed var(--border2);border-radius:4px;padding:24px;text-align:center;cursor:pointer;background:var(--bg2);transition:border-color .2s;min-height:100px;display:flex;flex-direction:column;align-items:center;justify-content:center}
 .photoz:hover{border-color:var(--border3)}
 
+
+/* Rapports agents - rendu amélioré */
+.rpt-header{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.rpt-stats{display:flex;gap:16px;align-items:center;flex-shrink:0}
+.rstat{text-align:center;min-width:52px}
+.rstat-val{font-family:'Cinzel',serif;font-size:17px;color:var(--sand)}
+.rstat-lbl{font-size:9px;letter-spacing:.08em;color:var(--text3);text-transform:uppercase;margin-top:2px}
+.agent-grade-badge{display:inline-block;font-size:10px;letter-spacing:.1em;color:var(--sand2);border:1px solid var(--border2);border-radius:3px;padding:2px 7px;margin-top:4px;font-family:'Cinzel',serif}
+.rpt-section-title{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.3em;color:var(--text3);text-transform:uppercase;margin-bottom:8px}
+.rpt-row{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;padding:10px 12px;background:var(--bg3);border:1px solid var(--border);border-radius:4px;margin-bottom:6px}
+.rpt-row-left{flex:1;min-width:0}
+.rpt-suspect{font-family:'Cinzel',serif;font-size:13px;color:var(--sand);margin-bottom:5px}
+.rpt-tags{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:5px}
+.rpt-tags .tag{font-size:9px;padding:2px 6px}
+.rpt-date{font-size:10px;color:var(--text3);letter-spacing:.04em}
+.rpt-row-right{font-family:'Cinzel',serif;font-size:13px;color:#ffa0a0;white-space:nowrap;padding-top:2px}
+.rpt-sec-block{margin-top:8px;padding:8px 10px;background:rgba(40,30,10,.4);border-left:2px solid var(--border2);border-radius:0 3px 3px 0}
+.rpt-sec-title{font-size:10px;color:var(--text3);font-style:italic;margin-bottom:5px}
+.rpt-sec-row{font-size:12px;color:var(--text2);margin-bottom:3px;padding-left:4px}
+
 /* Badge agent secondaire */
 .tag-sec{background:rgba(60,40,120,.3);color:#9080d0;border:1px solid rgba(144,128,208,.3)}
+
+
+.village-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:2px}
+.village-btn{background:var(--bg2);border:1px solid var(--border);border-radius:4px;padding:10px 8px;text-align:center;cursor:pointer;transition:all .2s;font-family:'Cinzel',serif;font-size:12px;letter-spacing:.1em;color:var(--text3)}
+.village-btn:hover{border-color:var(--border2);background:var(--bg3);color:var(--text)}
+.village-btn.sel-suna{background:rgba(160,120,40,.2);border-color:var(--sand2);color:var(--sand)}
+.village-btn.sel-konoha{background:rgba(20,80,20,.2);border-color:var(--green2);color:var(--green3)}
 
 @media (max-width:720px){
   #pw{padding:20px}
@@ -232,14 +259,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <span class="syncstatus" id="sync-status">Local</span>
     </div>
     <div class="tnav">
-      <button class="tnbtn act" id="nb0" onclick="sv('list',0)">Casiers</button>
-      <button class="tnbtn" id="nb1" onclick="openNew(true)">Nouveau dossier</button>
+      <button class="tnbtn" id="nb0" onclick="sv('list',0)">Casiers</button>
+      <button class="tnbtn act" id="nb1" onclick="openNew(true)">Nouveau dossier</button>
       <button class="tnbtn" id="nb2" onclick="sv('reports',2)">Rapports</button>
       <button class="tnbtn danger" onclick="lock()">Verrouiller</button>
     </div>
   </div>
 
-  <div id="vlist" class="view act">
+  <div id="vlist" class="view">
     <div class="ph">
       <div><div class="ptitle">Casiers Judiciaires</div><div class="psub" id="ccount">—</div></div>
       <button class="abtn" onclick="openNew(true)">+ Nouveau dossier</button>
@@ -261,7 +288,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <div id="agent-reports"></div>
   </div>
 
-  <div id="vnew" class="view">
+  <div id="vnew" class="view act">
     <div class="ph">
       <div><div class="ptitle" id="ftitle">Nouveau Dossier</div><div class="psub">Enregistrement d'interpellation</div></div>
     </div>
@@ -270,10 +297,31 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="fsect-title">Identité du Prévenu</div>
       <div class="fgrid" style="margin-bottom:10px">
         <div><label class="flbl">Nom complet</label><input class="finput" id="fn" type="text" placeholder="Nom du shinobi" /></div>
-        <div><label class="flbl">Village d'origine</label><input class="finput" id="fv" type="text" placeholder="Suna, Konoha..." /></div>
+        <div>
+          <label class="flbl">Village d'origine</label>
+          <div class="village-grid">
+            <div class="village-btn" id="vbtn-suna" onclick="selVillage('Suna')">🏜 Suna</div>
+            <div class="village-btn" id="vbtn-konoha" onclick="selVillage('Konoha')">🍃 Konoha</div>
+          </div>
+          <input type="hidden" id="fv" value="" />
+        </div>
       </div>
       <div class="fgrid" style="margin-bottom:10px">
-        <div><label class="flbl">Date d'interpellation</label><input class="finput" id="fd" type="date" /></div>
+        <div>
+          <label class="flbl">Date d'interpellation</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <select class="fselect" id="fd-jour"><option value="">Jour</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select>
+            <select class="fselect" id="fd-mois"><option value="">Mois</option>
+              <option value="01">Janvier</option><option value="02">Février</option>
+              <option value="03">Mars</option><option value="04">Avril</option>
+              <option value="05">Mai</option><option value="06">Juin</option>
+              <option value="07">Juillet</option><option value="08">Août</option>
+              <option value="09">Septembre</option><option value="10">Octobre</option>
+              <option value="11">Novembre</option><option value="12">Décembre</option>
+            </select>
+          </div>
+          <input type="hidden" id="fd" value="" />
+        </div>
         <div></div>
       </div>
       <label class="flbl" style="margin-bottom:8px;display:block">Grade du prévenu</label>
@@ -284,7 +332,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div class="fsect-title">Agents Impliqués</div>
       <div class="fgrid" style="margin-bottom:10px">
         <div><label class="flbl">Nom de l'agent responsable</label><input class="finput" id="fa-nom" type="text" list="agent-options" placeholder="Nom de l'agent" /></div>
-        <div><label class="flbl">Grade de l'agent</label><input class="finput" id="fa-grade" type="text" placeholder="Ex: Chunin, Jonin..." /></div>
+        <div>
+          <label class="flbl">Grade de l'agent</label>
+          <div class="grade-grid" id="agent-grade-grid" style="margin-top:2px"><div class="grade-btn" id="agb-genin" onclick="selAgentGrade('Genin')"><div class="grade-name">Genin</div></div>
+<div class="grade-btn" id="agb-chunin" onclick="selAgentGrade('Chunin')"><div class="grade-name">Chunin</div></div>
+<div class="grade-btn" id="agb-jonin" onclick="selAgentGrade('Jonin')"><div class="grade-name">Jonin</div></div>
+<div class="grade-btn" id="agb-anbu" onclick="selAgentGrade('ANBU')"><div class="grade-name">ANBU</div></div>
+<div class="grade-btn" id="agb-shugo" onclick="selAgentGrade('Shugo')"><div class="grade-name">Shugo</div></div>
+<div class="grade-btn" id="agb-sensei" onclick="selAgentGrade('Sensei')"><div class="grade-name">Sensei</div></div>
+<div class="grade-btn" id="agb-kage" onclick="selAgentGrade('Kage')"><div class="grade-name">Kage</div></div></div>
+          <input type="hidden" id="fa-grade" value="" />
+        </div>
       </div>
       <datalist id="agent-options"></datalist>
       <div><label class="flbl">Agents présents lors de l'interpellation <span style="color:var(--text3)">(optionnel)</span></label><input class="finput" id="fa-autres" type="text" placeholder="Noms des autres agents séparés par des virgules" /></div>
@@ -620,9 +678,27 @@ function buildGrades(){
 
 function selGradeF(key){
   selGrade=key;
-  document.querySelectorAll('.grade-btn').forEach(b=>b.classList.remove('sel'));
+  // Only target suspect grade buttons, not agent grade buttons
+  document.querySelectorAll('#grade-grid .grade-btn').forEach(b=>b.classList.remove('sel'));
   document.getElementById('gb-'+key).classList.add('sel');
   updTotal();
+}
+
+let selVillageVal='';
+function selVillage(v){
+  selVillageVal=v;
+  document.getElementById('fv').value=v;
+  document.getElementById('vbtn-suna').className='village-btn'+(v==='Suna'?' sel-suna':'');
+  document.getElementById('vbtn-konoha').className='village-btn'+(v==='Konoha'?' sel-konoha':'');
+}
+
+let selAgentGradeVal='';
+function selAgentGrade(g){
+  selAgentGradeVal=g;
+  document.getElementById('fa-grade').value=g;
+  document.querySelectorAll('#agent-grade-grid .grade-btn').forEach(b=>b.classList.remove('sel'));
+  const el=document.getElementById('agb-'+g.toLowerCase());
+  if(el)el.classList.add('sel');
 }
 
 function buildInf(){
@@ -693,64 +769,65 @@ function renderReports(filter=''){
   if(!root)return;
   const q=filter.trim().toLowerCase();
   const groups=getAgentGroups().filter(g=>!q||g.name.toLowerCase().includes(q));
-  if(count)count.textContent=groups.length+' agent(s) avec incident(s)';
+  if(count)count.textContent=groups.length+' agent(s) enregistré(s)';
   if(groups.length===0){
-    root.innerHTML='<div class="empty">'+(filter?'Aucun agent trouvé.':'Aucun incident avec agent responsable pour le moment.')+'</div>';
+    root.innerHTML='<div class="empty">'+(filter?'Aucun agent trouvé.':'Aucun rapport disponible pour le moment.')+'</div>';
     return;
   }
   root.innerHTML=groups.map(g=>{
-    // Compter par rôle
     const nbResp=g.items.filter(it=>it.role==='responsable').length;
     const nbSec=g.items.filter(it=>it.role==='secondaire').length;
     const totalAmendes=g.items.filter(it=>it.role==='responsable').reduce((sum,it)=>sum+(Number(it.incident.total)||0),0);
-
-    // Photo de l'agent
     const photo=getAgentPhoto(g.name);
     const init=g.name.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';
-    const avatarContent=photo
-      ?`<img src="${esc(photo)}" alt="" />`
-      :esc(init);
+    const avatarContent=photo?`<img src="${esc(photo)}" alt="" />`:esc(init);
 
-    // Comptage label
-    let countParts=[];
-    if(nbResp>0)countParts.push(nbResp+' arrestation(s) en tant que responsable');
-    if(nbSec>0)countParts.push(nbSec+' présence(s) en tant que secondaire');
-    const countLabel=countParts.join(' · ')+(g.grade?' · '+esc(g.grade):'');
+    // Ligne de stats résumée
+    const statResp=nbResp>0?`<div class="rstat"><div class="rstat-val">${nbResp}</div><div class="rstat-lbl">Arrest.</div></div>`:'';
+    const statSec=nbSec>0?`<div class="rstat"><div class="rstat-val" style="color:var(--text2)">${nbSec}</div><div class="rstat-lbl">Présence(s)</div></div>`:'';
+    const statAm=nbResp>0?`<div class="rstat"><div class="rstat-val" style="color:#ffa0a0;font-size:13px">${totalAmendes.toLocaleString('fr-FR')} ♦</div><div class="rstat-lbl">Ryos perçus</div></div>`:'';
 
-    const rows=g.items.map(it=>{
-      const inc=it.incident;
-      const c=it.casier;
-      const infractions=inc.infractions&&inc.infractions.length?inc.infractions.map(inf=>esc(inf.name)).join(', '):'Aucune infraction notée';
-      const roleTag=it.role==='secondaire'
-        ?`<span class="tag tag-sec" style="margin-left:6px">Secondaire</span>`
-        :`<span class="tag tag-r" style="margin-left:6px">Responsable</span>`;
-      const amendeStr=it.role==='responsable'?`<div style="font-family:'Cinzel',serif;font-size:12px;color:var(--text3)">${Number(inc.total||0).toLocaleString('fr-FR')} ♦</div>`:'';
-      return `<div class="dinfitem">
-        <div>
-          <span style="font-size:13px">A interpellé <b>${esc(c.nom)}</b>${roleTag}</span>
-          <div class="inc-meta">${esc(inc.date||'Date inconnue')} · Pour: ${infractions}</div>
+    // Rangée d'incidents (responsable uniquement = dossiers clôturés)
+    const respItems=g.items.filter(it=>it.role==='responsable');
+    const secItems=g.items.filter(it=>it.role==='secondaire');
+
+    const respRows=respItems.map(it=>{
+      const inc=it.incident;const c=it.casier;
+      const tags=inc.infractions.map(inf=>{
+        const cl=inf.cat==='crimes'?'tag-c':inf.cat==='delits'?'tag-d':'tag-i';
+        return `<span class="tag ${cl}">${esc(inf.name)}</span>`;
+      }).join('');
+      return `<div class="rpt-row">
+        <div class="rpt-row-left">
+          <div class="rpt-suspect">${esc(c.nom)}</div>
+          <div class="rpt-tags">${tags||'<span style="color:var(--text3);font-size:11px;font-style:italic">Aucune infraction</span>'}</div>
+          <div class="rpt-date">📅 ${esc(inc.date||'Date inconnue')}${c.village?' · '+esc(c.village):''}</div>
         </div>
-        ${amendeStr}
+        <div class="rpt-row-right">${Number(inc.total||0).toLocaleString('fr-FR')} ♦</div>
       </div>`;
     }).join('');
 
-    const totalLine=nbResp>0?`<div class="inc-total">${totalAmendes.toLocaleString('fr-FR')} ♦</div>`:'<div class="inc-total" style="color:var(--text3);font-size:12px">—</div>';
+    const secRows=secItems.length?`<div class="rpt-sec-title">Présent(e) en soutien lors de :</div>`+secItems.map(it=>{
+      const inc=it.incident;const c=it.casier;
+      return `<div class="rpt-sec-row">↳ Interpellation de <b>${esc(c.nom)}</b> · ${esc(inc.date||'—')}</div>`;
+    }).join(''):'';
 
     return `<div class="agent-card">
-      <div class="agent-head">
+      <div class="rpt-header">
         <div class="agent-head-left">
           <div class="agent-avatar" onclick="openAgentPhotoUpload('${esc(g.name)}')" title="Cliquer pour ajouter une photo">
             ${avatarContent}
-            <div class="agent-avatar-hint">📷 Photo</div>
+            <div class="agent-avatar-hint">📷</div>
           </div>
           <div class="agent-info">
             <div class="agent-name">${esc(g.name)}</div>
-            <div class="agent-count">${countLabel}</div>
+            ${g.grade?`<div class="agent-grade-badge">${esc(g.grade)}</div>`:''}
           </div>
         </div>
-        ${totalLine}
+        <div class="rpt-stats">${statResp}${statSec}${statAm}</div>
       </div>
-      ${rows}
+      ${respRows?`<div class="rpt-section-title">Dossiers clôturés</div>${respRows}`:''}
+      ${secRows?`<div class="rpt-sec-block">${secRows}</div>`:''}
     </div>`;
   }).join('');
 }
@@ -796,7 +873,12 @@ function cancelForm(){
 
 function resetForm(){
   ['fn','fv','fd','fa-nom','fa-grade','fa-autres'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
-  selInf={};photoData=null;editIdx=-1;addIncidentIdx=-1;selGrade=null;
+  const jsel=document.getElementById('fd-jour');if(jsel)jsel.value='';
+  const msel=document.getElementById('fd-mois');if(msel)msel.value='';
+  selInf={};photoData=null;editIdx=-1;addIncidentIdx=-1;selGrade=null;selVillageVal='';selAgentGradeVal='';
+  const vbs=document.getElementById('vbtn-suna');if(vbs)vbs.className='village-btn';
+  const vbk=document.getElementById('vbtn-konoha');if(vbk)vbk.className='village-btn';
+  document.querySelectorAll('#agent-grade-grid .grade-btn').forEach(b=>b.classList.remove('sel'));
   document.getElementById('pp').style.display='none';
   document.getElementById('pph').style.display='block';
   document.getElementById('pp').src='';
@@ -822,7 +904,7 @@ function buildIncident(){
     });
   });
   return {
-    date:(document.getElementById('fd').value||''),
+    date:(()=>{const j=document.getElementById('fd-jour')?.value||'';const m=document.getElementById('fd-mois')?.value||'';return j&&m?j+'/'+m:document.getElementById('fd').value||'';})(),
     grade:selGrade,
     gradeName:grade?grade.name:'—',
     gradeMult:mult,
@@ -991,6 +1073,8 @@ function openIncident(idx){
   document.getElementById('save-btn').textContent="Ajouter l'incident";
   document.getElementById('fn').value=c.nom||'';
   document.getElementById('fv').value=c.village||'';
+  selVillage(c.village||'');
+  selVillage(c.village||'');
   if(c.photo){document.getElementById('pp').src=c.photo;document.getElementById('pp').style.display='block';document.getElementById('pph').style.display='none';}
   sv('new',1);
 }
@@ -1001,9 +1085,18 @@ function editCasier(idx){
   const inc=c.incidents&&c.incidents.length?c.incidents[0]:c;
   document.getElementById('fn').value=c.nom||'';
   document.getElementById('fv').value=c.village||'';
-  document.getElementById('fd').value=inc.date||'';
+  selVillage(c.village||'');
+  selVillage(c.village||'');
+  const rawDate=inc.date||'';
+  if(rawDate.includes('/')){
+    const [edj,edm]=rawDate.split('/');
+    const jsel2=document.getElementById('fd-jour');if(jsel2)jsel2.value=edj||'';
+    const msel2=document.getElementById('fd-mois');if(msel2)msel2.value=edm||'';
+  }
+  document.getElementById('fd').value=rawDate;
   document.getElementById('fa-nom').value=inc.agent?inc.agent.nom||'':'';
   document.getElementById('fa-grade').value=inc.agent?inc.agent.grade||'':'';
+  if(inc.agent&&inc.agent.grade)selAgentGrade(inc.agent.grade);
   document.getElementById('fa-autres').value=inc.agent?inc.agent.autres||'':'';
   photoData=null;
   if(c.photo){document.getElementById('pp').src=c.photo;document.getElementById('pp').style.display='block';document.getElementById('pph').style.display='none';}
