@@ -1096,7 +1096,7 @@ function buildIncident(){
 
 async function saveCasier(){
   const nom=(document.getElementById('fn').value||'').trim();
-  if(!nom){alert('Le nom du prévenu est requis.');return;}
+  if(!nom){alert("Le nom du prévenu est requis.");return;}
   const incident=buildIncident();
   if(addIncidentIdx>=0){
     const c=casiers[addIncidentIdx];
@@ -1345,7 +1345,7 @@ function calcDuration(debut,fin){
 
 async function savePatrol(){
   const agent=(document.getElementById('pf-agent').value||'').trim();
-  if(!agent){alert('Le nom de l'agent est requis.');return;}
+  if(!agent){alert("Le nom de l'agent est requis.");return;}
   const j=document.getElementById('pf-jour').value;
   const m=document.getElementById('pf-mois').value;
   const date=j&&m?j+'/'+m:'';
