@@ -402,13 +402,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div><label class="flbl">Nom de l'agent responsable</label><input class="finput" id="fa-nom" type="text" list="agent-options" placeholder="Nom de l'agent" /></div>
         <div>
           <label class="flbl">Grade de l'agent</label>
-          <div class="grade-grid" id="agent-grade-grid" style="margin-top:2px"><div class="grade-btn" id="agb-genin" onclick="selAgentGrade('Genin')"><div class="grade-name">Genin</div></div>
-<div class="grade-btn" id="agb-chunin" onclick="selAgentGrade('Chunin')"><div class="grade-name">Chunin</div></div>
-<div class="grade-btn" id="agb-jonin" onclick="selAgentGrade('Jonin')"><div class="grade-name">Jonin</div></div>
-<div class="grade-btn" id="agb-anbu" onclick="selAgentGrade('ANBU')"><div class="grade-name">ANBU</div></div>
-<div class="grade-btn" id="agb-shugo" onclick="selAgentGrade('Shugo')"><div class="grade-name">Shugo</div></div>
-<div class="grade-btn" id="agb-sensei" onclick="selAgentGrade('Sensei')"><div class="grade-name">Sensei</div></div>
-<div class="grade-btn" id="agb-kage" onclick="selAgentGrade('Kage')"><div class="grade-name">Kage</div></div></div>
+          <div class="grade-grid" id="agent-grade-grid" style="margin-top:2px"><div class="grade-btn" id="agb-dirigeant" onclick="selAgentGrade('Dirigeant')"><div class="grade-name">Dirigeant</div></div>
+<div class="grade-btn" id="agb-commandant" onclick="selAgentGrade('Commandant')"><div class="grade-name">Commandant</div></div>
+<div class="grade-btn" id="agb-capitaine" onclick="selAgentGrade('Capitaine')"><div class="grade-name">Capitaine</div></div>
+<div class="grade-btn" id="agb-lieutenant" onclick="selAgentGrade('Lieutenant')"><div class="grade-name">Lieutenant</div></div>
+<div class="grade-btn" id="agb-mbrconf" onclick="selAgentGrade('Mbr. Confirmé')"><div class="grade-name">Mbr. Confirmé</div></div>
+<div class="grade-btn" id="agb-membre" onclick="selAgentGrade('Membre')"><div class="grade-name">Membre</div></div>
+<div class="grade-btn" id="agb-cadet" onclick="selAgentGrade('Cadet')"><div class="grade-name">Cadet</div></div></div>
           <input type="hidden" id="fa-grade" value="" />
         </div>
       </div>
@@ -478,13 +478,13 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div>
           <label class="flbl">Grade</label>
           <div class="grade-grid" id="patrol-grade-grid" style="margin-top:2px">
-            <div class="grade-btn" id="pgb-genin" onclick="selPatrolGrade('Genin')"><div class="grade-name">Genin</div></div>
-            <div class="grade-btn" id="pgb-chunin" onclick="selPatrolGrade('Chunin')"><div class="grade-name">Chunin</div></div>
-            <div class="grade-btn" id="pgb-jonin" onclick="selPatrolGrade('Jonin')"><div class="grade-name">Jonin</div></div>
-            <div class="grade-btn" id="pgb-anbu" onclick="selPatrolGrade('ANBU')"><div class="grade-name">ANBU</div></div>
-            <div class="grade-btn" id="pgb-shugo" onclick="selPatrolGrade('Shugo')"><div class="grade-name">Shugo</div></div>
-            <div class="grade-btn" id="pgb-sensei" onclick="selPatrolGrade('Sensei')"><div class="grade-name">Sensei</div></div>
-            <div class="grade-btn" id="pgb-kage" onclick="selPatrolGrade('Kage')"><div class="grade-name">Kage</div></div>
+            <div class="grade-btn" id="pgb-dirigeant" onclick="selPatrolGrade('Dirigeant')"><div class="grade-name">Dirigeant</div></div>
+            <div class="grade-btn" id="pgb-commandant" onclick="selPatrolGrade('Commandant')"><div class="grade-name">Commandant</div></div>
+            <div class="grade-btn" id="pgb-capitaine" onclick="selPatrolGrade('Capitaine')"><div class="grade-name">Capitaine</div></div>
+            <div class="grade-btn" id="pgb-lieutenant" onclick="selPatrolGrade('Lieutenant')"><div class="grade-name">Lieutenant</div></div>
+            <div class="grade-btn" id="pgb-mbrconf" onclick="selPatrolGrade('Mbr. Confirmé')"><div class="grade-name">Mbr. Confirmé</div></div>
+            <div class="grade-btn" id="pgb-membre" onclick="selPatrolGrade('Membre')"><div class="grade-name">Membre</div></div>
+            <div class="grade-btn" id="pgb-cadet" onclick="selPatrolGrade('Cadet')"><div class="grade-name">Cadet</div></div>
           </div>
           <input type="hidden" id="pf-grade" value="" />
         </div>
@@ -863,11 +863,13 @@ function selVillage(v){
 }
 
 let selAgentGradeVal='';
+const SHUGO_GRADE_KEYS={'Dirigeant':'dirigeant','Commandant':'commandant','Capitaine':'capitaine','Lieutenant':'lieutenant','Mbr. Confirmé':'mbrconf','Membre':'membre','Cadet':'cadet'};
 function selAgentGrade(g){
   selAgentGradeVal=g;
   document.getElementById('fa-grade').value=g;
   document.querySelectorAll('#agent-grade-grid .grade-btn').forEach(b=>b.classList.remove('sel'));
-  const el=document.getElementById('agb-'+g.toLowerCase());
+  const key=SHUGO_GRADE_KEYS[g]||g.toLowerCase().replace(/[^a-z]/g,'');
+  const el=document.getElementById('agb-'+key);
   if(el)el.classList.add('sel');
 }
 
@@ -1314,7 +1316,8 @@ function selPatrolGrade(g){
   selPatrolGradeVal=g;
   document.getElementById('pf-grade').value=g;
   document.querySelectorAll('#patrol-grade-grid .grade-btn').forEach(b=>b.classList.remove('sel'));
-  const el=document.getElementById('pgb-'+g.toLowerCase());
+  const key=SHUGO_GRADE_KEYS[g]||g.toLowerCase().replace(/[^a-z]/g,'');
+  const el=document.getElementById('pgb-'+key);
   if(el)el.classList.add('sel');
 }
 
