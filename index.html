@@ -238,6 +238,33 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 </style>
 
 <style>
+
+/* ── PATROUILLES ── */
+.patrol-card{background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:16px 18px;margin-bottom:10px;transition:border-color .2s}
+.patrol-card:hover{border-color:var(--border2)}
+.patrol-header{display:flex;align-items:center;justify-content:space-between;gap:14px;margin-bottom:8px}
+.patrol-agent{font-family:'Cinzel',serif;font-size:15px;color:var(--sand)}
+.patrol-badge{font-size:11px;color:var(--text3);margin-top:3px}
+.patrol-time-block{font-family:'Cinzel',serif;font-size:14px;color:var(--sand2);background:var(--bg3);border:1px solid var(--border);border-radius:5px;padding:8px 14px;text-align:center;white-space:nowrap;min-width:120px}
+.patrol-time-lbl{font-size:9px;letter-spacing:.1em;color:var(--text3);margin-bottom:2px;text-transform:uppercase}
+.patrol-duration{font-size:11px;color:var(--text3);margin-top:3px;font-style:italic}
+.patrol-report-text{font-size:13px;color:var(--text2);line-height:1.65;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);white-space:pre-wrap}
+.patrol-date{font-size:11px;color:var(--text3);letter-spacing:.04em}
+.patrol-autres{font-size:12px;color:var(--text3);margin-top:4px;font-style:italic}
+.patrol-empty{color:var(--text3);font-style:italic;font-size:13px;text-align:center;padding:36px}
+.patrol-form-wrap{background:var(--bg2);border:1px solid var(--border2);border-radius:8px;padding:20px;margin-bottom:16px}
+.time-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.patrol-del{background:none;border:none;color:var(--text3);cursor:pointer;font-size:11px;padding:3px 7px;border-radius:3px;transition:color .15s}
+.patrol-del:hover{color:var(--blood3)}
+
+/* ── AGENT CARD COLLAPSE ── */
+.agent-card-body{overflow:hidden;transition:max-height .38s cubic-bezier(.4,0,.2,1),opacity .3s;max-height:0;opacity:0;padding:0 20px}
+.agent-card-body.open{max-height:2000px;opacity:1;padding:16px 20px}
+.agent-card-top{cursor:pointer;user-select:none;padding:18px 20px}
+.agent-card-top:hover .agent-name{color:var(--sand)}
+.expand-chevron{display:inline-block;transition:transform .3s;font-style:normal;font-size:12px;color:var(--text3);margin-left:6px}
+.expand-chevron.open{transform:rotate(180deg)}
+
 /* ── DESERT BACKGROUND ── */
 #desert-canvas{
   position:fixed;top:0;left:0;width:100%;height:100%;
@@ -302,6 +329,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <button class="tnbtn" id="nb0" onclick="sv('list',0)">Casiers</button>
       <button class="tnbtn act" id="nb1" onclick="openNew(true)">Nouveau dossier</button>
       <button class="tnbtn" id="nb2" onclick="sv('reports',2)">Rapports</button>
+      <button class="tnbtn" id="nb3" onclick="sv('patrouilles',3)">Patrouilles</button>
       <button class="tnbtn danger" onclick="lock()">Verrouiller</button>
     </div>
   </div>
@@ -434,6 +462,70 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <button class="abtn prim" id="save-btn" onclick="saveCasier()">Enregistrer le dossier</button>
     </div>
   </div>
+
+  <div id="vpatrouilles" class="view">
+    <div class="ph">
+      <div><div class="ptitle">Patrouilles</div><div class="psub" id="patrol-count">—</div></div>
+      <button class="abtn grn" onclick="togglePatrolForm()">+ Nouvelle patrouille</button>
+    </div>
+    <div id="patrol-form-wrap" style="display:none" class="patrol-form-wrap">
+      <div class="fsect-title" style="margin-bottom:14px;border-bottom:1px solid var(--border2);padding-bottom:8px">Enregistrer une patrouille</div>
+      <div class="fgrid" style="margin-bottom:12px">
+        <div>
+          <label class="flbl">Agent responsable</label>
+          <input class="finput" id="pf-agent" type="text" list="agent-options" placeholder="Nom de l'agent" />
+        </div>
+        <div>
+          <label class="flbl">Grade</label>
+          <div class="grade-grid" id="patrol-grade-grid" style="margin-top:2px">
+            <div class="grade-btn" id="pgb-genin" onclick="selPatrolGrade('Genin')"><div class="grade-name">Genin</div></div>
+            <div class="grade-btn" id="pgb-chunin" onclick="selPatrolGrade('Chunin')"><div class="grade-name">Chunin</div></div>
+            <div class="grade-btn" id="pgb-jonin" onclick="selPatrolGrade('Jonin')"><div class="grade-name">Jonin</div></div>
+            <div class="grade-btn" id="pgb-anbu" onclick="selPatrolGrade('ANBU')"><div class="grade-name">ANBU</div></div>
+            <div class="grade-btn" id="pgb-shugo" onclick="selPatrolGrade('Shugo')"><div class="grade-name">Shugo</div></div>
+            <div class="grade-btn" id="pgb-sensei" onclick="selPatrolGrade('Sensei')"><div class="grade-name">Sensei</div></div>
+            <div class="grade-btn" id="pgb-kage" onclick="selPatrolGrade('Kage')"><div class="grade-name">Kage</div></div>
+          </div>
+          <input type="hidden" id="pf-grade" value="" />
+        </div>
+      </div>
+      <div class="fgrid" style="margin-bottom:12px">
+        <div>
+          <label class="flbl">Date</label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <select class="fselect" id="pf-jour"><option value="">Jour</option><option value="01">01</option><option value="02">02</option><option value="03">03</option><option value="04">04</option><option value="05">05</option><option value="06">06</option><option value="07">07</option><option value="08">08</option><option value="09">09</option><option value="10">10</option><option value="11">11</option><option value="12">12</option><option value="13">13</option><option value="14">14</option><option value="15">15</option><option value="16">16</option><option value="17">17</option><option value="18">18</option><option value="19">19</option><option value="20">20</option><option value="21">21</option><option value="22">22</option><option value="23">23</option><option value="24">24</option><option value="25">25</option><option value="26">26</option><option value="27">27</option><option value="28">28</option><option value="29">29</option><option value="30">30</option><option value="31">31</option></select>
+            <select class="fselect" id="pf-mois"><option value="">Mois</option>
+              <option value="01">Janvier</option><option value="02">Février</option>
+              <option value="03">Mars</option><option value="04">Avril</option>
+              <option value="05">Mai</option><option value="06">Juin</option>
+              <option value="07">Juillet</option><option value="08">Août</option>
+              <option value="09">Septembre</option><option value="10">Octobre</option>
+              <option value="11">Novembre</option><option value="12">Décembre</option>
+            </select>
+          </div>
+        </div>
+        <div class="time-grid">
+          <div><label class="flbl">Début</label><input class="finput" id="pf-debut" type="time" /></div>
+          <div><label class="flbl">Fin</label><input class="finput" id="pf-fin" type="time" /></div>
+        </div>
+      </div>
+      <div style="margin-bottom:12px">
+        <label class="flbl">Agents accompagnants <span style="color:var(--text3)">(optionnel)</span></label>
+        <input class="finput" id="pf-autres" type="text" placeholder="Noms séparés par des virgules" />
+      </div>
+      <div style="margin-bottom:14px">
+        <label class="flbl">Rapport de patrouille</label>
+        <textarea class="fta" id="pf-rapport" placeholder="Compte-rendu : zones couvertes, incidents observés..." style="min-height:100px"></textarea>
+      </div>
+      <div class="factions">
+        <button class="abtn" onclick="togglePatrolForm()">Annuler</button>
+        <button class="abtn prim" onclick="savePatrol()">Enregistrer</button>
+      </div>
+    </div>
+    <input class="srch" type="text" id="patrol-srch" placeholder="Rechercher par agent..." oninput="renderPatrols(this.value)" />
+    <div id="patrol-list"></div>
+  </div>
+
 </div>
 
 <!-- Input caché pour photo d'agent -->
@@ -443,6 +535,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 const PWD="sabaku";
 const STORAGE_KEY="sg_v3";
 const AGENT_PHOTOS_KEY="sg_agent_photos_v1";
+const PATROLS_KEY="sg_patrols_v1";
+const SUPABASE_PATROL_ROW="patrols";
 
 const SUPABASE_URL="https://sgxcsrwurhjvnkalpxun.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_hvgD-ZPp-pqArTYKaTBaEg_b4fz386Z";
@@ -488,6 +582,8 @@ let storageMode='local';
 // Photos des agents stockées séparément (clé = nom normalisé)
 let agentPhotos={};
 let currentAgentPhotoKey=null;
+let patrols=[];
+let selPatrolGradeVal='';
 
 function loadAgentPhotosLocal(){
   try{const r=localStorage.getItem(AGENT_PHOTOS_KEY);agentPhotos=r?JSON.parse(r):{};}catch(e){agentPhotos={};}
@@ -522,6 +618,37 @@ async function saveAgentPhotos(){
     try{await saveAgentPhotosRemote();}catch(e){console.error('Sync photos failed',e);}
   }
 }
+
+// ── PATROUILLES STORAGE ──
+function loadPatrolsLocal(){
+  try{const r=localStorage.getItem(PATROLS_KEY);patrols=r?JSON.parse(r):[];}catch(e){patrols=[];}
+}
+function savePatrolsLocal(){
+  try{localStorage.setItem(PATROLS_KEY,JSON.stringify(patrols));}catch(e){}
+}
+async function loadPatrolsRemote(){
+  const url=`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}?id=eq.${SUPABASE_PATROL_ROW}&select=data`;
+  const res=await fetch(url,{headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${SUPABASE_ANON_KEY}`}});
+  if(!res.ok)throw new Error();
+  const rows=await res.json();
+  return rows&&rows[0]&&Array.isArray(rows[0].data)?rows[0].data:[];
+}
+async function savePatrolsRemote(){
+  const url=`${SUPABASE_URL}/rest/v1/${SUPABASE_TABLE}`;
+  const res=await fetch(url,{
+    method:'POST',
+    headers:{apikey:SUPABASE_ANON_KEY,Authorization:`Bearer ${SUPABASE_ANON_KEY}`,'Content-Type':'application/json',Prefer:'resolution=merge-duplicates'},
+    body:JSON.stringify({id:SUPABASE_PATROL_ROW,data:patrols,updated_at:new Date().toISOString()})
+  });
+  if(!res.ok)throw new Error();
+}
+async function savePatrols(){
+  savePatrolsLocal();
+  if(storageMode==='remote'&&supabaseReady()){
+    try{await savePatrolsRemote();}catch(e){console.error('Patrol sync failed',e);}
+  }
+}
+
 function agentPhotoKey(name){
   return String(name||'').trim().toLowerCase();
 }
@@ -641,13 +768,14 @@ async function saveRemote(){
 async function ld(){
   loadAgentPhotosLocal();
   if(!supabaseReady()){
-    casiers=loadLocal();
+    casiers=loadLocal();loadPatrolsLocal();
     storageMode='local';
     setSyncStatus('Local');
     return;
   }
   try{
-    const [remoteCasiers,remotePhotos]=await Promise.all([loadRemote(),loadAgentPhotosRemote()]);
+    const [remoteCasiers,remotePhotos,remotePatrols]=await Promise.all([loadRemote(),loadAgentPhotosRemote(),loadPatrolsRemote().catch(()=>[])]);
+    patrols=remotePatrols.length?remotePatrols:patrols;
     casiers=remoteCasiers;
     agentPhotos=Object.keys(remotePhotos).length?remotePhotos:agentPhotos;
     storageMode='remote';
@@ -658,8 +786,9 @@ async function ld(){
     }
     saveLocal();
     saveAgentPhotosLocal();
+    savePatrolsLocal();
   }catch(e){
-    casiers=loadLocal();
+    casiers=loadLocal();loadPatrolsLocal();
     storageMode='local';
     setSyncStatus('Local secours','err');
   }
@@ -678,7 +807,7 @@ async function chkpw(){
     document.getElementById('pw').style.display='none';
     document.getElementById('app').style.display='block';
     setSyncStatus('Chargement...');
-    await ld();buildGrades();buildInf();refreshAgentOptions();renderList();renderReports();
+    await ld();buildGrades();buildInf();refreshAgentOptions();renderList();renderReports();renderPatrols();
   } else {
     document.getElementById('pe').textContent='Accès refusé — mot de passe incorrect.';
     document.getElementById('pi').value='';
@@ -694,6 +823,7 @@ function sv(name,nbIdx){
   document.getElementById('v'+name).classList.add('act');
   if(nbIdx!==undefined&&nbIdx!==null){const nb=document.getElementById('nb'+nbIdx);if(nb)nb.classList.add('act');}
   if(name==='reports')renderReports(document.getElementById('agent-srch')?.value||'');
+  if(name==='patrouilles')renderPatrols(document.getElementById('patrol-srch')?.value||'');
 }
 
 function openNew(fresh=false){
@@ -852,23 +982,24 @@ function renderReports(filter=''){
       return `<div class="rpt-sec-row">↳ Interpellation de <b>${esc(c.nom)}</b> · ${esc(inc.date||'—')}</div>`;
     }).join(''):'';
 
+    const cardKey=agentKey(g.name).replace(/[^a-z0-9]/g,'_');
     return `<div class="agent-card">
-      <div class="agent-card-top">
+      <div class="agent-card-top" onclick="toggleAgentCard('${cardKey}')">
         <div class="rpt-header">
           <div class="agent-head-left">
-            <div class="agent-avatar" onclick="openAgentPhotoUpload('${esc(g.name)}')" title="Cliquer pour ajouter une photo">
+            <div class="agent-avatar" onclick="event.stopPropagation();openAgentPhotoUpload('${esc(g.name)}')" title="Cliquer pour ajouter une photo">
               ${avatarContent}
               <div class="agent-avatar-hint">📷</div>
             </div>
             <div class="agent-info">
-              <div class="agent-name">${esc(g.name)}</div>
+              <div class="agent-name">${esc(g.name)} <i class="expand-chevron" id="acc-${cardKey}">▼</i></div>
               ${g.grade?`<div class="agent-grade-badge">${esc(g.grade)}</div>`:''}
             </div>
           </div>
           <div class="rpt-stats">${statResp}${statSec}${statAm}</div>
         </div>
       </div>
-      <div class="agent-card-body">
+      <div class="agent-card-body" id="acb-${cardKey}">
         ${respRows?`<div class="rpt-section-title">Dossiers clôturés</div>${respRows}`:''}
         ${secRows?`<div class="rpt-sec-block">${secRows}</div>`:''}
       </div>
@@ -1177,6 +1308,126 @@ async function delIncident(casierIdx,incidentIdx){
 async function delCasier(idx){
   if(confirm('Supprimer définitivement ce casier ?')){casiers.splice(idx,1);await sd();refreshAgentOptions();renderList();renderReports();sv('list',0);}
 }
+
+// ── PATROUILLES ──
+function selPatrolGrade(g){
+  selPatrolGradeVal=g;
+  document.getElementById('pf-grade').value=g;
+  document.querySelectorAll('#patrol-grade-grid .grade-btn').forEach(b=>b.classList.remove('sel'));
+  const el=document.getElementById('pgb-'+g.toLowerCase());
+  if(el)el.classList.add('sel');
+}
+
+function togglePatrolForm(){
+  const w=document.getElementById('patrol-form-wrap');
+  const vis=w.style.display!=='none';
+  w.style.display=vis?'none':'block';
+  if(!vis){
+    // Reset form
+    ['pf-agent','pf-grade','pf-autres','pf-rapport','pf-debut','pf-fin'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+    document.getElementById('pf-jour').value='';
+    document.getElementById('pf-mois').value='';
+    selPatrolGradeVal='';
+    document.querySelectorAll('#patrol-grade-grid .grade-btn').forEach(b=>b.classList.remove('sel'));
+  }
+}
+
+function calcDuration(debut,fin){
+  if(!debut||!fin)return '';
+  const [h1,m1]=debut.split(':').map(Number);
+  const [h2,m2]=fin.split(':').map(Number);
+  let mins=(h2*60+m2)-(h1*60+m1);
+  if(mins<0)mins+=24*60;
+  if(mins<=0)return '';
+  const h=Math.floor(mins/60);const m=mins%60;
+  return h>0?(m>0?`${h}h${String(m).padStart(2,'0')}`:`${h}h`):`${m}min`;
+}
+
+async function savePatrol(){
+  const agent=(document.getElementById('pf-agent').value||'').trim();
+  if(!agent){alert('Le nom de l'agent est requis.');return;}
+  const j=document.getElementById('pf-jour').value;
+  const m=document.getElementById('pf-mois').value;
+  const date=j&&m?j+'/'+m:'';
+  const debut=document.getElementById('pf-debut').value||'';
+  const fin=document.getElementById('pf-fin').value||'';
+  const patrol={
+    id:Date.now(),
+    agent,
+    grade:document.getElementById('pf-grade').value||'',
+    date,
+    debut,fin,
+    autres:(document.getElementById('pf-autres').value||'').trim(),
+    rapport:(document.getElementById('pf-rapport').value||'').trim(),
+    duration:calcDuration(debut,fin)
+  };
+  patrols.unshift(patrol);
+  await savePatrols();
+  togglePatrolForm();
+  renderPatrols(document.getElementById('patrol-srch')?.value||'');
+}
+
+async function delPatrol(id){
+  if(!confirm('Supprimer cette patrouille ?'))return;
+  patrols=patrols.filter(p=>p.id!==id);
+  await savePatrols();
+  renderPatrols(document.getElementById('patrol-srch')?.value||'');
+}
+
+function renderPatrols(filter=''){
+  const root=document.getElementById('patrol-list');
+  const count=document.getElementById('patrol-count');
+  if(!root)return;
+  const q=(filter||'').trim().toLowerCase();
+  const fil=patrols.filter(p=>!q||(p.agent||'').toLowerCase().includes(q));
+  if(count)count.textContent=patrols.length+' patrouille(s) enregistrée(s)';
+  if(fil.length===0){
+    root.innerHTML='<div class="patrol-empty">'+(q?'Aucun résultat.':'Aucune patrouille enregistrée.')+'</div>';
+    return;
+  }
+  root.innerHTML=fil.map(p=>{
+    const dur=p.duration?`<div class="patrol-duration">Durée : ${esc(p.duration)}</div>`:'';
+    const autresStr=p.autres?`<div class="patrol-autres">Avec : ${esc(p.autres)}</div>`:'';
+    const reportStr=p.rapport?`<div class="patrol-report-text">${esc(p.rapport)}</div>`:'';
+    const timeStr=p.debut||p.fin
+      ?`${p.debut||'—'} → ${p.fin||'—'}`
+      :'Horaires non renseignés';
+    const init=(p.agent||'?').split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';
+    const photo=getAgentPhoto(p.agent||'');
+    const av=photo?`<img src="${esc(photo)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />`:`<span style="font-family:'Cinzel',serif;font-size:16px;color:var(--sand3)">${esc(init)}</span>`;
+    return `<div class="patrol-card">
+      <div class="patrol-header">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="width:44px;height:44px;border-radius:50%;border:1px solid var(--border2);background:var(--bg3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">${av}</div>
+          <div>
+            <div class="patrol-agent">${esc(p.agent)}</div>
+            <div class="patrol-badge">${p.grade?esc(p.grade)+' · ':''}<span style="color:var(--text2)">${p.date?'📅 '+esc(p.date):'Date inconnue'}</span></div>
+            ${autresStr}
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px">
+          <div class="patrol-time-block">
+            <div class="patrol-time-lbl">Patrouille</div>
+            <div>${esc(timeStr)}</div>
+            ${dur}
+          </div>
+          <button class="patrol-del" onclick="delPatrol(${p.id})">✕ Supprimer</button>
+        </div>
+      </div>
+      ${reportStr}
+    </div>`;
+  }).join('');
+}
+
+// ── AGENT CARD COLLAPSE ──
+function toggleAgentCard(key){
+  const body=document.getElementById('acb-'+key);
+  const chev=document.getElementById('acc-'+key);
+  if(!body)return;
+  body.classList.toggle('open');
+  if(chev)chev.classList.toggle('open');
+}
+
 ld().catch(()=>{});
 
 
