@@ -296,15 +296,19 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .ccard{transition:border-color .2s,background .2s}
 .ccard:hover{transform:none;box-shadow:none;border-color:var(--border2)}
 
-/* ── WELCOME MODAL ── */
-.wm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:2000;backdrop-filter:blur(2px)}
-.wm-overlay.show{display:flex}
-.wm-box{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border2);border-radius:10px;padding:34px 42px;text-align:center;max-width:420px;width:90%;box-shadow:0 12px 60px rgba(0,0,0,.7);animation:wmPop .25s ease}
-@keyframes wmPop{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
-.wm-kanji{font-size:34px;color:var(--sand2);margin-bottom:10px;text-shadow:0 0 20px rgba(232,184,75,.25)}
-.wm-title{font-family:'Cinzel',serif;font-size:17px;letter-spacing:.22em;color:var(--sand);text-transform:uppercase;margin-bottom:14px}
-.wm-text{font-size:14px;color:var(--text);line-height:1.7;margin-bottom:24px}
-.wm-text b{color:var(--sand);font-family:'Cinzel',serif;letter-spacing:.04em}
+/* ── WELCOME TOAST ── */
+.wm-toast{position:fixed;bottom:24px;right:24px;background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border2);border-radius:10px;padding:18px 20px;max-width:340px;width:calc(100% - 48px);box-shadow:0 14px 50px rgba(0,0,0,.55);z-index:2000;display:flex;gap:14px;align-items:flex-start;transform:translateX(130%);opacity:0;transition:transform .5s cubic-bezier(.22,.9,.2,1),opacity .4s ease;pointer-events:none}
+.wm-toast.show{transform:translateX(0);opacity:1;pointer-events:auto}
+.wm-toast-kanji{font-size:28px;line-height:1;color:var(--sand2);flex-shrink:0;text-shadow:0 0 14px rgba(232,184,75,.25)}
+.wm-toast-content{flex:1;min-width:0}
+.wm-toast-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.25em;color:var(--sand);text-transform:uppercase;margin-bottom:6px}
+.wm-toast-text{font-size:13px;color:var(--text);line-height:1.6}
+.wm-toast-text b{color:var(--sand);font-family:'Cinzel',serif;letter-spacing:.03em}
+.wm-toast-close{background:none;border:none;color:var(--text3);cursor:pointer;font-size:15px;line-height:1;padding:2px;flex-shrink:0;transition:color .2s}
+.wm-toast-close:hover{color:var(--sand)}
+@media (max-width:720px){
+  .wm-toast{right:14px;left:14px;bottom:14px;width:auto;max-width:none}
+}
 </style>
 
 </head>
@@ -327,14 +331,14 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
   </div>
 </div>
 
-<!-- Popup de bienvenue -->
-<div id="welcome-modal" class="wm-overlay">
-  <div class="wm-box">
-    <div class="wm-kanji">砂</div>
-    <div class="wm-title">Bienvenue</div>
-    <div class="wm-text">Bienvenue au nouveau membre : <b>Hisoka Shigaraki</b> et à ...</div>
-    <button class="abtn prim" onclick="closeWelcome()">Fermer</button>
+<!-- Popup de bienvenue (toast) -->
+<div id="welcome-modal" class="wm-toast">
+  <div class="wm-toast-kanji">砂</div>
+  <div class="wm-toast-content">
+    <div class="wm-toast-title">Bienvenue</div>
+    <div class="wm-toast-text">Bienvenue au nouveau membre : <b>Hisoka Shigaraki</b> et à ...</div>
   </div>
+  <button class="wm-toast-close" onclick="closeWelcome()">✕</button>
 </div>
 
 <div id="app">
@@ -840,10 +844,14 @@ async function chkpw(){
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('pw').style.display!=='none')chkpw();});
 function lock(){document.getElementById('pw').style.display='flex';document.getElementById('app').style.display='none';document.getElementById('pi').value='';}
 
-// ── POPUP DE BIENVENUE ──
+// ── POPUP DE BIENVENUE (toast) ──
 function showWelcome(){
   const m=document.getElementById('welcome-modal');
-  if(m)m.classList.add('show');
+  if(!m)return;
+  setTimeout(()=>{
+    m.classList.add('show');
+    setTimeout(closeWelcome,8000);
+  },500);
 }
 function closeWelcome(){
   const m=document.getElementById('welcome-modal');
