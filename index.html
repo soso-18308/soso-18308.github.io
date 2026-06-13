@@ -295,6 +295,16 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 /* Card hover — just border, no jump */
 .ccard{transition:border-color .2s,background .2s}
 .ccard:hover{transform:none;box-shadow:none;border-color:var(--border2)}
+
+/* ── WELCOME MODAL ── */
+.wm-overlay{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;z-index:2000;backdrop-filter:blur(2px)}
+.wm-overlay.show{display:flex}
+.wm-box{background:linear-gradient(135deg,var(--bg2),var(--bg3));border:1px solid var(--border2);border-radius:10px;padding:34px 42px;text-align:center;max-width:420px;width:90%;box-shadow:0 12px 60px rgba(0,0,0,.7);animation:wmPop .25s ease}
+@keyframes wmPop{from{opacity:0;transform:scale(.94) translateY(8px)}to{opacity:1;transform:scale(1) translateY(0)}}
+.wm-kanji{font-size:34px;color:var(--sand2);margin-bottom:10px;text-shadow:0 0 20px rgba(232,184,75,.25)}
+.wm-title{font-family:'Cinzel',serif;font-size:17px;letter-spacing:.22em;color:var(--sand);text-transform:uppercase;margin-bottom:14px}
+.wm-text{font-size:14px;color:var(--text);line-height:1.7;margin-bottom:24px}
+.wm-text b{color:var(--sand);font-family:'Cinzel',serif;letter-spacing:.04em}
 </style>
 
 </head>
@@ -314,6 +324,16 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     <button class="pw-btn" onclick="chkpw()">Accéder aux archives</button>
     <div class="pw-err" id="pe"></div>
     <div class="pw-hint">Agents Shugo autorisés uniquement</div>
+  </div>
+</div>
+
+<!-- Popup de bienvenue -->
+<div id="welcome-modal" class="wm-overlay">
+  <div class="wm-box">
+    <div class="wm-kanji">砂</div>
+    <div class="wm-title">Bienvenue</div>
+    <div class="wm-text">Bienvenue au nouveau membre : <b>Hisoka Shigaraki</b> et à ...</div>
+    <button class="abtn prim" onclick="closeWelcome()">Fermer</button>
   </div>
 </div>
 
@@ -810,6 +830,7 @@ async function chkpw(){
     document.getElementById('app').style.display='block';
     setSyncStatus('Chargement...');
     await ld();buildGrades();buildInf();refreshAgentOptions();renderList();renderReports();renderPatrols();
+    showWelcome();
   } else {
     document.getElementById('pe').textContent='Accès refusé — mot de passe incorrect.';
     document.getElementById('pi').value='';
@@ -818,6 +839,16 @@ async function chkpw(){
 }
 document.addEventListener('keydown',e=>{if(e.key==='Enter'&&document.getElementById('pw').style.display!=='none')chkpw();});
 function lock(){document.getElementById('pw').style.display='flex';document.getElementById('app').style.display='none';document.getElementById('pi').value='';}
+
+// ── POPUP DE BIENVENUE ──
+function showWelcome(){
+  const m=document.getElementById('welcome-modal');
+  if(m)m.classList.add('show');
+}
+function closeWelcome(){
+  const m=document.getElementById('welcome-modal');
+  if(m)m.classList.remove('show');
+}
 
 function sv(name,nbIdx){
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('act'));
