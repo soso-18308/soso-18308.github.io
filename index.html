@@ -326,13 +326,26 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .toggle-btn.active{background:rgba(94,212,94,.15);border-color:rgba(94,212,94,.4);color:var(--green3)}
 .toggle-btn.inactive{background:rgba(128,96,48,.15);border-color:var(--border);color:var(--text3)}
 .wanted-editor-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:12px}
-.wanted-preview-mini{background:var(--bg4);border:1px solid var(--border);border-radius:6px;overflow:hidden;width:130px;flex-shrink:0}
-.wanted-preview-mini .wp-head{background:var(--blood);padding:4px;text-align:center;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.3em;color:#ffcccc}
-.wanted-preview-mini .wp-photo{height:90px;background:var(--bg3);display:flex;align-items:center;justify-content:center;overflow:hidden}
-.wanted-preview-mini .wp-photo img{width:100%;height:100%;object-fit:cover}
-.wanted-preview-mini .wp-body{padding:6px;text-align:center}
-.wanted-preview-mini .wp-nom{font-family:'Cinzel',serif;font-size:9px;color:var(--sand)}
-.wanted-preview-mini .wp-rwd{font-family:'Cinzel',serif;font-size:11px;color:#ffa0a0;margin-top:2px}
+.wanted-preview-mini{
+  background:linear-gradient(170deg,#231608,#18100405,#231608);
+  border:1px solid rgba(196,144,48,.4);border-radius:4px;overflow:hidden;
+  box-shadow:0 4px 16px rgba(0,0,0,.5);
+}
+.wanted-preview-mini .wp-head{
+  background:linear-gradient(90deg,#6a0f0f,#9a1515,#6a0f0f);
+  padding:5px;text-align:center;font-family:'Cinzel',serif;font-size:8px;letter-spacing:.4em;color:#ffdddd;
+  border-bottom:1px solid rgba(255,100,100,.2);
+}
+.wanted-preview-mini .wp-photo{height:110px;background:linear-gradient(135deg,#1a1208,#0d0a05);display:flex;align-items:center;justify-content:center;overflow:hidden;border-bottom:1px solid rgba(196,144,48,.2)}
+.wanted-preview-mini .wp-photo img{width:100%;height:100%;object-fit:cover;filter:sepia(.15)}
+.wanted-preview-mini .wp-body{padding:7px 8px 9px;text-align:center;background:linear-gradient(180deg,rgba(30,18,6,.8),rgba(20,12,4,.95))}
+.wanted-preview-mini .wp-nom{font-family:'Cinzel',serif;font-size:10px;color:var(--sand);letter-spacing:.1em;margin-bottom:5px}
+.wanted-preview-mini .wp-rwd{font-family:'Cinzel',serif;font-size:12px;color:#ffa0a0;background:rgba(138,26,26,.3);border:1px solid rgba(184,32,32,.35);border-radius:3px;padding:3px 6px;margin-top:2px}
+
+/* Admin pleine largeur */
+.admin-fullview{max-width:980px !important;padding:24px 32px !important}
+.admin-section{margin-bottom:28px;background:var(--bg2);border:1px solid var(--border);border-radius:8px;padding:18px 20px}
+.admin-section-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.35em;color:var(--purple3);text-transform:uppercase;margin-bottom:16px;padding-bottom:8px;border-bottom:1px solid rgba(160,144,224,.3)}
 .wform-row{display:flex;gap:8px;align-items:flex-start;margin-bottom:10px}
 .admin-wanted-list{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 
@@ -367,9 +380,10 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 #loading-screen{
   position:fixed;inset:0;z-index:9999;
   background:#0d0a05;
-  display:flex;align-items:center;justify-content:center;
+  display:none;align-items:center;justify-content:center;
   transition:opacity .5s ease, visibility .5s ease;
 }
+#loading-screen.show{display:flex}
 #loading-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
 .ld-inner{display:flex;flex-direction:column;align-items:center;gap:18px}
 .ld-spinner{
@@ -722,94 +736,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
         <div id="patrol-list"></div>
       </div>
 
-      <!-- ── ADMIN PANEL ── -->
-      <div id="vadmin" class="view">
-        <div class="ph">
-          <div><div class="ptitle" style="color:var(--purple3)">⚙ Administration</div><div class="psub">Gestion des annonces, popups et affiches de recherche</div></div>
-        </div>
 
-        <!-- POPUPS -->
-        <div class="admin-section">
-          <div class="admin-section-title">📢 Popups d'annonce</div>
-          <p style="font-size:12px;color:var(--text3);margin-bottom:14px;font-style:italic">Les popups actives s'affichent à tous les agents à la connexion.</p>
-
-          <!-- Formulaire nouvelle popup -->
-          <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:14px;margin-bottom:14px">
-            <div class="fsect-title" style="margin-bottom:12px;padding-bottom:6px">Nouvelle annonce</div>
-            <div style="margin-bottom:10px">
-              <label class="flbl">Titre</label>
-              <input class="finput" id="popup-title" type="text" placeholder="Ex: Nouveau membre, Annonce importante..." />
-            </div>
-            <div style="margin-bottom:10px">
-              <label class="flbl">Message</label>
-              <textarea class="fta" id="popup-text" placeholder="Contenu de l'annonce..." style="min-height:80px"></textarea>
-            </div>
-            <div style="margin-bottom:10px">
-              <label class="flbl">Emoji / Kanji (optionnel)</label>
-              <input class="finput" id="popup-icon" type="text" placeholder="Ex: 砂 🎉 ⚔️" style="max-width:200px" />
-            </div>
-            <div class="factions">
-              <button class="abtn purp" onclick="addPopup()">Créer l'annonce</button>
-            </div>
-          </div>
-
-          <div id="popup-list"></div>
-        </div>
-
-        <!-- AFFICHES DE RECHERCHE -->
-        <div class="admin-section">
-          <div class="admin-section-title">🔍 Affiches de Recherche (sidebar)</div>
-          <p style="font-size:12px;color:var(--text3);margin-bottom:14px;font-style:italic">Les affiches actives s'affichent dans la colonne de droite du site.</p>
-
-          <!-- Formulaire nouvelle affiche -->
-          <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:14px;margin-bottom:14px">
-            <div class="fsect-title" style="margin-bottom:12px;padding-bottom:6px">Nouvelle affiche</div>
-            <div class="wanted-editor-grid">
-              <div>
-                <div style="margin-bottom:10px">
-                  <label class="flbl">Nom du suspect</label>
-                  <input class="finput" id="wanted-nom" type="text" placeholder="Nom complet" />
-                </div>
-                <div style="margin-bottom:10px">
-                  <label class="flbl">Récompense (♦ Ryos)</label>
-                  <input class="finput" id="wanted-reward" type="number" placeholder="Ex: 50000" />
-                </div>
-                <div style="margin-bottom:10px">
-                  <label class="flbl">Description / Motif recherché</label>
-                  <textarea class="fta" id="wanted-desc" placeholder="Dangereux, armé, vu à..." style="min-height:70px"></textarea>
-                </div>
-                <div style="margin-bottom:10px">
-                  <label class="flbl">Photo (optionnel)</label>
-                  <div class="photoz" style="padding:16px;min-height:70px" onclick="document.getElementById('wanted-photo-input').click()">
-                    <img id="wanted-photo-prev" src="" alt="" style="max-width:100%;max-height:100px;display:none;border-radius:3px" />
-                    <div id="wanted-photo-ph" style="color:var(--text3);font-size:12px;font-style:italic">📷 Ajouter une photo</div>
-                  </div>
-                  <input type="file" id="wanted-photo-input" accept="image/*" style="display:none" onchange="prevWantedPhoto(event)" />
-                </div>
-              </div>
-              <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
-                <div style="font-size:11px;color:var(--text3);letter-spacing:.1em;font-family:'Cinzel',serif">APERÇU</div>
-                <div class="wanted-preview-mini" id="wanted-preview" style="width:140px">
-                  <div class="wp-head">⚔ RECHERCHÉ ⚔</div>
-                  <div class="wp-photo" id="wprev-photo" style="height:100px">
-                    <span style="font-family:'Cinzel',serif;font-size:24px;color:var(--sand3)">?</span>
-                  </div>
-                  <div class="wp-body">
-                    <div class="wp-nom" id="wprev-nom">—</div>
-                    <div class="wp-rwd" id="wprev-rwd">0 ♦</div>
-                    <div style="font-size:8px;color:var(--text3);margin-top:1px">RÉCOMPENSE</div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <div class="factions">
-              <button class="abtn purp" onclick="addWanted()">Ajouter à la sidebar</button>
-            </div>
-          </div>
-
-          <div id="wanted-admin-list"></div>
-        </div>
-      </div>
 
     </div>
 
@@ -866,6 +793,89 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
   </div>
 </div>
+
+  <!-- ── ADMIN PANEL (pleine largeur) ── -->
+  <div id="vadmin" class="view admin-fullview">
+    <div class="ph">
+      <div><div class="ptitle" style="color:var(--purple3)">⚙ Administration</div><div class="psub">Gestion des annonces, popups et affiches de recherche</div></div>
+    </div>
+
+    <!-- POPUPS -->
+    <div class="admin-section">
+      <div class="admin-section-title">📢 Popups d'annonce</div>
+      <p style="font-size:12px;color:var(--text3);margin-bottom:14px;font-style:italic">Les popups actives s'affichent à tous les agents à la connexion.</p>
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:14px;margin-bottom:14px">
+        <div class="fsect-title" style="margin-bottom:12px;padding-bottom:6px">Nouvelle annonce</div>
+        <div style="margin-bottom:10px">
+          <label class="flbl">Titre</label>
+          <input class="finput" id="popup-title" type="text" placeholder="Ex: Nouveau membre, Annonce importante..." />
+        </div>
+        <div style="margin-bottom:10px">
+          <label class="flbl">Message</label>
+          <textarea class="fta" id="popup-text" placeholder="Contenu de l'annonce..." style="min-height:80px"></textarea>
+        </div>
+        <div style="margin-bottom:10px">
+          <label class="flbl">Emoji / Kanji <span style="color:var(--text3)">(optionnel)</span></label>
+          <input class="finput" id="popup-icon" type="text" placeholder="Ex: 砂 🎉 ⚔️" style="max-width:200px" />
+        </div>
+        <div class="factions">
+          <button class="abtn purp" onclick="addPopup()">Créer l'annonce</button>
+        </div>
+      </div>
+      <div id="popup-list"></div>
+    </div>
+
+    <!-- AFFICHES DE RECHERCHE -->
+    <div class="admin-section">
+      <div class="admin-section-title">🔍 Affiches de Recherche (sidebar)</div>
+      <p style="font-size:12px;color:var(--text3);margin-bottom:14px;font-style:italic">Les affiches actives s'affichent dans la colonne de droite du site.</p>
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:14px;margin-bottom:14px">
+        <div class="fsect-title" style="margin-bottom:12px;padding-bottom:6px">Nouvelle affiche</div>
+        <div class="wanted-editor-grid">
+          <div>
+            <div style="margin-bottom:10px">
+              <label class="flbl">Nom du suspect</label>
+              <input class="finput" id="wanted-nom" type="text" placeholder="Nom complet" oninput="updateWantedPreview()" />
+            </div>
+            <div style="margin-bottom:10px">
+              <label class="flbl">Récompense (♦ Ryos)</label>
+              <input class="finput" id="wanted-reward" type="number" placeholder="Ex: 50000" oninput="updateWantedPreview()" />
+            </div>
+            <div style="margin-bottom:10px">
+              <label class="flbl">Description / Motif recherché</label>
+              <textarea class="fta" id="wanted-desc" placeholder="Dangereux, armé, vu à..." style="min-height:70px"></textarea>
+            </div>
+            <div style="margin-bottom:10px">
+              <label class="flbl">Photo <span style="color:var(--text3)">(optionnel)</span></label>
+              <div class="photoz" style="padding:16px;min-height:70px" onclick="document.getElementById('wanted-photo-input').click()">
+                <img id="wanted-photo-prev" src="" alt="" style="max-width:100%;max-height:100px;display:none;border-radius:3px" />
+                <div id="wanted-photo-ph" style="color:var(--text3);font-size:12px;font-style:italic">📷 Ajouter une photo</div>
+              </div>
+              <input type="file" id="wanted-photo-input" accept="image/*" style="display:none" onchange="prevWantedPhoto(event)" />
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:center;gap:10px">
+            <div style="font-size:11px;color:var(--text3);letter-spacing:.1em;font-family:'Cinzel',serif">APERÇU</div>
+            <div class="wanted-preview-mini" id="wanted-preview" style="width:150px">
+              <div class="wp-head">⚔ RECHERCHÉ ⚔</div>
+              <div class="wp-photo" id="wprev-photo" style="height:110px">
+                <span style="font-family:'Cinzel',serif;font-size:24px;color:var(--sand3)">?</span>
+              </div>
+              <div class="wp-body">
+                <div class="wp-nom" id="wprev-nom">—</div>
+                <div class="wp-rwd" id="wprev-rwd">0 ♦</div>
+                <div style="font-size:8px;color:var(--text3);margin-top:1px">RÉCOMPENSE</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="factions">
+          <button class="abtn purp" onclick="addWanted()">Ajouter à la sidebar</button>
+        </div>
+      </div>
+      <div id="wanted-admin-list"></div>
+    </div>
+  </div>
 
 <input type="file" id="agent-photo-input" accept="image/*" style="display:none" onchange="saveAgentPhoto(event)" />
 
@@ -1055,7 +1065,9 @@ async function saveWantedsSync(){
 async function ld(){
   loadAgentPhotosLocal();loadSuspectPhotosLocal();loadPatrolsLocal();loadPopupsLocal();loadWantedsLocal();
   if(!supabaseReady()){
-    casiers=loadLocal();storageMode='local';setSyncStatus('Local');return;
+    casiers=loadLocal();storageMode='local';setSyncStatus('Local');
+    migrateInlinePhotos();
+    return;
   }  try{
     setSyncStatus('Connexion...','');
     // Charger d'abord les photos, PUIS normaliser les casiers (migration .photo→suspectPhotos)
@@ -1076,8 +1088,8 @@ async function ld(){
     storageMode='remote';setSyncStatus('Partagé','on');
     if(casiers.length===0){const local=loadLocal();if(local.length){casiers=local;await saveRemote();}}
     saveLocal();saveAgentPhotosLocal();saveSuspectPhotosLocal();savePatrolsLocal();savePopupsLocal();saveWantedsLocal();
-    // Persiste les photos migrées (anciens casiers avec .photo inline)
-    if(Object.keys(suspectPhotos).length)await saveSuspectPhotos().catch(()=>{});
+    // Migrer les anciennes photos inline vers suspectPhotos
+    migrateInlinePhotos();
   }catch(e){
     casiers=loadLocal();storageMode='local';setSyncStatus('Local secours','err');
     console.error('Supabase load failed:',e);
@@ -1089,6 +1101,25 @@ async function sd(){
   if(storageMode==='remote'&&supabaseReady()){
     try{await saveRemote();setSyncStatus('Partagé','on');}
     catch(e){setSyncStatus('Erreur sync','err');console.error('Save failed:',e);}
+  }
+}
+
+// Migration photos inline → suspectPhotos (appelée après chargement complet)
+function migrateInlinePhotos(){
+  let migrated=0;
+  casiers.forEach(c=>{
+    if(c.photo&&typeof c.photo==='string'&&c.photo.startsWith('data:')){
+      const key=suspectPhotoKey(c.nom);
+      if(!suspectPhotos[key]){suspectPhotos[key]=c.photo;migrated++;}
+      delete c.photo;
+    }
+  });
+  if(migrated>0){
+    console.log('[migration] '+migrated+' photo(s) migrées vers suspectPhotos');
+    saveSuspectPhotosLocal();
+    if(storageMode==='remote'&&supabaseReady())saveSuspectPhotosRemote().catch(()=>{});
+    saveLocal();
+    if(storageMode==='remote'&&supabaseReady())saveRemote().catch(()=>{});
   }
 }
 
@@ -1104,13 +1135,9 @@ function normalizeCasier(c){
   c.agent.nom=String(c.agent.nom||'');
   c.agent.grade=String(c.agent.grade||'');
   c.agent.autres=String(c.agent.autres||'');
-  // Migration compat : si l'ancien casier avait .photo en base64, on le place dans suspectPhotos
+  // photoKey = index dans suspectPhotos
   c.photoKey=c.photoKey||suspectPhotoKey(c.nom);
-  if(c.photo&&typeof c.photo==='string'&&c.photo.startsWith('data:')){
-    const key=suspectPhotoKey(c.nom);
-    if(!suspectPhotos[key])suspectPhotos[key]=c.photo;
-    delete c.photo;
-  }
+  // .photo gardé tel quel pour migration ultérieure
   c.infractions=Array.isArray(c.infractions)?c.infractions:[];
   c.incidents=Array.isArray(c.incidents)&&c.incidents.length?c.incidents:[{
     date:c.date,grade:c.grade||null,gradeName:c.gradeName,gradeMult:c.gradeMult,
@@ -1147,9 +1174,12 @@ async function chkpw(){
   const v=document.getElementById('pi').value.trim().toLowerCase();
   if(v===PWD){
     document.getElementById('pw').style.display='none';
-    document.getElementById('app').style.display='block';
+    const ls=document.getElementById('loading-screen');
+    if(ls){ls.classList.add('show');}
     setSyncStatus('Chargement...');
     await ld();
+    if(ls){ls.classList.remove('show');ls.classList.add('hidden');setTimeout(()=>{ls.style.display='none';},500);}
+    document.getElementById('app').style.display='block';
     buildGrades();buildInf();refreshAgentOptions();
     renderList();renderReports();renderPatrols();renderWantedSidebar();renderPopupAdmin();renderWantedAdmin();
     showActivePopups();
@@ -1171,6 +1201,7 @@ function sv(name,nbIdx){
   if(name==='reports')renderReports(document.getElementById('agent-srch')?.value||'');
   if(name==='patrouilles')renderPatrols(document.getElementById('patrol-srch')?.value||'');
   if(name==='list')renderList(document.getElementById('srch')?.value||'');
+  if(name==='admin'){renderPopupAdmin();renderWantedAdmin();}
 }
 
 function openNew(fresh=false){
@@ -2073,10 +2104,8 @@ function confirmCrop(){
   for(let i=0;i<8;i++)spawnDust();setInterval(spawnDust,6000);
 })();
 
-ld().catch(()=>{}).finally(()=>{
-  const ls=document.getElementById('loading-screen');
-  if(ls)ls.classList.add('hidden');
-});
+// Préchargement silencieux (avant login) - sans spinner
+ld().catch(()=>{});
 </script>
 </body>
 </html>
