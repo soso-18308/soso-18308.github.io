@@ -123,23 +123,30 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .wanted-empty{font-size:11px;color:var(--text3);text-align:center;padding:24px 10px;font-style:italic;line-height:1.6}
 
 /* Avis de recherche - version plus lisible */
-#wanted-sidebar{width:250px;padding:18px 14px;background:linear-gradient(180deg,#1b1106 0%,#0f0a03 100%)}
-.app-inner.with-sidebar{margin-right:250px}
+#wanted-sidebar{width:320px;padding:20px 18px;background:linear-gradient(180deg,#221306 0%,#100803 100%);border-left:1px solid rgba(232,184,75,.45)}
+.app-inner.with-sidebar{margin-right:320px}
 .wanted-poster{
-  border-radius:8px;
+  border-radius:10px;
   background:
-    linear-gradient(180deg,rgba(246,203,106,.08),rgba(58,35,10,.04)),
-    repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 1px,transparent 1px 9px),
-    #241607;
-  box-shadow:0 12px 34px rgba(0,0,0,.62),inset 0 0 0 1px rgba(255,224,150,.05);
+    linear-gradient(180deg,rgba(255,225,154,.18),rgba(80,45,12,.08)),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.035) 0 1px,transparent 1px 7px),
+    #2a1908;
+  border:1px solid rgba(232,184,75,.62);
+  box-shadow:0 18px 42px rgba(0,0,0,.72),0 0 0 1px rgba(0,0,0,.45),inset 0 0 28px rgba(0,0,0,.3);
 }
-.wanted-poster-header{padding:8px 10px;background:linear-gradient(90deg,#5e0c0c,#ad2020,#5e0c0c)}
-.wanted-poster-title{font-size:9px;letter-spacing:.34em}
-.wanted-poster-photo{height:150px;margin:10px 10px 0;border:1px solid rgba(232,184,75,.28);border-radius:5px}
-.wanted-poster-body{padding:10px 12px 12px;background:transparent}
-.wanted-poster-nom{font-size:13px;line-height:1.25}
-.wanted-poster-crime{font-size:10px;color:var(--text2)}
-.wanted-poster-reward-wrap{border-radius:6px;background:linear-gradient(135deg,rgba(138,26,26,.45),rgba(80,12,12,.35))}
+.wanted-poster::after{content:'SUNA';position:absolute;right:10px;bottom:76px;font-family:'Cinzel',serif;font-size:10px;letter-spacing:.22em;color:rgba(232,184,75,.22);transform:rotate(-8deg);pointer-events:none}
+.wanted-poster-header{padding:10px 10px 9px;background:linear-gradient(90deg,#4d0707,#be2424,#4d0707);border-bottom:2px solid rgba(255,180,120,.18)}
+.wanted-poster-title{font-size:11px;letter-spacing:.28em;color:#ffe1d2}
+.wanted-poster-photo{height:190px;margin:13px 13px 0;border:2px solid rgba(232,184,75,.42);border-radius:7px;background:#120b04}
+.wanted-poster-photo img{filter:sepia(.25) contrast(1.12) saturate(.9)}
+.wanted-poster-photo .wanted-init{font-size:58px;color:rgba(232,184,75,.38)}
+.wanted-poster-body{padding:12px 14px 15px;background:transparent}
+.wanted-poster-divider{margin:0 0 9px}
+.wanted-poster-nom{font-size:16px;line-height:1.25;letter-spacing:.16em}
+.wanted-poster-crime{font-size:11px;color:#d8a646;margin:8px 0 10px}
+.wanted-poster-reward-wrap{border-radius:8px;background:linear-gradient(135deg,rgba(138,26,26,.72),rgba(62,8,8,.62));border-color:rgba(255,120,100,.38);padding:8px 10px}
+.wanted-poster-reward-lbl{font-size:9px}
+.wanted-poster-reward{font-size:20px;color:#ffd0bd}
 
 body.admin-mode #wanted-sidebar{display:none!important}
 body.admin-mode .app-inner{margin-right:0!important}
@@ -156,6 +163,9 @@ body.admin-mode #vadmin.act{
     radial-gradient(circle at 20% 0%,rgba(122,48,176,.18),transparent 34%),
     linear-gradient(180deg,rgba(13,10,5,.98),rgba(8,6,3,.98));
 }
+.admin-gate-view{max-width:none!important;min-height:calc(100vh - 52px);padding:0!important}
+.admin-gate-view.act{display:grid!important;place-items:center}
+.admin-gate-view .admin-gate-box{width:min(440px,calc(100vw - 40px));padding:46px 48px;background:linear-gradient(145deg,#1b1107,#100904);border-color:rgba(176,128,224,.55)}
 
 /* ── LAYOUT WITH SIDEBAR ── */
 .app-inner{margin-right:0;transition:margin-right .3s}
@@ -874,7 +884,7 @@ body.admin-mode #vadmin.act{
 
 
 <!-- ── ADMIN PASSWORD GATE ── -->
-<div id="admin-gate">
+<div id="vadminGate" class="view admin-gate-view">
   <div class="admin-gate-box">
     <div class="admin-gate-icon">⚙</div>
     <div class="admin-gate-title">Zone Restreinte</div>
@@ -1252,7 +1262,7 @@ function lock(){document.getElementById('pw').style.display='flex';document.getE
 
 // ── NAVIGATION ──
 function sv(name,nbIdx){
-  document.body.classList.toggle('admin-mode',name==='admin');
+  document.body.classList.toggle('admin-mode',name==='admin'||name==='adminGate');
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('act'));
   document.querySelectorAll('.tnbtn').forEach(b=>b.classList.remove('act'));
   document.getElementById('v'+name).classList.add('act');
@@ -1912,20 +1922,18 @@ let adminUnlocked = false;
 
 function openAdminGate(){
   if(adminUnlocked){sv('admin',4);return;}
-  const gate=document.getElementById('admin-gate');
-  gate.classList.add('show');
+  sv('adminGate',4);
   const inp=document.getElementById('admin-gate-inp');
   if(inp){inp.value='';setTimeout(()=>inp.focus(),80);}
   document.getElementById('admin-gate-err').textContent='';
 }
 function closeAdminGate(){
-  document.getElementById('admin-gate').classList.remove('show');
+  sv('list',0);
 }
 function checkAdminPwd(){
   const val=(document.getElementById('admin-gate-inp').value||'').trim().toLowerCase();
   if(val===ADMIN_PWD){
     adminUnlocked=true;
-    closeAdminGate();
     sv('admin',4);
   } else {
     document.getElementById('admin-gate-err').textContent='Code incorrect.';
@@ -1934,8 +1942,8 @@ function checkAdminPwd(){
   }
 }
 document.addEventListener('keydown',e=>{
-  if(e.key==='Enter'&&document.getElementById('admin-gate').classList.contains('show'))checkAdminPwd();
-  if(e.key==='Escape'&&document.getElementById('admin-gate').classList.contains('show'))closeAdminGate();
+  if(e.key==='Enter'&&document.getElementById('vadminGate').classList.contains('act'))checkAdminPwd();
+  if(e.key==='Escape'&&document.getElementById('vadminGate').classList.contains('act'))closeAdminGate();
 });
 
 // ── CROP ENGINE ──
