@@ -122,6 +122,41 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .wanted-poster-reward{font-family:'Cinzel',serif;font-size:15px;color:#ffa0a0;text-shadow:0 0 10px rgba(255,100,100,.3)}
 .wanted-empty{font-size:11px;color:var(--text3);text-align:center;padding:24px 10px;font-style:italic;line-height:1.6}
 
+/* Avis de recherche - version plus lisible */
+#wanted-sidebar{width:250px;padding:18px 14px;background:linear-gradient(180deg,#1b1106 0%,#0f0a03 100%)}
+.app-inner.with-sidebar{margin-right:250px}
+.wanted-poster{
+  border-radius:8px;
+  background:
+    linear-gradient(180deg,rgba(246,203,106,.08),rgba(58,35,10,.04)),
+    repeating-linear-gradient(90deg,rgba(255,255,255,.025) 0 1px,transparent 1px 9px),
+    #241607;
+  box-shadow:0 12px 34px rgba(0,0,0,.62),inset 0 0 0 1px rgba(255,224,150,.05);
+}
+.wanted-poster-header{padding:8px 10px;background:linear-gradient(90deg,#5e0c0c,#ad2020,#5e0c0c)}
+.wanted-poster-title{font-size:9px;letter-spacing:.34em}
+.wanted-poster-photo{height:150px;margin:10px 10px 0;border:1px solid rgba(232,184,75,.28);border-radius:5px}
+.wanted-poster-body{padding:10px 12px 12px;background:transparent}
+.wanted-poster-nom{font-size:13px;line-height:1.25}
+.wanted-poster-crime{font-size:10px;color:var(--text2)}
+.wanted-poster-reward-wrap{border-radius:6px;background:linear-gradient(135deg,rgba(138,26,26,.45),rgba(80,12,12,.35))}
+
+body.admin-mode #wanted-sidebar{display:none!important}
+body.admin-mode .app-inner{margin-right:0!important}
+body.admin-mode #vadmin.act{
+  display:block;
+  position:fixed;
+  inset:52px 0 0 0;
+  z-index:90;
+  max-width:none!important;
+  width:100%;
+  overflow:auto;
+  padding:28px 34px 42px!important;
+  background:
+    radial-gradient(circle at 20% 0%,rgba(122,48,176,.18),transparent 34%),
+    linear-gradient(180deg,rgba(13,10,5,.98),rgba(8,6,3,.98));
+}
+
 /* ── LAYOUT WITH SIDEBAR ── */
 .app-inner{margin-right:0;transition:margin-right .3s}
 .app-inner.with-sidebar{margin-right:210px}
@@ -959,8 +994,16 @@ function getSuspectPhoto(nom){
   const fromMap=suspectPhotos[suspectPhotoKey(nom)];
   if(fromMap)return fromMap;
   const casier=casiers.find(c=>c.nom===nom);
+  if(casier&&casier.photoKey&&suspectPhotos[casier.photoKey])return suspectPhotos[casier.photoKey];
   if(casier&&casier.photo&&casier.photo.startsWith('data:'))return casier.photo;
   return null;
+}
+function getCasierPhoto(c){
+  if(!c)return null;
+  return (c.photoKey&&suspectPhotos[c.photoKey])
+    || suspectPhotos[suspectPhotoKey(c.nom)]
+    || (c.photo&&String(c.photo).startsWith('data:')?c.photo:null)
+    || null;
 }
 
 // ── LOCAL STORAGE ──
@@ -1119,7 +1162,7 @@ function migrateInlinePhotos(){
   // 1) Casiers avec photo inline → suspectPhotos
   casiers.forEach(c=>{
     if(c.photo&&typeof c.photo==='string'&&c.photo.startsWith('data:')){
-      const key=suspectPhotoKey(c.nom);
+      const key=c.photoKey||suspectPhotoKey(c.nom);
       if(!suspectPhotos[key]){suspectPhotos[key]=c.photo;migrated++;}
       // On garde c.photo en mémoire pour l'affichage
     }
@@ -1127,7 +1170,7 @@ function migrateInlinePhotos(){
   // 2) suspectPhotos → réinjecter dans casiers qui n'ont pas de photo
   casiers.forEach(c=>{
     if(!c.photo||!c.photo.startsWith('data:')){
-      const ph=suspectPhotos[suspectPhotoKey(c.nom)];
+      const ph=(c.photoKey&&suspectPhotos[c.photoKey])||suspectPhotos[suspectPhotoKey(c.nom)];
       if(ph)c.photo=ph;
     }
   });
@@ -1209,6 +1252,7 @@ function lock(){document.getElementById('pw').style.display='flex';document.getE
 
 // ── NAVIGATION ──
 function sv(name,nbIdx){
+  document.body.classList.toggle('admin-mode',name==='admin');
   document.querySelectorAll('.view').forEach(v=>v.classList.remove('act'));
   document.querySelectorAll('.tnbtn').forEach(b=>b.classList.remove('act'));
   document.getElementById('v'+name).classList.add('act');
@@ -1338,23 +1382,29 @@ async function saveCasier(){
   const nom=(document.getElementById('fn').value||'').trim();
   if(!nom){alert("Le nom du prévenu est requis.");return;}
   const incident=buildIncident();
+  const newPhotoKey=suspectPhotoKey(nom);
+  const previousCasier=editIdx>=0?casiers[editIdx]:(addIncidentIdx>=0?casiers[addIncidentIdx]:null);
+  const previousPhoto=previousCasier?getCasierPhoto(previousCasier):null;
 
   // Sauvegarde photo suspect séparément si présente
   if(photoData!==null){
-    suspectPhotos[suspectPhotoKey(nom)]=photoData;
+    suspectPhotos[newPhotoKey]=photoData;
     await saveSuspectPhotos();
     photoData=null;
+  } else if(previousPhoto&&!suspectPhotos[newPhotoKey]){
+    suspectPhotos[newPhotoKey]=previousPhoto;
+    await saveSuspectPhotos();
   }
 
   if(addIncidentIdx>=0){
     const c=casiers[addIncidentIdx];
     c.nom=nom;c.village=(document.getElementById('fv').value||'').trim();
-    c.photoKey=suspectPhotoKey(nom);
+    c.photoKey=newPhotoKey;
     c.incidents.unshift(incident);
     updateTotals(c);
     await sd();refreshAgentOptions();renderList();renderReports();const idx=addIncidentIdx;resetForm();showDetail(idx);return;
   }
-  const record={nom,village:(document.getElementById('fv').value||'').trim(),photoKey:suspectPhotoKey(nom),incidents:[incident]};
+  const record={nom,village:(document.getElementById('fv').value||'').trim(),photoKey:newPhotoKey,incidents:[incident]};
   updateTotals(record);
   if(editIdx>=0){
     record.incidents=casiers[editIdx].incidents&&casiers[editIdx].incidents.length?casiers[editIdx].incidents:[incident];
@@ -1386,7 +1436,7 @@ function renderList(filter=''){
     if(haIn)tags.push('<span class="tag tag-i">Infraction</span>');
     tags.push('<span class="tag tag-r">'+incCount+' incident(s)</span>');
     const init=c.nom.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';
-    const ph=getSuspectPhoto(c.nom)||c.photo||null;
+    const ph=getCasierPhoto(c);
     const av=ph?`<img src="${esc(ph)}" alt="" />`:`<span>${esc(init)}</span>`;
     const el=document.createElement('div');
     el.className='ccard';el.onclick=()=>showDetail(ri);
@@ -1409,7 +1459,7 @@ function filt(){renderList(document.getElementById('srch').value);}
 function showDetail(idx){
   const c=casiers[idx];updateTotals(c);
   const init=c.nom.split(' ').map(w=>w[0]||'').join('').toUpperCase().slice(0,2)||'?';
-  const ph=getSuspectPhoto(c.nom)||c.photo||null;
+  const ph=getCasierPhoto(c);
   const phEl=ph?`<img src="${esc(ph)}" alt="" />`:esc(init);
   const nCr=c.infractions.filter(i=>i.cat==='crimes').length;
   const nDe=c.infractions.filter(i=>i.cat==='delits').length;
@@ -1486,7 +1536,7 @@ function openIncident(idx){
   document.getElementById('fn').value=c.nom||'';
   document.getElementById('fv').value=c.village||'';
   selVillage(c.village||'');
-  const ph=getSuspectPhoto(c.nom)||c.photo||null;
+  const ph=getCasierPhoto(c);
   if(ph){document.getElementById('pp').src=ph;document.getElementById('pp').style.display='block';document.getElementById('pph').style.display='none';}
   sv('new',1);
 }
@@ -1508,7 +1558,7 @@ function editCasier(idx){
   if(inc.agent&&inc.agent.grade)selAgentGrade(inc.agent.grade);
   document.getElementById('fa-autres').value=inc.agent?inc.agent.autres||'':'';
   photoData=null;
-  const ph=getSuspectPhoto(c.nom)||c.photo||null;
+  const ph=getCasierPhoto(c);
   if(ph){document.getElementById('pp').src=ph;document.getElementById('pp').style.display='block';document.getElementById('pph').style.display='none';}
   else{document.getElementById('pp').style.display='none';document.getElementById('pph').style.display='flex';}
   selGrade=inc.grade||null;
@@ -2120,7 +2170,7 @@ function confirmCrop(){
 })();
 
 // Préchargement silencieux (avant login) - sans spinner
-ld().catch(()=>{});
+// Chargement lance par chkpw(), apres validation du code.
 </script>
 </body>
 </html>
