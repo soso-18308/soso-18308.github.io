@@ -54,39 +54,73 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
 /* ── WANTED SIDEBAR ── */
 #wanted-sidebar{
-  position:fixed;right:0;top:52px;width:210px;height:calc(100vh - 52px);
-  background:linear-gradient(180deg,var(--bg2) 0%,#110c04 100%);
-  border-left:1px solid var(--border2);
+  position:fixed;right:0;top:52px;width:220px;height:calc(100vh - 52px);
+  background:linear-gradient(180deg,#1a1005 0%,#120c03 100%);
+  border-left:2px solid rgba(196,144,48,.35);
   overflow-y:auto;z-index:50;
-  padding:14px 10px;
-  display:flex;flex-direction:column;gap:10px;
+  padding:16px 12px 24px;
+  display:flex;flex-direction:column;gap:14px;
 }
-#wanted-sidebar::-webkit-scrollbar{width:4px}
+#wanted-sidebar::-webkit-scrollbar{width:3px}
 #wanted-sidebar::-webkit-scrollbar-track{background:transparent}
-#wanted-sidebar::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
-.wanted-sidebar-title{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.4em;color:var(--text3);text-transform:uppercase;text-align:center;padding-bottom:8px;border-bottom:1px solid var(--border);margin-bottom:2px}
+#wanted-sidebar::-webkit-scrollbar-thumb{background:rgba(196,144,48,.3);border-radius:2px}
+/* Header avis de recherche */
+.wsb-header{display:flex;align-items:center;gap:8px;margin-bottom:4px}
+.wsb-header-line{flex:1;height:1px;background:linear-gradient(90deg,transparent,rgba(196,144,48,.6),transparent)}
+.wsb-header-txt{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.35em;color:var(--sand2);text-transform:uppercase;white-space:nowrap;text-shadow:0 0 10px rgba(232,184,75,.3)}
+.wsb-footer{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.25em;color:var(--text3);text-align:center;margin-top:auto;padding-top:12px;border-top:1px solid rgba(196,144,48,.15)}
+/* Affiche style wanted poster */
 .wanted-poster{
-  background:linear-gradient(160deg,#2a1e08 0%,#1a1005 100%);
-  border:1px solid var(--border2);
-  border-radius:6px;overflow:hidden;
-  box-shadow:0 4px 16px rgba(0,0,0,.5);
-  cursor:pointer;transition:border-color .2s,box-shadow .2s;
+  background:linear-gradient(170deg,#231608 0%,#18100400 60%,#231608 100%),
+             repeating-linear-gradient(0deg,transparent,transparent 28px,rgba(196,144,48,.025) 28px,rgba(196,144,48,.025) 29px);
+  border:1px solid rgba(196,144,48,.4);
+  border-radius:4px;overflow:hidden;
+  box-shadow:0 6px 24px rgba(0,0,0,.6),inset 0 0 0 1px rgba(255,255,255,.03);
+  position:relative;
+  transition:border-color .25s,box-shadow .25s,transform .2s;
+}
+.wanted-poster::before{
+  content:'';position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 0%,rgba(196,144,48,.06) 0%,transparent 70%);
+  pointer-events:none;
+}
+.wanted-poster:hover{border-color:rgba(232,184,75,.7);box-shadow:0 8px 32px rgba(0,0,0,.7),0 0 20px rgba(196,144,48,.1);transform:translateY(-2px)}
+/* Bandeau rouge en haut */
+.wanted-poster-header{
+  background:linear-gradient(90deg,#6a0f0f 0%,#9a1515 50%,#6a0f0f 100%);
+  padding:6px 10px 5px;text-align:center;
+  border-bottom:1px solid rgba(255,100,100,.2);
   position:relative;
 }
-.wanted-poster:hover{border-color:var(--sand);box-shadow:0 4px 20px rgba(232,184,75,.15)}
-.wanted-poster-header{background:var(--blood);padding:5px 8px;text-align:center;border-bottom:1px solid rgba(184,32,32,.6)}
-.wanted-poster-title{font-family:'Cinzel',serif;font-size:9px;letter-spacing:.4em;color:#ffcccc;text-transform:uppercase}
-.wanted-poster-photo{width:100%;aspect-ratio:3/4;background:var(--bg3);display:flex;align-items:center;justify-content:center;overflow:hidden;max-height:120px}
-.wanted-poster-photo img{width:100%;height:100%;object-fit:cover}
-.wanted-poster-photo .wanted-init{font-family:'Cinzel',serif;font-size:32px;color:var(--sand3)}
-.wanted-poster-body{padding:7px 8px;text-align:center}
-.wanted-poster-nom{font-family:'Cinzel',serif;font-size:11px;color:var(--sand);letter-spacing:.08em;margin-bottom:3px}
-.wanted-poster-reward{font-family:'Cinzel',serif;font-size:13px;color:#ffa0a0}
-.wanted-poster-reward-lbl{font-size:9px;color:var(--text3);letter-spacing:.06em;margin-top:1px}
-.wanted-poster-desc{font-size:10px;color:var(--text2);margin-top:4px;line-height:1.4;font-style:italic}
-.wanted-poster-close{position:absolute;top:4px;right:4px;background:rgba(0,0,0,.5);border:none;color:rgba(255,255,255,.5);width:16px;height:16px;border-radius:3px;font-size:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;line-height:1;transition:color .2s}
-.wanted-poster-close:hover{color:#fff}
-.wanted-empty{font-size:11px;color:var(--text3);text-align:center;padding:20px 10px;font-style:italic}
+.wanted-poster-header::after{content:'';position:absolute;bottom:0;left:10%;right:10%;height:1px;background:rgba(255,180,180,.15)}
+.wanted-poster-title{font-family:'Cinzel',serif;font-size:10px;letter-spacing:.5em;color:#ffdddd;text-transform:uppercase;text-shadow:0 1px 4px rgba(0,0,0,.5)}
+/* Photo */
+.wanted-poster-photo{
+  width:100%;height:130px;
+  background:linear-gradient(135deg,#1a1208,#0d0a05);
+  display:flex;align-items:center;justify-content:center;overflow:hidden;
+  border-bottom:1px solid rgba(196,144,48,.2);
+  position:relative;
+}
+.wanted-poster-photo::after{
+  content:'';position:absolute;inset:0;
+  box-shadow:inset 0 0 20px rgba(0,0,0,.5);
+  pointer-events:none;
+}
+.wanted-poster-photo img{width:100%;height:100%;object-fit:cover;filter:sepia(.15) contrast(1.05)}
+.wanted-poster-photo .wanted-init{
+  font-family:'Cinzel',serif;font-size:40px;color:rgba(196,144,48,.25);
+  text-shadow:none;
+}
+/* Corps */
+.wanted-poster-body{padding:8px 10px 10px;text-align:center;background:linear-gradient(180deg,rgba(30,18,6,.8),rgba(20,12,4,.95))}
+.wanted-poster-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(196,144,48,.4),transparent);margin:5px 0}
+.wanted-poster-nom{font-family:'Cinzel',serif;font-size:12px;color:var(--sand);letter-spacing:.12em;margin-bottom:4px;text-shadow:0 0 12px rgba(232,184,75,.2)}
+.wanted-poster-crime{font-size:9px;color:var(--text3);letter-spacing:.08em;font-style:italic;margin-bottom:6px;line-height:1.4}
+.wanted-poster-reward-wrap{background:rgba(138,26,26,.3);border:1px solid rgba(184,32,32,.35);border-radius:3px;padding:5px 8px;margin-top:6px}
+.wanted-poster-reward-lbl{font-family:'Cinzel',serif;font-size:8px;letter-spacing:.3em;color:rgba(255,160,160,.6);text-transform:uppercase;margin-bottom:2px}
+.wanted-poster-reward{font-family:'Cinzel',serif;font-size:15px;color:#ffa0a0;text-shadow:0 0 10px rgba(255,100,100,.3)}
+.wanted-empty{font-size:11px;color:var(--text3);text-align:center;padding:24px 10px;font-style:italic;line-height:1.6}
 
 /* ── LAYOUT WITH SIDEBAR ── */
 .app-inner{margin-right:0;transition:margin-right .3s}
@@ -329,10 +363,109 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 .rp-textarea{width:100%;background:var(--bg3);border:1px solid var(--border2);color:var(--text);font-family:'Inter',sans-serif;font-size:14px;padding:9px 13px;border-radius:4px;outline:none;resize:vertical;min-height:70px}
 .rp-textarea:focus{border-color:var(--border3)}
 
-@media (max-width:900px){
+/* ── LOADING SCREEN ── */
+#loading-screen{
+  position:fixed;inset:0;z-index:9999;
+  background:#0d0a05;
+  display:flex;align-items:center;justify-content:center;
+  transition:opacity .5s ease, visibility .5s ease;
+}
+#loading-screen.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.ld-inner{display:flex;flex-direction:column;align-items:center;gap:18px}
+.ld-spinner{
+  width:48px;height:48px;
+  border:3px solid rgba(232,184,75,.15);
+  border-top-color:var(--sand2);
+  border-radius:50%;
+  animation:spin .9s linear infinite;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ld-kanji{
+  font-size:36px;color:var(--sand2);line-height:1;
+  opacity:.7;
+  animation:kanjiPulse 3s ease-in-out infinite;
+}
+.ld-text{
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:.35em;
+  color:var(--text3);text-transform:uppercase;
+}
+
   #wanted-sidebar{display:none}
   .app-inner.with-sidebar{margin-right:0}
 }
+
+/* ── ADMIN PASSWORD GATE ── */
+#admin-gate{
+  position:fixed;inset:0;z-index:500;
+  background:rgba(10,7,2,.92);backdrop-filter:blur(6px);
+  display:none;align-items:center;justify-content:center;
+}
+#admin-gate.show{display:flex}
+.admin-gate-box{
+  background:linear-gradient(135deg,var(--bg2),var(--bg3));
+  border:1px solid rgba(160,144,224,.45);
+  border-radius:10px;padding:36px 44px;width:340px;text-align:center;
+  box-shadow:0 16px 60px rgba(0,0,0,.7);
+}
+.admin-gate-icon{font-size:44px;margin-bottom:14px;opacity:.8}
+.admin-gate-title{font-family:'Cinzel',serif;font-size:13px;letter-spacing:.4em;color:var(--purple3);text-transform:uppercase;margin-bottom:6px}
+.admin-gate-sub{font-size:12px;color:var(--text3);margin-bottom:22px;font-style:italic}
+.admin-gate-inp{
+  width:100%;background:var(--bg);border:1px solid rgba(160,144,224,.4);
+  color:var(--purple3);font-family:'Cinzel',serif;font-size:18px;
+  letter-spacing:.5em;text-align:center;padding:12px 16px;border-radius:5px;
+  outline:none;margin-bottom:12px;transition:border-color .2s;
+}
+.admin-gate-inp:focus{border-color:var(--purple3);box-shadow:0 0 0 2px rgba(176,128,224,.15)}
+.admin-gate-inp::placeholder{color:rgba(160,144,224,.3);letter-spacing:.2em;font-size:14px}
+.admin-gate-btn{
+  width:100%;background:var(--purple);border:1px solid var(--purple2);color:var(--purple3);
+  font-family:'Cinzel',serif;font-size:11px;letter-spacing:.3em;text-transform:uppercase;
+  padding:12px;border-radius:5px;cursor:pointer;transition:all .2s;margin-bottom:10px;
+}
+.admin-gate-btn:hover{background:var(--purple2)}
+.admin-gate-cancel{background:none;border:none;color:var(--text3);font-size:12px;cursor:pointer;font-family:'Cinzel',serif;letter-spacing:.1em;transition:color .2s}
+.admin-gate-cancel:hover{color:var(--text)}
+.admin-gate-err{color:var(--blood3);font-size:12px;min-height:18px;margin-bottom:8px;font-style:italic}
+
+/* ── CROP MODAL ── */
+#crop-modal{
+  position:fixed;inset:0;z-index:600;
+  background:rgba(8,5,2,.95);backdrop-filter:blur(8px);
+  display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px;
+}
+#crop-modal.show{display:flex}
+.crop-box{
+  background:var(--bg2);border:1px solid var(--border2);border-radius:10px;
+  padding:20px;max-width:520px;width:calc(100% - 32px);
+  box-shadow:0 16px 60px rgba(0,0,0,.8);
+}
+.crop-title{font-family:'Cinzel',serif;font-size:11px;letter-spacing:.35em;color:var(--sand2);text-transform:uppercase;margin-bottom:14px;text-align:center}
+.crop-area{
+  position:relative;width:100%;overflow:hidden;
+  background:#000;border-radius:6px;border:1px solid var(--border);
+  cursor:crosshair;user-select:none;touch-action:none;
+}
+#crop-img{display:block;width:100%;max-height:55vh;object-fit:contain;pointer-events:none}
+.crop-selection{
+  position:absolute;border:2px solid var(--sand);
+  box-shadow:0 0 0 9999px rgba(0,0,0,.55);
+  pointer-events:none;
+}
+.crop-handle{
+  position:absolute;width:10px;height:10px;
+  background:var(--sand);border:1px solid #000;border-radius:2px;
+  pointer-events:all;
+}
+.crop-controls{display:flex;gap:10px;justify-content:center;margin-top:14px;flex-wrap:wrap}
+.crop-ratio-btn{
+  background:var(--bg3);border:1px solid var(--border2);color:var(--text2);
+  font-family:'Cinzel',serif;font-size:10px;letter-spacing:.15em;
+  padding:6px 12px;border-radius:4px;cursor:pointer;transition:all .2s;
+}
+.crop-ratio-btn:hover,.crop-ratio-btn.sel{background:rgba(196,144,48,.18);border-color:var(--sand2);color:var(--sand)}
+.crop-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:14px}
+
 @media (max-width:720px){
   #pw{padding:20px}
   .pw-box{width:100%;max-width:380px;padding:26px 22px}
@@ -355,6 +488,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 <body>
 
 <canvas id="desert-canvas"></canvas>
+
+<!-- ── ÉCRAN DE CHARGEMENT ── -->
+<div id="loading-screen">
+  <div class="ld-inner">
+    <div class="ld-spinner"></div>
+    <div class="ld-kanji">砂</div>
+    <div class="ld-text">Chargement des archives...</div>
+  </div>
+</div>
 
 <div id="pw">
   <div class="pw-logo">
@@ -387,7 +529,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <button class="tnbtn" id="nb1" onclick="openNew(true)">Nouveau</button>
       <button class="tnbtn" id="nb2" onclick="sv('reports',2)">Rapports</button>
       <button class="tnbtn" id="nb3" onclick="sv('patrouilles',3)">Patrouilles</button>
-      <button class="tnbtn admin-btn" id="nb4" onclick="sv('admin',4)">⚙ Admin</button>
+      <button class="tnbtn admin-btn" id="nb4" onclick="openAdminGate()">⚙ Admin</button>
       <button class="tnbtn danger" onclick="lock()">Verrouiller</button>
     </div>
   </div>
@@ -673,8 +815,54 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
 
     <!-- ── SIDEBAR AFFICHES DE RECHERCHE ── -->
     <div id="wanted-sidebar">
-      <div class="wanted-sidebar-title">⚔ Recherchés ⚔</div>
+      <div class="wsb-header">
+        <div class="wsb-header-line"></div>
+        <span class="wsb-header-txt">AVIS DE RECHERCHE</span>
+        <div class="wsb-header-line"></div>
+      </div>
       <div id="wanted-poster-list"></div>
+      <div class="wsb-footer">村 SHUGO · SUNA 砂</div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ── ADMIN PASSWORD GATE ── -->
+<div id="admin-gate">
+  <div class="admin-gate-box">
+    <div class="admin-gate-icon">⚙</div>
+    <div class="admin-gate-title">Zone Restreinte</div>
+    <div class="admin-gate-sub">Accès administrateur requis</div>
+    <div class="admin-gate-err" id="admin-gate-err"></div>
+    <input class="admin-gate-inp" type="password" id="admin-gate-inp" placeholder="Code admin" />
+    <button class="admin-gate-btn" onclick="checkAdminPwd()">Accéder</button>
+    <button class="admin-gate-cancel" onclick="closeAdminGate()">Annuler</button>
+  </div>
+</div>
+
+<!-- ── CROP MODAL ── -->
+<div id="crop-modal">
+  <div class="crop-box">
+    <div class="crop-title">Cadrer la photo</div>
+    <div class="crop-area" id="crop-area">
+      <img id="crop-img" src="" alt="" />
+      <div class="crop-selection" id="crop-sel" style="display:none">
+        <div class="crop-handle" id="ch-tl" style="top:-5px;left:-5px;cursor:nw-resize"></div>
+        <div class="crop-handle" id="ch-tr" style="top:-5px;right:-5px;cursor:ne-resize"></div>
+        <div class="crop-handle" id="ch-bl" style="bottom:-5px;left:-5px;cursor:sw-resize"></div>
+        <div class="crop-handle" id="ch-br" style="bottom:-5px;right:-5px;cursor:se-resize"></div>
+      </div>
+    </div>
+    <div class="crop-controls">
+      <button class="crop-ratio-btn sel" id="crb-free" onclick="setCropRatio(0,0,'free')">Libre</button>
+      <button class="crop-ratio-btn" id="crb-1-1" onclick="setCropRatio(1,1,'1-1')">1:1</button>
+      <button class="crop-ratio-btn" id="crb-3-4" onclick="setCropRatio(3,4,'3-4')">3:4</button>
+      <button class="crop-ratio-btn" id="crb-4-3" onclick="setCropRatio(4,3,'4-3')">4:3</button>
+      <button class="crop-ratio-btn" id="crb-16-9" onclick="setCropRatio(16,9,'16-9')">16:9</button>
+    </div>
+    <div class="crop-actions">
+      <button class="abtn" onclick="cancelCrop()">Annuler</button>
+      <button class="abtn prim" onclick="confirmCrop()">Valider le cadrage</button>
     </div>
   </div>
 </div>
@@ -868,26 +1056,28 @@ async function ld(){
   loadAgentPhotosLocal();loadSuspectPhotosLocal();loadPatrolsLocal();loadPopupsLocal();loadWantedsLocal();
   if(!supabaseReady()){
     casiers=loadLocal();storageMode='local';setSyncStatus('Local');return;
-  }
-  try{
+  }  try{
     setSyncStatus('Connexion...','');
-    const [remoteCasiers,remotePhotosAgents,remotePhotosSuspects,remotePatrols,remotePopups,remoteWanteds]=await Promise.all([
-      loadRemote(),
+    // Charger d'abord les photos, PUIS normaliser les casiers (migration .photo→suspectPhotos)
+    const [remotePhotosAgents,remotePhotosSuspects,remotePatrols,remotePopups,remoteWanteds]=await Promise.all([
       loadAgentPhotosRemote().catch(()=>({})),
       loadSuspectPhotosRemote().catch(()=>({})),
       loadPatrolsRemote().catch(()=>[]),
       loadPopupsRemote().catch(()=>[]),
       loadWantedsRemote().catch(()=>[])
     ]);
-    casiers=remoteCasiers;
     if(Object.keys(remotePhotosAgents).length)agentPhotos=remotePhotosAgents;
     if(Object.keys(remotePhotosSuspects).length)suspectPhotos=remotePhotosSuspects;
+    const remoteCasiers=await loadRemote();
+    casiers=remoteCasiers;
     if(remotePatrols.length)patrols=remotePatrols;
     if(remotePopups.length)popups=remotePopups;
     if(remoteWanteds.length)wanteds=remoteWanteds;
     storageMode='remote';setSyncStatus('Partagé','on');
     if(casiers.length===0){const local=loadLocal();if(local.length){casiers=local;await saveRemote();}}
     saveLocal();saveAgentPhotosLocal();saveSuspectPhotosLocal();savePatrolsLocal();savePopupsLocal();saveWantedsLocal();
+    // Persiste les photos migrées (anciens casiers avec .photo inline)
+    if(Object.keys(suspectPhotos).length)await saveSuspectPhotos().catch(()=>{});
   }catch(e){
     casiers=loadLocal();storageMode='local';setSyncStatus('Local secours','err');
     console.error('Supabase load failed:',e);
@@ -914,9 +1104,13 @@ function normalizeCasier(c){
   c.agent.nom=String(c.agent.nom||'');
   c.agent.grade=String(c.agent.grade||'');
   c.agent.autres=String(c.agent.autres||'');
-  // photo: on récupère depuis suspectPhotos par photoKey ou nom
+  // Migration compat : si l'ancien casier avait .photo en base64, on le place dans suspectPhotos
   c.photoKey=c.photoKey||suspectPhotoKey(c.nom);
-  // .photo gardé pour compat ancienne version (sera déplacé à la prochaine save)
+  if(c.photo&&typeof c.photo==='string'&&c.photo.startsWith('data:')){
+    const key=suspectPhotoKey(c.nom);
+    if(!suspectPhotos[key])suspectPhotos[key]=c.photo;
+    delete c.photo;
+  }
   c.infractions=Array.isArray(c.infractions)?c.infractions:[];
   c.incidents=Array.isArray(c.incidents)&&c.incidents.length?c.incidents:[{
     date:c.date,grade:c.grade||null,gradeName:c.gradeName,gradeMult:c.gradeMult,
@@ -1054,12 +1248,7 @@ function updTotal(){
 function prevPhoto(e){
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=ev=>{
-    photoData=ev.target.result;
-    document.getElementById('pp').src=photoData;
-    document.getElementById('pp').style.display='block';
-    document.getElementById('pph').style.display='none';
-  };
+  r.onload=ev=>openCrop(ev.target.result,'suspect');
   r.readAsDataURL(f);
 }
 
@@ -1407,12 +1596,7 @@ function openAgentPhotoUpload(agentName){
 function saveAgentPhoto(e){
   const f=e.target.files[0];if(!f||!currentAgentPhotoKey)return;
   const r=new FileReader();
-  r.onload=async ev=>{
-    agentPhotos[currentAgentPhotoKey]=ev.target.result;
-    await saveAgentPhotos();
-    renderReports(document.getElementById('agent-srch')?.value||'');
-    renderPatrols(document.getElementById('patrol-srch')?.value||'');
-  };
+  r.onload=ev=>openCrop(ev.target.result,'agent');
   r.readAsDataURL(f);
 }
 
@@ -1533,13 +1717,8 @@ let wantedPhotoDataLocal=null;
 function prevWantedPhoto(e){
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=ev=>{
-    wantedPhotoDataLocal=ev.target.result;
-    document.getElementById('wanted-photo-prev').src=wantedPhotoDataLocal;
-    document.getElementById('wanted-photo-prev').style.display='block';
-    document.getElementById('wanted-photo-ph').style.display='none';
-    updateWantedPreview();
-  };r.readAsDataURL(f);
+  r.onload=ev=>openCrop(ev.target.result,'wanted');
+  r.readAsDataURL(f);
 }
 function updateWantedPreview(){
   const nom=(document.getElementById('wanted-nom')?.value||'—').trim()||'—';
@@ -1605,20 +1784,249 @@ function renderWantedSidebar(){
   if(sidebar){sidebar.style.display=active.length?'flex':'none';}
   const inner=document.getElementById('app-inner');
   if(inner){inner.classList.toggle('with-sidebar',active.length>0);}
-  if(!active.length){root.innerHTML='<div class="wanted-empty">Aucune affiche active</div>';return;}
+  if(!active.length){root.innerHTML='<div class="wanted-empty">Aucune affiche<br>pour le moment</div>';return;}
   root.innerHTML=active.map(w=>{
-    const ph=w.photo?`<img src="${esc(w.photo)}" alt="" />`:`<div class="wanted-init">${esc(w.nom.split(' ').map(x=>x[0]||'').join('').toUpperCase().slice(0,2)||'?')}</div>`;
+    const init=w.nom.split(' ').map(x=>x[0]||'').join('').toUpperCase().slice(0,2)||'?';
+    const ph=w.photo
+      ?`<img src="${esc(w.photo)}" alt="" />`
+      :`<div class="wanted-init">${esc(init)}</div>`;
+    const descClean=w.desc?w.desc.slice(0,80)+(w.desc.length>80?'…':''):'';
     return `<div class="wanted-poster">
-      <div class="wanted-poster-header"><div class="wanted-poster-title">⚔ RECHERCHÉ ⚔</div></div>
+      <div class="wanted-poster-header">
+        <div class="wanted-poster-title">⚔&nbsp;&nbsp;RECHERCHÉ&nbsp;&nbsp;⚔</div>
+      </div>
       <div class="wanted-poster-photo">${ph}</div>
       <div class="wanted-poster-body">
+        <div class="wanted-poster-divider"></div>
         <div class="wanted-poster-nom">${esc(w.nom)}</div>
-        <div class="wanted-poster-reward">${Number(w.reward||0).toLocaleString('fr-FR')} ♦</div>
-        <div class="wanted-poster-reward-lbl">RÉCOMPENSE</div>
-        ${w.desc?`<div class="wanted-poster-desc">${esc(w.desc)}</div>`:''}
+        ${descClean?`<div class="wanted-poster-crime">${esc(descClean)}</div>`:''}
+        <div class="wanted-poster-reward-wrap">
+          <div class="wanted-poster-reward-lbl">RÉCOMPENSE</div>
+          <div class="wanted-poster-reward">${Number(w.reward||0).toLocaleString('fr-FR')} ♦</div>
+        </div>
       </div>
     </div>`;
   }).join('');
+}
+
+
+// ── ADMIN PASSWORD GATE ──
+const ADMIN_PWD = "kazekage";
+let adminUnlocked = false;
+
+function openAdminGate(){
+  if(adminUnlocked){sv('admin',4);return;}
+  const gate=document.getElementById('admin-gate');
+  gate.classList.add('show');
+  const inp=document.getElementById('admin-gate-inp');
+  if(inp){inp.value='';setTimeout(()=>inp.focus(),80);}
+  document.getElementById('admin-gate-err').textContent='';
+}
+function closeAdminGate(){
+  document.getElementById('admin-gate').classList.remove('show');
+}
+function checkAdminPwd(){
+  const val=(document.getElementById('admin-gate-inp').value||'').trim().toLowerCase();
+  if(val===ADMIN_PWD){
+    adminUnlocked=true;
+    closeAdminGate();
+    sv('admin',4);
+  } else {
+    document.getElementById('admin-gate-err').textContent='Code incorrect.';
+    document.getElementById('admin-gate-inp').value='';
+    setTimeout(()=>document.getElementById('admin-gate-err').textContent='',2000);
+  }
+}
+document.addEventListener('keydown',e=>{
+  if(e.key==='Enter'&&document.getElementById('admin-gate').classList.contains('show'))checkAdminPwd();
+  if(e.key==='Escape'&&document.getElementById('admin-gate').classList.contains('show'))closeAdminGate();
+});
+
+// ── CROP ENGINE ──
+let cropCtx={mode:null,src:null,ratioW:0,ratioH:0,sel:{x:0,y:0,w:0,h:0},dragging:false,resizing:null,startX:0,startY:0,startSel:null};
+
+function openCrop(src, mode){
+  cropCtx.mode=mode;
+  cropCtx.src=src;
+  cropCtx.ratioW=0;cropCtx.ratioH=0;
+  document.querySelectorAll('.crop-ratio-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('crb-free').classList.add('sel');
+  const img=document.getElementById('crop-img');
+  img.onload=()=>{
+    const area=document.getElementById('crop-area');
+    const aw=area.clientWidth,ah=img.clientHeight||area.clientHeight;
+    const iw=img.naturalWidth,ih=img.naturalHeight;
+    const scale=aw/iw;
+    const dh=ih*scale;
+    // default selection: 80% centered
+    const margin=aw*0.1;
+    cropCtx.sel={x:margin,y:dh*0.1,w:aw-margin*2,h:dh*0.8};
+    drawCropSel();
+  };
+  img.src=src;
+  document.getElementById('crop-modal').classList.add('show');
+}
+
+function drawCropSel(){
+  const sel=document.getElementById('crop-sel');
+  const s=cropCtx.sel;
+  sel.style.display='block';
+  sel.style.left=s.x+'px';sel.style.top=s.y+'px';
+  sel.style.width=s.w+'px';sel.style.height=s.h+'px';
+}
+
+function setCropRatio(w,h,key){
+  cropCtx.ratioW=w;cropCtx.ratioH=h;
+  document.querySelectorAll('.crop-ratio-btn').forEach(b=>b.classList.remove('sel'));
+  document.getElementById('crb-'+key).classList.add('sel');
+  if(w>0&&h>0){
+    const s=cropCtx.sel;
+    const area=document.getElementById('crop-area');
+    const aw=area.clientWidth;
+    // recalc height from width
+    let nw=s.w,nh=nw*(h/w);
+    const img=document.getElementById('crop-img');
+    const maxH=img.clientHeight;
+    if(nh>maxH){nh=maxH;nw=nh*(w/h);}
+    s.w=nw;s.h=nh;
+    // keep centered
+    if(s.x+s.w>aw)s.x=aw-s.w;
+    if(s.x<0)s.x=0;
+    drawCropSel();
+  }
+}
+
+// Drag & resize events
+(function(){
+  let active=false,mode=null;
+  function getArea(){return document.getElementById('crop-area');}
+  function clamp(v,mn,mx){return Math.max(mn,Math.min(mx,v));}
+
+  function onDown(e){
+    if(!document.getElementById('crop-modal').classList.contains('show'))return;
+    e.preventDefault();
+    const area=getArea();
+    const rect=area.getBoundingClientRect();
+    const cx=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
+    const cy=(e.touches?e.touches[0].clientY:e.clientY)-rect.top;
+    const s=cropCtx.sel;
+    const handles={
+      'ch-tl':{cursor:'nw-resize',fn:(dx,dy,os)=>{const nw=clamp(os.w-dx,30,os.x+os.w);const nh=cropCtx.ratioW?nw*(cropCtx.ratioH/cropCtx.ratioW):clamp(os.h-dy,30,os.y+os.h);return {x:os.x+os.w-nw,y:os.y+os.h-nh,w:nw,h:nh};}},
+      'ch-tr':{cursor:'ne-resize',fn:(dx,dy,os)=>{const nw=clamp(os.w+dx,30);const nh=cropCtx.ratioW?nw*(cropCtx.ratioH/cropCtx.ratioW):clamp(os.h-dy,30,os.y+os.h);return {x:os.x,y:os.y+os.h-nh,w:nw,h:nh};}},
+      'ch-bl':{cursor:'sw-resize',fn:(dx,dy,os)=>{const nw=clamp(os.w-dx,30,os.x+os.w);const nh=cropCtx.ratioW?nw*(cropCtx.ratioH/cropCtx.ratioW):clamp(os.h+dy,30);return {x:os.x+os.w-nw,y:os.y,w:nw,h:nh};}},
+      'ch-br':{cursor:'se-resize',fn:(dx,dy,os)=>{const nw=clamp(os.w+dx,30);const nh=cropCtx.ratioW?nw*(cropCtx.ratioH/cropCtx.ratioW):clamp(os.h+dy,30);return {x:os.x,y:os.y,w:nw,h:nh};}}
+    };
+    // Check if on a handle
+    for(const [id,h] of Object.entries(handles)){
+      const el=document.getElementById(id);if(!el)continue;
+      const hr=el.getBoundingClientRect();
+      const hx=hr.left-rect.left+hr.width/2,hy=hr.top-rect.top+hr.height/2;
+      if(Math.abs(cx-hx)<14&&Math.abs(cy-hy)<14){
+        active=true;mode={type:'resize',fn:h.fn,ox:cx,oy:cy,os:{...s}};return;
+      }
+    }
+    // Inside selection = move
+    if(cx>=s.x&&cx<=s.x+s.w&&cy>=s.y&&cy<=s.y+s.h){
+      active=true;mode={type:'move',ox:cx,oy:cy,os:{...s}};return;
+    }
+    // Outside = new selection
+    active=true;mode={type:'new',ox:cx,oy:cy};
+    cropCtx.sel={x:cx,y:cy,w:0,h:0};drawCropSel();
+  }
+
+  function onMove(e){
+    if(!active)return;
+    e.preventDefault();
+    const area=getArea();
+    const rect=area.getBoundingClientRect();
+    const cx=(e.touches?e.touches[0].clientX:e.clientX)-rect.left;
+    const cy=(e.touches?e.touches[0].clientY:e.clientY)-rect.top;
+    const img=document.getElementById('crop-img');
+    const aw=area.clientWidth,ah=img.clientHeight;
+    const s=cropCtx.sel;
+    const m=mode;
+    if(m.type==='new'){
+      let x=Math.min(m.ox,cx),y=Math.min(m.oy,cy);
+      let w=Math.abs(cx-m.ox),h=Math.abs(cy-m.oy);
+      if(cropCtx.ratioW&&cropCtx.ratioH){h=w*(cropCtx.ratioH/cropCtx.ratioW);}
+      cropCtx.sel={x,y,w,h};
+    } else if(m.type==='move'){
+      const dx=cx-m.ox,dy=cy-m.oy;
+      let nx=clamp(m.os.x+dx,0,aw-m.os.w);
+      let ny=clamp(m.os.y+dy,0,ah-m.os.h);
+      cropCtx.sel={...m.os,x:nx,y:ny};
+    } else if(m.type==='resize'){
+      const dx=cx-m.ox,dy=cy-m.oy;
+      const ns=m.fn(dx,dy,m.os);
+      // clamp to area
+      ns.x=clamp(ns.x,0,aw-ns.w);ns.y=clamp(ns.y,0,ah-ns.h);
+      ns.w=clamp(ns.w,30,aw-ns.x);ns.h=clamp(ns.h,30,ah-ns.y);
+      cropCtx.sel=ns;
+    }
+    drawCropSel();
+    function clamp(v,mn,mx){return mx!==undefined?Math.max(mn,Math.min(mx,v)):Math.max(mn,v);}
+  }
+
+  function onUp(){active=false;mode=null;}
+
+  const area=document.getElementById('crop-area');
+  if(area){
+    area.addEventListener('mousedown',onDown);
+    area.addEventListener('touchstart',onDown,{passive:false});
+  }
+  document.addEventListener('mousemove',onMove);
+  document.addEventListener('touchmove',onMove,{passive:false});
+  document.addEventListener('mouseup',onUp);
+  document.addEventListener('touchend',onUp);
+})();
+
+function cancelCrop(){
+  document.getElementById('crop-modal').classList.remove('show');
+  cropCtx={mode:null,src:null,ratioW:0,ratioH:0,sel:{x:0,y:0,w:0,h:0},dragging:false,resizing:null,startX:0,startY:0,startSel:null};
+}
+
+function confirmCrop(){
+  const img=document.getElementById('crop-img');
+  const area=document.getElementById('crop-area');
+  const s=cropCtx.sel;
+  if(!img.src||s.w<2||s.h<2){cancelCrop();return;}
+
+  // Calcul du scale entre display et naturel
+  const dispW=area.clientWidth;
+  const scale=img.naturalWidth/dispW;
+  const canvas=document.createElement('canvas');
+  canvas.width=Math.round(s.w*scale);
+  canvas.height=Math.round(s.h*scale);
+  const ctx2=canvas.getContext('2d');
+  ctx2.drawImage(img,
+    Math.round(s.x*scale),Math.round(s.y*scale),
+    Math.round(s.w*scale),Math.round(s.h*scale),
+    0,0,canvas.width,canvas.height
+  );
+  const croppedData=canvas.toDataURL('image/jpeg',0.88);
+
+  const mode=cropCtx.mode;
+  cancelCrop();
+
+  if(mode==='suspect'){
+    photoData=croppedData;
+    document.getElementById('pp').src=croppedData;
+    document.getElementById('pp').style.display='block';
+    document.getElementById('pph').style.display='none';
+  } else if(mode==='wanted'){
+    wantedPhotoDataLocal=croppedData;
+    document.getElementById('wanted-photo-prev').src=croppedData;
+    document.getElementById('wanted-photo-prev').style.display='block';
+    document.getElementById('wanted-photo-ph').style.display='none';
+    updateWantedPreview();
+  } else if(mode==='agent'){
+    (async()=>{
+      agentPhotos[currentAgentPhotoKey]=croppedData;
+      await saveAgentPhotos();
+      renderReports(document.getElementById('agent-srch')?.value||'');
+      renderPatrols(document.getElementById('patrol-srch')?.value||'');
+    })();
+  }
 }
 
 // ── DESERT BG ──
@@ -1665,7 +2073,10 @@ function renderWantedSidebar(){
   for(let i=0;i<8;i++)spawnDust();setInterval(spawnDust,6000);
 })();
 
-ld().catch(()=>{});
+ld().catch(()=>{}).finally(()=>{
+  const ls=document.getElementById('loading-screen');
+  if(ls)ls.classList.add('hidden');
+});
 </script>
 </body>
 </html>
