@@ -750,51 +750,8 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
       <div id="wanted-poster-list"></div>
       <div class="wsb-footer">村 SHUGO · SUNA 砂</div>
     </div>
-  </div>
-</div>
-
-
-<!-- ── ADMIN PASSWORD GATE ── -->
-<div id="admin-gate">
-  <div class="admin-gate-box">
-    <div class="admin-gate-icon">⚙</div>
-    <div class="admin-gate-title">Zone Restreinte</div>
-    <div class="admin-gate-sub">Accès administrateur requis</div>
-    <div class="admin-gate-err" id="admin-gate-err"></div>
-    <input class="admin-gate-inp" type="password" id="admin-gate-inp" placeholder="Code admin" />
-    <button class="admin-gate-btn" onclick="checkAdminPwd()">Accéder</button>
-    <button class="admin-gate-cancel" onclick="closeAdminGate()">Annuler</button>
-  </div>
-</div>
-
-<!-- ── CROP MODAL ── -->
-<div id="crop-modal">
-  <div class="crop-box">
-    <div class="crop-title">Cadrer la photo</div>
-    <div class="crop-area" id="crop-area">
-      <img id="crop-img" src="" alt="" />
-      <div class="crop-selection" id="crop-sel" style="display:none">
-        <div class="crop-handle" id="ch-tl" style="top:-5px;left:-5px;cursor:nw-resize"></div>
-        <div class="crop-handle" id="ch-tr" style="top:-5px;right:-5px;cursor:ne-resize"></div>
-        <div class="crop-handle" id="ch-bl" style="bottom:-5px;left:-5px;cursor:sw-resize"></div>
-        <div class="crop-handle" id="ch-br" style="bottom:-5px;right:-5px;cursor:se-resize"></div>
-      </div>
-    </div>
-    <div class="crop-controls">
-      <button class="crop-ratio-btn sel" id="crb-free" onclick="setCropRatio(0,0,'free')">Libre</button>
-      <button class="crop-ratio-btn" id="crb-1-1" onclick="setCropRatio(1,1,'1-1')">1:1</button>
-      <button class="crop-ratio-btn" id="crb-3-4" onclick="setCropRatio(3,4,'3-4')">3:4</button>
-      <button class="crop-ratio-btn" id="crb-4-3" onclick="setCropRatio(4,3,'4-3')">4:3</button>
-      <button class="crop-ratio-btn" id="crb-16-9" onclick="setCropRatio(16,9,'16-9')">16:9</button>
-    </div>
-    <div class="crop-actions">
-      <button class="abtn" onclick="cancelCrop()">Annuler</button>
-      <button class="abtn prim" onclick="confirmCrop()">Valider le cadrage</button>
-    </div>
-  </div>
-</div>
-
-  <!-- ── ADMIN PANEL (pleine largeur) ── -->
+  
+<!-- ── ADMIN PANEL (pleine largeur) ── -->
   <div id="vadmin" class="view admin-fullview">
     <div class="ph">
       <div><div class="ptitle" style="color:var(--purple3)">⚙ Administration</div><div class="psub">Gestion des annonces, popups et affiches de recherche</div></div>
@@ -877,6 +834,51 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--text);min-h
     </div>
   </div>
 
+</div>
+</div>
+
+
+<!-- ── ADMIN PASSWORD GATE ── -->
+<div id="admin-gate">
+  <div class="admin-gate-box">
+    <div class="admin-gate-icon">⚙</div>
+    <div class="admin-gate-title">Zone Restreinte</div>
+    <div class="admin-gate-sub">Accès administrateur requis</div>
+    <div class="admin-gate-err" id="admin-gate-err"></div>
+    <input class="admin-gate-inp" type="password" id="admin-gate-inp" placeholder="Code admin" />
+    <button class="admin-gate-btn" onclick="checkAdminPwd()">Accéder</button>
+    <button class="admin-gate-cancel" onclick="closeAdminGate()">Annuler</button>
+  </div>
+</div>
+
+<!-- ── CROP MODAL ── -->
+<div id="crop-modal">
+  <div class="crop-box">
+    <div class="crop-title">Cadrer la photo</div>
+    <div class="crop-area" id="crop-area">
+      <img id="crop-img" src="" alt="" />
+      <div class="crop-selection" id="crop-sel" style="display:none">
+        <div class="crop-handle" id="ch-tl" style="top:-5px;left:-5px;cursor:nw-resize"></div>
+        <div class="crop-handle" id="ch-tr" style="top:-5px;right:-5px;cursor:ne-resize"></div>
+        <div class="crop-handle" id="ch-bl" style="bottom:-5px;left:-5px;cursor:sw-resize"></div>
+        <div class="crop-handle" id="ch-br" style="bottom:-5px;right:-5px;cursor:se-resize"></div>
+      </div>
+    </div>
+    <div class="crop-controls">
+      <button class="crop-ratio-btn sel" id="crb-free" onclick="setCropRatio(0,0,'free')">Libre</button>
+      <button class="crop-ratio-btn" id="crb-1-1" onclick="setCropRatio(1,1,'1-1')">1:1</button>
+      <button class="crop-ratio-btn" id="crb-3-4" onclick="setCropRatio(3,4,'3-4')">3:4</button>
+      <button class="crop-ratio-btn" id="crb-4-3" onclick="setCropRatio(4,3,'4-3')">4:3</button>
+      <button class="crop-ratio-btn" id="crb-16-9" onclick="setCropRatio(16,9,'16-9')">16:9</button>
+    </div>
+    <div class="crop-actions">
+      <button class="abtn" onclick="cancelCrop()">Annuler</button>
+      <button class="abtn prim" onclick="confirmCrop()">Valider le cadrage</button>
+    </div>
+  </div>
+</div>
+
+
 <input type="file" id="agent-photo-input" accept="image/*" style="display:none" onchange="saveAgentPhoto(event)" />
 
 <script>
@@ -952,7 +954,14 @@ function esc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&
 function suspectPhotoKey(nom){return String(nom||'').trim().toLowerCase();}
 function agentPhotoKey(name){return String(name||'').trim().toLowerCase();}
 function getAgentPhoto(name){return agentPhotos[agentPhotoKey(name)]||null;}
-function getSuspectPhoto(nom){return suspectPhotos[suspectPhotoKey(nom)]||null;}
+function getSuspectPhoto(nom){
+  // D'abord suspectPhotos, sinon chercher le casier en mémoire
+  const fromMap=suspectPhotos[suspectPhotoKey(nom)];
+  if(fromMap)return fromMap;
+  const casier=casiers.find(c=>c.nom===nom);
+  if(casier&&casier.photo&&casier.photo.startsWith('data:'))return casier.photo;
+  return null;
+}
 
 // ── LOCAL STORAGE ──
 function loadLocal(){try{const r=localStorage.getItem(STORAGE_KEY);return r?JSON.parse(r).map(normalizeCasier):[];}catch(e){return [];}}
@@ -1104,22 +1113,28 @@ async function sd(){
   }
 }
 
-// Migration photos inline → suspectPhotos (appelée après chargement complet)
+// Après chargement: migration photos inline → suspectPhotos + injection inverse
 function migrateInlinePhotos(){
   let migrated=0;
+  // 1) Casiers avec photo inline → suspectPhotos
   casiers.forEach(c=>{
     if(c.photo&&typeof c.photo==='string'&&c.photo.startsWith('data:')){
       const key=suspectPhotoKey(c.nom);
       if(!suspectPhotos[key]){suspectPhotos[key]=c.photo;migrated++;}
-      delete c.photo;
+      // On garde c.photo en mémoire pour l'affichage
+    }
+  });
+  // 2) suspectPhotos → réinjecter dans casiers qui n'ont pas de photo
+  casiers.forEach(c=>{
+    if(!c.photo||!c.photo.startsWith('data:')){
+      const ph=suspectPhotos[suspectPhotoKey(c.nom)];
+      if(ph)c.photo=ph;
     }
   });
   if(migrated>0){
-    console.log('[migration] '+migrated+' photo(s) migrées vers suspectPhotos');
+    console.log('[shugo] '+migrated+' photo(s) migrées');
     saveSuspectPhotosLocal();
     if(storageMode==='remote'&&supabaseReady())saveSuspectPhotosRemote().catch(()=>{});
-    saveLocal();
-    if(storageMode==='remote'&&supabaseReady())saveRemote().catch(()=>{});
   }
 }
 
