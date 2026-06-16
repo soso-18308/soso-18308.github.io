@@ -1005,15 +1005,37 @@ function getSuspectPhoto(nom){
   if(fromMap)return fromMap;
   const casier=casiers.find(c=>c.nom===nom);
   if(casier&&casier.photoKey&&suspectPhotos[casier.photoKey])return suspectPhotos[casier.photoKey];
+  if(casier&&casier.photoThumb&&String(casier.photoThumb).startsWith('data:'))return casier.photoThumb;
   if(casier&&casier.photo&&casier.photo.startsWith('data:'))return casier.photo;
   return null;
 }
 function getCasierPhoto(c){
   if(!c)return null;
+  const wantedMatch=wanteds.find(w=>suspectPhotoKey(w.nom)===suspectPhotoKey(c.nom)&&w.photo);
   return (c.photoKey&&suspectPhotos[c.photoKey])
     || suspectPhotos[suspectPhotoKey(c.nom)]
+    || (c.photoThumb&&String(c.photoThumb).startsWith('data:')?c.photoThumb:null)
     || (c.photo&&String(c.photo).startsWith('data:')?c.photo:null)
+    || (wantedMatch&&String(wantedMatch.photo).startsWith('data:')?wantedMatch.photo:null)
     || null;
+}
+function makePhotoThumb(src){
+  return new Promise(resolve=>{
+    if(!src||!String(src).startsWith('data:'))return resolve(src||'');
+    const img=new Image();
+    img.onload=()=>{
+      const size=120;
+      const canvas=document.createElement('canvas');
+      canvas.width=size;canvas.height=size;
+      const ctx=canvas.getContext('2d');
+      const s=Math.min(img.naturalWidth,img.naturalHeight);
+      const sx=(img.naturalWidth-s)/2,sy=(img.naturalHeight-s)/2;
+      ctx.drawImage(img,sx,sy,s,s,0,0,size,size);
+      resolve(canvas.toDataURL('image/jpeg',0.78));
+    };
+    img.onerror=()=>resolve(src);
+    img.src=src;
+  });
 }
 
 // ── LOCAL STORAGE ──
@@ -1029,6 +1051,25 @@ function loadPopupsLocal(){try{const r=localStorage.getItem(POPUPS_KEY);popups=r
 function savePopupsLocal(){try{localStorage.setItem(POPUPS_KEY,JSON.stringify(popups));}catch(e){}}
 function loadWantedsLocal(){try{const r=localStorage.getItem(WANTED_KEY);wanteds=r?JSON.parse(r):[];}catch(e){wanteds=[];}}
 function saveWantedsLocal(){try{localStorage.setItem(WANTED_KEY,JSON.stringify(wanteds));}catch(e){}}
+async function mergeCasierPhotosFrom(sourceCasiers){
+  if(!Array.isArray(sourceCasiers)||!sourceCasiers.length)return 0;
+  let merged=0;
+  for(const src of sourceCasiers){
+    const srcKey=src.photoKey||suspectPhotoKey(src.nom);
+    const srcPhoto=(srcKey&&suspectPhotos[srcKey])
+      || suspectPhotos[suspectPhotoKey(src.nom)]
+      || (src.photoThumb&&String(src.photoThumb).startsWith('data:')?src.photoThumb:null)
+      || (src.photo&&String(src.photo).startsWith('data:')?src.photo:null);
+    if(!srcPhoto)continue;
+    const target=casiers.find(c=>(c.photoKey&&c.photoKey===srcKey)||suspectPhotoKey(c.nom)===suspectPhotoKey(src.nom));
+    if(!target||getCasierPhoto(target))continue;
+    target.photoKey=target.photoKey||srcKey;
+    target.photoThumb=await makePhotoThumb(srcPhoto);
+    if(!suspectPhotos[target.photoKey]&&String(srcPhoto).startsWith('data:'))suspectPhotos[target.photoKey]=srcPhoto;
+    merged++;
+  }
+  return merged;
+}
 
 // ── SUPABASE HELPERS ──
 function supabaseReady(){return SUPABASE_URL.startsWith('https://')&&SUPABASE_ANON_KEY.length>20;}
@@ -1126,9 +1167,10 @@ async function saveWantedsSync(){
 // ── CHARGEMENT GLOBAL ──
 async function ld(){
   loadAgentPhotosLocal();loadSuspectPhotosLocal();loadPatrolsLocal();loadPopupsLocal();loadWantedsLocal();
+  const localCasiersBeforeRemote=loadLocal();
   if(!supabaseReady()){
-    casiers=loadLocal();storageMode='local';setSyncStatus('Local');
-    migrateInlinePhotos();
+    casiers=localCasiersBeforeRemote;storageMode='local';setSyncStatus('Local');
+    await migrateInlinePhotos();
     return;
   }  try{
     setSyncStatus('Connexion...','');
@@ -1144,14 +1186,16 @@ async function ld(){
     if(Object.keys(remotePhotosSuspects).length)suspectPhotos=remotePhotosSuspects;
     const remoteCasiers=await loadRemote();
     casiers=remoteCasiers;
+    const mergedLocalPhotos=await mergeCasierPhotosFrom(localCasiersBeforeRemote);
     if(remotePatrols.length)patrols=remotePatrols;
     if(remotePopups.length)popups=remotePopups;
     if(remoteWanteds.length)wanteds=remoteWanteds;
     storageMode='remote';setSyncStatus('Partagé','on');
-    if(casiers.length===0){const local=loadLocal();if(local.length){casiers=local;await saveRemote();}}
+    if(casiers.length===0){const local=localCasiersBeforeRemote;if(local.length){casiers=local;await saveRemote();}}
     saveLocal();saveAgentPhotosLocal();saveSuspectPhotosLocal();savePatrolsLocal();savePopupsLocal();saveWantedsLocal();
     // Migrer les anciennes photos inline vers suspectPhotos
-    migrateInlinePhotos();
+    await migrateInlinePhotos();
+    if(mergedLocalPhotos>0){saveLocal();await saveRemote().catch(()=>{});await saveSuspectPhotos();}
   }catch(e){
     casiers=loadLocal();storageMode='local';setSyncStatus('Local secours','err');
     console.error('Supabase load failed:',e);
@@ -1167,8 +1211,8 @@ async function sd(){
 }
 
 // Après chargement: migration photos inline → suspectPhotos + injection inverse
-function migrateInlinePhotos(){
-  let migrated=0;
+async function migrateInlinePhotos(){
+  let migrated=0,thumbed=0;
   // 1) Casiers avec photo inline → suspectPhotos
   casiers.forEach(c=>{
     if(c.photo&&typeof c.photo==='string'&&c.photo.startsWith('data:')){
@@ -1184,10 +1228,16 @@ function migrateInlinePhotos(){
       if(ph)c.photo=ph;
     }
   });
-  if(migrated>0){
-    console.log('[shugo] '+migrated+' photo(s) migrées');
+  for(const c of casiers){
+    const ph=getCasierPhoto(c);
+    if(ph&&!c.photoThumb){c.photoThumb=await makePhotoThumb(ph);thumbed++;}
+  }
+  if(migrated>0||thumbed>0){
+    console.log('[shugo] '+migrated+' photo(s) migrées, '+thumbed+' miniature(s) créées');
+    saveLocal();
     saveSuspectPhotosLocal();
     if(storageMode==='remote'&&supabaseReady())saveSuspectPhotosRemote().catch(()=>{});
+    if(storageMode==='remote'&&supabaseReady())saveRemote().catch(()=>{});
   }
 }
 
@@ -1205,6 +1255,7 @@ function normalizeCasier(c){
   c.agent.autres=String(c.agent.autres||'');
   // photoKey = index dans suspectPhotos
   c.photoKey=c.photoKey||suspectPhotoKey(c.nom);
+  if(c.photoThumb&&typeof c.photoThumb!=='string')c.photoThumb='';
   // .photo gardé tel quel pour migration ultérieure
   c.infractions=Array.isArray(c.infractions)?c.infractions:[];
   c.incidents=Array.isArray(c.incidents)&&c.incidents.length?c.incidents:[{
@@ -1395,11 +1446,14 @@ async function saveCasier(){
   const newPhotoKey=suspectPhotoKey(nom);
   const previousCasier=editIdx>=0?casiers[editIdx]:(addIncidentIdx>=0?casiers[addIncidentIdx]:null);
   const previousPhoto=previousCasier?getCasierPhoto(previousCasier):null;
+  let savedThumb=previousPhoto?await makePhotoThumb(previousPhoto):'';
 
   // Sauvegarde photo suspect séparément si présente
   if(photoData!==null){
+    savedThumb=await makePhotoThumb(photoData);
     suspectPhotos[newPhotoKey]=photoData;
     await saveSuspectPhotos();
+    if(previousCasier)previousCasier.photoThumb=savedThumb;
     photoData=null;
   } else if(previousPhoto&&!suspectPhotos[newPhotoKey]){
     suspectPhotos[newPhotoKey]=previousPhoto;
@@ -1410,11 +1464,12 @@ async function saveCasier(){
     const c=casiers[addIncidentIdx];
     c.nom=nom;c.village=(document.getElementById('fv').value||'').trim();
     c.photoKey=newPhotoKey;
+    c.photoThumb=savedThumb||c.photoThumb||'';
     c.incidents.unshift(incident);
     updateTotals(c);
     await sd();refreshAgentOptions();renderList();renderReports();const idx=addIncidentIdx;resetForm();showDetail(idx);return;
   }
-  const record={nom,village:(document.getElementById('fv').value||'').trim(),photoKey:newPhotoKey,incidents:[incident]};
+  const record={nom,village:(document.getElementById('fv').value||'').trim(),photoKey:newPhotoKey,photoThumb:savedThumb,incidents:[incident]};
   updateTotals(record);
   if(editIdx>=0){
     record.incidents=casiers[editIdx].incidents&&casiers[editIdx].incidents.length?casiers[editIdx].incidents:[incident];
