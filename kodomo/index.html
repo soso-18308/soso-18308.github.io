@@ -3,77 +3,319 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
 <title>Kodomo</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="../css/style.css">
 
+<style>
+
+*{
+margin:0;
+padding:0;
+box-sizing:border-box;
+}
+
+body{
+font-family:'Inter',sans-serif;
+background:#050b14;
+color:white;
+min-height:100vh;
+}
+
+header{
+height:70px;
+border-bottom:1px solid rgba(96,165,250,.25);
+display:flex;
+align-items:center;
+justify-content:space-between;
+padding:0 40px;
+background:rgba(5,11,20,.95);
+}
+
+.logo{
+font-family:'Cinzel',serif;
+font-size:28px;
+letter-spacing:6px;
+color:#60a5fa;
+}
+
+nav{
+display:flex;
+gap:20px;
+}
+
+nav button{
+background:none;
+border:none;
+color:#dbeafe;
+cursor:pointer;
+font-size:14px;
+letter-spacing:2px;
+}
+
+nav button:hover{
+color:#60a5fa;
+}
+
+.container{
+max-width:1200px;
+margin:auto;
+padding:40px;
+}
+
+.topbar{
+display:flex;
+justify-content:space-between;
+align-items:center;
+margin-bottom:30px;
+}
+
+h1{
+font-family:'Cinzel',serif;
+letter-spacing:4px;
+color:#60a5fa;
+}
+
+.add-btn{
+background:#60a5fa;
+border:none;
+padding:12px 20px;
+border-radius:8px;
+cursor:pointer;
+font-weight:bold;
+}
+
+.search{
+width:100%;
+padding:15px;
+background:#0b1627;
+border:1px solid rgba(96,165,250,.3);
+border-radius:10px;
+color:white;
+margin-bottom:25px;
+}
+
+.list{
+display:flex;
+flex-direction:column;
+gap:15px;
+}
+
+.card{
+background:#0b1627;
+border:1px solid rgba(96,165,250,.25);
+padding:20px;
+border-radius:14px;
+cursor:pointer;
+transition:.3s;
+}
+
+.card:hover{
+border-color:#60a5fa;
+transform:translateY(-2px);
+}
+
+.card h3{
+color:#60a5fa;
+margin-bottom:8px;
+}
+
+.hidden{
+display:none;
+}
+
+.password-box{
+max-width:400px;
+margin:100px auto;
+text-align:center;
+}
+
+.password-box input{
+width:100%;
+padding:12px;
+margin:15px 0;
+background:#0b1627;
+border:1px solid rgba(96,165,250,.3);
+color:white;
+border-radius:8px;
+}
+
+.password-box button{
+padding:10px 20px;
+background:#60a5fa;
+border:none;
+border-radius:8px;
+cursor:pointer;
+}
+
+</style>
 </head>
-<body class="kodomo-bg">
+<body>
 
-<div class="particles"></div>
+<header>
+<div class="logo">KODOMO</div>
 
-<div class="kodomo-container">
+<nav>
+<button onclick="showSection('cours')">LIVRES</button>
+<button onclick="showSection('exam')">EXAMENS</button>
+<button onclick="showSection('eleves')">ÉLÈVES</button>
+<button onclick="showSection('rapports')">RAPPORTS</button>
+</nav>
+</header>
 
-    <div class="kodomo-header">
-        <div class="kodomo-kanji">子</div>
-        <h1>KODOMO</h1>
-        <p>Archives Académiques</p>
-    </div>
+<div class="container">
 
-    <div class="kodomo-grid">
+<!-- LIVRES -->
 
-        <div class="kodomo-card">
-            <div class="kodomo-icon">📚</div>
-            <h2>Livre de cours</h2>
+<section id="cours">
 
-            <p>
-                Tous les liens et documents de cours.
-                Fonctionne comme un forum où les membres
-                autorisés peuvent ajouter, modifier ou
-                supprimer du contenu.
-            </p>
-        </div>
+<div class="topbar">
+<h1>Livres de cours</h1>
+<button class="add-btn">+ Nouveau document</button>
+</div>
 
-        <div class="kodomo-card">
-            <div class="kodomo-icon">📝</div>
-            <h2>Doc Exam</h2>
+<input class="search" placeholder="Rechercher un document...">
 
-            <p>
-                Archive des examens.
-                Accès protégé par le mot de passe
-                <strong>sako</strong>.
-                Les membres autorisés peuvent gérer
-                les documents.
-            </p>
-        </div>
+<div class="list">
+<div class="card">
+<h3>Ninjutsu Avancé</h3>
+<p>Document de cours</p>
+</div>
 
-        <div class="kodomo-card">
-            <div class="kodomo-icon">👤</div>
-            <h2>Info Élève</h2>
+<div class="card">
+<h3>Contrôle du Chakra</h3>
+<p>Document de cours</p>
+</div>
+</div>
 
-            <p>
-                Liste des nouveaux élèves.
-                Participation aux examens,
-                validation ou échec des passages.
-            </p>
-        </div>
+</section>
 
-        <div class="kodomo-card">
-            <div class="kodomo-icon">📋</div>
-            <h2>Rapport</h2>
+<!-- EXAM -->
 
-            <p>
-                Rapports des professeurs
-                et examinateurs concernant
-                les cours et les examens.
-            </p>
-        </div>
+<section id="exam" class="hidden">
 
-    </div>
+<div id="loginExam" class="password-box">
+<h1>Doc Exam</h1>
+
+<input type="password" id="examPass" placeholder="Mot de passe">
+
+<button onclick="checkPass()">
+Accéder
+</button>
+</div>
+
+<div id="examContent" class="hidden">
+
+<div class="topbar">
+<h1>Documents Exam</h1>
+<button class="add-btn">+ Nouveau document</button>
+</div>
+
+<div class="list">
+<div class="card">
+<h3>Examen Genin</h3>
+<p>Session Juin</p>
+</div>
+
+<div class="card">
+<h3>Examen Chunin</h3>
+<p>Session Été</p>
+</div>
+</div>
 
 </div>
+
+</section>
+
+<!-- ELEVES -->
+
+<section id="eleves" class="hidden">
+
+<div class="topbar">
+<h1>Info Élève</h1>
+<button class="add-btn">+ Nouvel élève</button>
+</div>
+
+<div class="list">
+
+<div class="card">
+<h3>Akero</h3>
+<p>Participation : Oui</p>
+<p>Résultat : Réussi</p>
+</div>
+
+<div class="card">
+<h3>Doma</h3>
+<p>Participation : Non</p>
+<p>Résultat : En attente</p>
+</div>
+
+</div>
+
+</section>
+
+<!-- RAPPORTS -->
+
+<section id="rapports" class="hidden">
+
+<div class="topbar">
+<h1>Rapports</h1>
+<button class="add-btn">+ Nouveau rapport</button>
+</div>
+
+<div class="list">
+
+<div class="card">
+<h3>Rapport Cours Chakra</h3>
+<p>Professeur Ryu</p>
+</div>
+
+<div class="card">
+<h3>Rapport Examen Genin</h3>
+<p>Examinateur Sako</p>
+</div>
+
+</div>
+
+</section>
+
+</div>
+
+<script>
+
+function showSection(id){
+
+document.querySelectorAll("section").forEach(section=>{
+section.classList.add("hidden");
+});
+
+document.getElementById(id).classList.remove("hidden");
+}
+
+function checkPass(){
+
+const pass =
+document.getElementById("examPass").value;
+
+if(pass === "sako"){
+
+document
+.getElementById("loginExam")
+.classList.add("hidden");
+
+document
+.getElementById("examContent")
+.classList.remove("hidden");
+
+}else{
+
+alert("Mot de passe incorrect");
+
+}
+
+}
+
+</script>
 
 </body>
 </html>
