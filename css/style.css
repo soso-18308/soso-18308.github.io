@@ -1,0 +1,84 @@
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    min-height:100vh;
+    overflow:hidden;
+}
+
+/* ========================= */
+/* ACCUEIL */
+/* ========================= */
+
+.home{
+    background:
+    radial-gradient(circle at top,#172744,#050b16);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.center{
+    text-align:center;
+}
+
+h1{
+    color:white;
+    font-size:4rem;
+    margin-bottom:50px;
+    letter-spacing:10px;
+}
+
+.cards{
+    display:flex;
+    gap:30px;
+}
+
+.card{
+    width:260px;
+    height:150px;
+    border-radius:20px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-decoration:none;
+    color:white;
+    font-size:2rem;
+    transition:.3s;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+.suna{
+    background:linear-gradient(
+        135deg,
+        #7a5820,
+        #c49030,
+        #e8b84b
+    );
+}
+
+.kodomo{
+    background:linear-gradient(
+        135deg,
+        #0b3d91,
+        #2563eb,
+        #60a5fa
+    );
+}
+
+/* ========================= */
+/* KODOMO */
+/* ========================= */
+
+.kodomo-bg{
+    background:
+    radial-gradient(circle at center,
+        #1d4ed8 0%,
+        #0f172a 100%);
+}
