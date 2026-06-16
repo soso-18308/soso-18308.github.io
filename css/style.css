@@ -1,57 +1,40 @@
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-}
+/* ================================= */
+/* ======== PAGE KODOMO ============ */
+/* ================================= */
 
-body{
-font-family:'Inter',sans-serif;
-height:100vh;
-overflow:hidden;
+.kodomo-bg{
+overflow:auto;
+height:auto;
+min-height:100vh;
+
 background:
-radial-gradient(circle at top,#15253f,#060b14);
-display:flex;
-justify-content:center;
-align-items:center;
+radial-gradient(circle at top,#1b4e8a 0%,#081423 60%,#050b14 100%);
+
+display:block;
+padding:50px 30px;
 position:relative;
 }
 
-/* Background */
-
-.particles{
-position:absolute;
-inset:0;
-background:
-radial-gradient(circle,#ffffff15 1px,transparent 1px);
-background-size:50px 50px;
-animation:move 15s linear infinite;
-}
-
-@keyframes move{
-from{
-transform:translateY(0);
-}
-to{
-transform:translateY(-50px);
-}
-}
-
-/* Hero */
-
-.hero{
-text-align:center;
+.kodomo-container{
+max-width:1200px;
+margin:auto;
+position:relative;
 z-index:2;
-animation:fadeIn 1.5s ease;
 }
 
-.logo{
+.kodomo-header{
+text-align:center;
+margin-bottom:60px;
+}
+
+.kodomo-kanji{
 font-size:90px;
-color:#fff;
+color:#60a5fa;
+text-shadow:0 0 40px rgba(96,165,250,.5);
 margin-bottom:15px;
-text-shadow:0 0 40px rgba(255,255,255,.4);
 }
 
-h1{
+.kodomo-header h1{
 font-family:'Cinzel',serif;
 font-size:4rem;
 letter-spacing:12px;
@@ -59,112 +42,71 @@ color:white;
 margin-bottom:15px;
 }
 
-p{
-color:#b8c5d8;
+.kodomo-header p{
+color:#b8d8ff;
 font-size:18px;
-margin-bottom:50px;
 }
 
-/* Cards */
-
-.cards{
-display:flex;
-gap:40px;
-justify-content:center;
-flex-wrap:wrap;
+.kodomo-grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:30px;
 }
 
-.card{
-width:320px;
-height:220px;
-
+.kodomo-card{
 background:rgba(255,255,255,.05);
 backdrop-filter:blur(15px);
 
-border:1px solid rgba(255,255,255,.1);
+border:1px solid rgba(96,165,250,.15);
 border-radius:24px;
 
-display:flex;
-flex-direction:column;
-justify-content:center;
-align-items:center;
+padding:30px;
 
-text-decoration:none;
 transition:.4s;
 }
 
-.card:hover{
-transform:translateY(-12px) scale(1.03);
+.kodomo-card:hover{
+transform:translateY(-10px) scale(1.02);
+border-color:#60a5fa;
+box-shadow:0 0 35px rgba(96,165,250,.35);
 }
 
-.icon{
-font-size:70px;
-margin-bottom:15px;
-}
-
-.card h2{
-font-family:'Cinzel',serif;
-font-size:28px;
-letter-spacing:5px;
-margin-bottom:10px;
-}
-
-.card span{
-font-size:14px;
-opacity:.8;
-}
-
-/* Shugo */
-
-.shugo{
-border-color:#e8b84b60;
-}
-
-.shugo h2,
-.shugo .icon{
-color:#e8b84b;
-}
-
-.shugo:hover{
-box-shadow:0 0 40px rgba(232,184,75,.4);
-}
-
-/* Kodomo */
-
-.kodomo{
-border-color:#60a5fa60;
-}
-
-.kodomo h2,
-.kodomo .icon{
+.kodomo-icon{
+font-size:60px;
+margin-bottom:20px;
 color:#60a5fa;
 }
 
-.kodomo:hover{
-box-shadow:0 0 40px rgba(96,165,250,.4);
+.kodomo-card h2{
+font-family:'Cinzel',serif;
+font-size:26px;
+letter-spacing:4px;
+color:#60a5fa;
+margin-bottom:15px;
 }
 
-/* Footer */
-
-footer{
-position:absolute;
-bottom:20px;
-left:50%;
-transform:translateX(-50%);
-color:#7b8ba5;
-font-size:12px;
-letter-spacing:3px;
+.kodomo-card p{
+color:#d0e4ff;
+font-size:14px;
+line-height:1.8;
+margin:0;
 }
 
-/* Animation */
+/* Responsive */
 
-@keyframes fadeIn{
-from{
-opacity:0;
-transform:translateY(20px);
+@media(max-width:768px){
+
+.kodomo-header h1{
+font-size:2.8rem;
+letter-spacing:6px;
 }
-to{
-opacity:1;
-transform:translateY(0);
+
+.kodomo-kanji{
+font-size:70px;
 }
+
+.kodomo-grid{
+grid-template-columns:1fr;
+}
+
 }
