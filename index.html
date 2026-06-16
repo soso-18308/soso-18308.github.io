@@ -472,9 +472,37 @@ body.admin-mode #vadmin.act{
   text-shadow:0 0 18px rgba(232,184,75,.14);
 }
 
-  #wanted-sidebar{display:none}
-  .app-inner.with-sidebar{margin-right:0}
+/* Mise en ordre finale: l'affiche ne decale plus le site */
+#wanted-sidebar{
+  position:fixed!important;right:18px!important;top:72px!important;
+  width:300px!important;height:calc(100vh - 92px)!important;
+  padding:0!important;background:transparent!important;border-left:none!important;
+  box-shadow:none!important;z-index:60!important;pointer-events:none;
 }
+.app-inner.with-sidebar{margin-right:0!important}
+.view{margin-left:auto!important;margin-right:auto!important}
+.wsb-header,.wsb-footer{display:none!important}
+#wanted-poster-list{display:flex!important;flex-direction:column!important;gap:16px!important;pointer-events:auto}
+.wanted-poster{
+  border-radius:10px!important;overflow:hidden!important;
+  background:
+    linear-gradient(180deg,rgba(255,230,165,.18),rgba(60,32,8,.06)),
+    repeating-linear-gradient(0deg,rgba(255,255,255,.025) 0 1px,transparent 1px 8px),
+    #281807!important;
+  border:1px solid rgba(232,184,75,.62)!important;
+  box-shadow:0 14px 34px rgba(0,0,0,.62),inset 0 0 24px rgba(0,0,0,.28)!important;
+}
+.wanted-rank{
+  padding:12px 14px 11px!important;
+  border-bottom:1px solid rgba(232,184,75,.28);
+  background:rgba(14,8,3,.38);
+  letter-spacing:.28em!important;
+}
+.wanted-poster-header{display:none!important}
+.wanted-poster-stamp{top:58px!important}
+.wanted-poster-photo{height:190px!important;margin:12px 12px 0!important}
+.wanted-poster-body{padding:11px 13px 14px!important}
+.wanted-poster::after{display:none!important}
 
 /* ── ADMIN PASSWORD GATE ── */
 #admin-gate{
@@ -1344,7 +1372,23 @@ async function chkpw(){
     if(ls){ls.style.display='';ls.classList.remove('hidden');ls.classList.add('show');}
     startLoadingTips();
     setSyncStatus('Chargement...');
-    await ld();
+    const minLoading=new Promise(resolve=>setTimeout(resolve,5000));
+    const loadTask=ld().then(()=>true).catch(e=>{console.error('Chargement interrompu:',e);return false;});
+    const loaded=await Promise.race([loadTask,new Promise(resolve=>setTimeout(()=>resolve(false),10000))]);
+    if(!loaded){
+      storageMode='local';
+      setSyncStatus('Local secours','err');
+      if(!casiers.length)casiers=loadLocal();
+      loadTask.then(ok=>{
+        if(ok&&document.getElementById('app').style.display==='block'){
+          renderList(document.getElementById('srch')?.value||'');
+          renderReports(document.getElementById('agent-srch')?.value||'');
+          renderPatrols(document.getElementById('patrol-srch')?.value||'');
+          renderWantedSidebar();renderPopupAdmin();renderWantedAdmin();
+        }
+      });
+    }
+    await minLoading;
     stopLoadingTips();
     if(ls){ls.classList.remove('show');ls.classList.add('hidden');setTimeout(()=>{ls.style.display='none';},500);}
     document.getElementById('app').style.display='block';
