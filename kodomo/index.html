@@ -8,8 +8,9 @@
 
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 
-<style>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
+<style>
 *{
 margin:0;
 padding:0;
@@ -18,19 +19,11 @@ box-sizing:border-box;
 
 body{
 font-family:'Inter',sans-serif;
-background:
-radial-gradient(
-circle at top,
-#1e3a8a 0%,
-#0f172a 40%,
-#020617 100%
-);
+background:radial-gradient(circle at top,#1e3a8a 0%,#0f172a 40%,#020617 100%);
 color:white;
 min-height:100vh;
 overflow-x:hidden;
 }
-
-/* BACKGROUND */
 
 .bg-kanji{
 position:fixed;
@@ -44,41 +37,23 @@ user-select:none;
 z-index:0;
 }
 
-/* LOGIN */
-
 #loginScreen{
 position:fixed;
 inset:0;
-
-background:
-radial-gradient(
-circle at top,
-#1e3a8a 0%,
-#0f172a 40%,
-#020617 100%
-);
-
+background:radial-gradient(circle at top,#1e3a8a 0%,#0f172a 40%,#020617 100%);
 display:flex;
 justify-content:center;
 align-items:center;
-
 z-index:9999;
 }
 
 .login-box{
-
 width:420px;
-
 background:rgba(15,23,42,.9);
-
 backdrop-filter:blur(15px);
-
 border:1px solid rgba(96,165,250,.25);
-
 border-radius:20px;
-
 padding:40px;
-
 text-align:center;
 }
 
@@ -101,38 +76,23 @@ margin-bottom:20px;
 }
 
 .login-box input{
-
 width:100%;
-
 padding:14px;
-
 background:#0f172a;
-
 border:1px solid rgba(96,165,250,.25);
-
 border-radius:10px;
-
 color:white;
-
 margin-bottom:15px;
 }
 
 .login-box button{
-
 width:100%;
-
 padding:14px;
-
 border:none;
-
 border-radius:10px;
-
 background:#2563eb;
-
 color:white;
-
 font-weight:bold;
-
 cursor:pointer;
 }
 
@@ -140,69 +100,44 @@ cursor:pointer;
 background:#3b82f6;
 }
 
-/* APP */
-
 .hidden{
-display:none;
+display:none !important;
 }
 
 header{
-
 height:70px;
-
 border-bottom:1px solid rgba(96,165,250,.2);
-
 display:flex;
-
 align-items:center;
-
 justify-content:space-between;
-
 padding:0 40px;
-
 background:rgba(2,6,23,.85);
-
 backdrop-filter:blur(10px);
-
 position:sticky;
-
 top:0;
-
 z-index:50;
 }
 
 .logo{
-
 font-family:'Cinzel',serif;
-
 font-size:28px;
-
 letter-spacing:6px;
-
 color:#60a5fa;
 }
 
 nav{
-
 display:flex;
-
 gap:20px;
+flex-wrap:wrap;
 }
 
 nav button{
-
 background:none;
-
 border:none;
-
 color:#dbeafe;
-
 cursor:pointer;
-
 letter-spacing:2px;
-
 font-size:13px;
-
 transition:.3s;
 }
 
@@ -211,52 +146,34 @@ color:#60a5fa;
 }
 
 .container{
-
 max-width:1200px;
-
 margin:auto;
-
 padding:40px;
-
 position:relative;
-
 z-index:5;
 }
 
 .topbar{
-
 display:flex;
-
 justify-content:space-between;
-
 align-items:center;
-
 margin-bottom:25px;
+gap:15px;
 }
 
 h1{
-
 font-family:'Cinzel',serif;
-
 letter-spacing:4px;
-
 color:#60a5fa;
 }
 
 .add-btn{
-
 background:#2563eb;
-
 border:none;
-
 padding:12px 20px;
-
 border-radius:10px;
-
 color:white;
-
 cursor:pointer;
-
 font-weight:bold;
 }
 
@@ -265,68 +182,70 @@ background:#3b82f6;
 }
 
 .search{
-
 width:100%;
-
 padding:15px;
-
 background:#0f172a;
-
 border:1px solid rgba(96,165,250,.2);
-
 border-radius:10px;
-
 color:white;
-
 margin-bottom:20px;
 }
 
 .list{
-
 display:flex;
-
 flex-direction:column;
-
 gap:15px;
 }
 
 .card{
-
 background:rgba(15,23,42,.8);
-
 border:1px solid rgba(96,165,250,.2);
-
 padding:20px;
-
 border-radius:15px;
-
 transition:.3s;
+position:relative;
 }
 
 .card:hover{
-
 transform:translateY(-3px);
-
 border-color:#60a5fa;
-
-box-shadow:
-0 0 20px rgba(96,165,250,.15);
+box-shadow:0 0 20px rgba(96,165,250,.15);
 }
 
 .card h3{
-
 color:#60a5fa;
-
 margin-bottom:10px;
 }
 
 .card p{
-
 color:#cbd5e1;
-
 margin-top:4px;
 }
 
+.card-actions{
+margin-top:15px;
+display:flex;
+gap:10px;
+}
+
+.small-btn{
+border:none;
+border-radius:8px;
+padding:8px 12px;
+cursor:pointer;
+color:white;
+background:#1d4ed8;
+}
+
+.delete-btn{
+background:#991b1b;
+}
+
+.status{
+margin-bottom:20px;
+color:#93c5fd;
+font-size:14px;
+}
 </style>
 </head>
 
@@ -334,245 +253,313 @@ margin-top:4px;
 
 <div class="bg-kanji">水</div>
 
-<!-- LOGIN -->
-
 <div id="loginScreen">
+  <div class="login-box">
+    <div class="water">水</div>
+    <h1>KODOMO</h1>
+    <p>Accès Enseignants</p>
 
-<div class="login-box">
+    <input type="password" id="mainPassword" placeholder="Mot de passe">
 
-<div class="water">水</div>
-
-<h1>KODOMO</h1>
-
-<p>Accès Enseignants</p>
-
-<input
-type="password"
-id="mainPassword"
-placeholder="Mot de passe">
-
-<button onclick="login()">
-ACCÉDER
-</button>
-
+    <button onclick="login()">ACCÉDER</button>
+  </div>
 </div>
-
-</div>
-
-<!-- APP -->
 
 <div id="app" class="hidden">
 
 <header>
+  <div class="logo">KODOMO</div>
 
-<div class="logo">
-KODOMO
-</div>
-
-<nav>
-
-<button onclick="showSection('cours')">
-📚 LIVRES
-</button>
-
-<button onclick="showSection('exam')">
-📝 EXAMENS
-</button>
-
-<button onclick="showSection('eleves')">
-👨‍🎓 ÉLÈVES
-</button>
-
-<button onclick="showSection('rapports')">
-📋 RAPPORTS
-</button>
-
-<button onclick="logout()">
-🔒 VERROUILLER
-</button>
-
-</nav>
-
+  <nav>
+    <button onclick="showSection('cours')">📚 LIVRES</button>
+    <button onclick="showSection('exam')">📝 EXAMENS</button>
+    <button onclick="showSection('eleves')">👨‍🎓 ÉLÈVES</button>
+    <button onclick="showSection('rapports')">📋 RAPPORTS</button>
+    <button onclick="logout()">🔒 VERROUILLER</button>
+  </nav>
 </header>
 
 <div class="container">
 
-<!-- COURS -->
+  <div id="status" class="status">Connexion à Supabase...</div>
 
-<section id="cours">
+  <section id="cours">
+    <div class="topbar">
+      <h1>Livres de cours</h1>
+      <button class="add-btn" onclick="addItem('cours')">+ Nouveau document</button>
+    </div>
 
-<div class="topbar">
+    <input class="search" placeholder="Rechercher un document..." oninput="setSearch('cours', this.value)">
+    <div class="list" id="coursList"></div>
+  </section>
 
-<h1>Livres de cours</h1>
+  <section id="exam" class="hidden">
+    <div class="topbar">
+      <h1>Documents Examens</h1>
+      <button class="add-btn" onclick="addItem('exam')">+ Nouvel examen</button>
+    </div>
 
-<button class="add-btn">
-+ Nouveau document
-</button>
+    <input class="search" placeholder="Rechercher un examen..." oninput="setSearch('exam', this.value)">
+    <div class="list" id="examList"></div>
+  </section>
 
-</div>
+  <section id="eleves" class="hidden">
+    <div class="topbar">
+      <h1>Informations Élèves</h1>
+      <button class="add-btn" onclick="addItem('eleves')">+ Nouvel élève</button>
+    </div>
 
-<input
-class="search"
-placeholder="Rechercher un document...">
+    <input class="search" placeholder="Rechercher un élève..." oninput="setSearch('eleves', this.value)">
+    <div class="list" id="elevesList"></div>
+  </section>
 
-<div class="list">
+  <section id="rapports" class="hidden">
+    <div class="topbar">
+      <h1>Rapports</h1>
+      <button class="add-btn" onclick="addItem('rapports')">+ Nouveau rapport</button>
+    </div>
 
-<div class="card">
-<h3>Ninjutsu Avancé</h3>
-<p>Document de cours</p>
-</div>
-
-<div class="card">
-<h3>Contrôle du Chakra</h3>
-<p>Document de cours</p>
-</div>
-
-</div>
-
-</section>
-
-<!-- EXAMENS -->
-
-<section id="exam" class="hidden">
-
-<div class="topbar">
-
-<h1>Documents Examens</h1>
-
-<button class="add-btn">
-+ Nouveau document
-</button>
+    <input class="search" placeholder="Rechercher un rapport..." oninput="setSearch('rapports', this.value)">
+    <div class="list" id="rapportsList"></div>
+  </section>
 
 </div>
-
-<div class="list">
-
-<div class="card">
-<h3>Examen Genin</h3>
-<p>Session Juin</p>
-</div>
-
-<div class="card">
-<h3>Examen Chunin</h3>
-<p>Session Été</p>
-</div>
-
-</div>
-
-</section>
-
-<!-- ELEVES -->
-
-<section id="eleves" class="hidden">
-
-<div class="topbar">
-
-<h1>Informations Élèves</h1>
-
-<button class="add-btn">
-+ Nouvel élève
-</button>
-
-</div>
-
-<div class="list">
-
-<div class="card">
-<h3>Akero</h3>
-<p>Participation : Oui</p>
-<p>Résultat : Réussi</p>
-</div>
-
-<div class="card">
-<h3>Doma</h3>
-<p>Participation : Non</p>
-<p>Résultat : En attente</p>
-</div>
-
-</div>
-
-</section>
-
-<!-- RAPPORTS -->
-
-<section id="rapports" class="hidden">
-
-<div class="topbar">
-
-<h1>Rapports</h1>
-
-<button class="add-btn">
-+ Nouveau rapport
-</button>
-
-</div>
-
-<div class="list">
-
-<div class="card">
-<h3>Rapport Cours Chakra</h3>
-<p>Professeur Ryu</p>
-</div>
-
-<div class="card">
-<h3>Rapport Examen Genin</h3>
-<p>Examinateur Sako</p>
-</div>
-
-</div>
-
-</section>
-
-</div>
-
 </div>
 
 <script>
+const SUPABASE_URL = "https://sgxcsrwurhjvnkalpxun.supabase.co";
+const SUPABASE_ANON_KEY = "sb_publishable_hvgD-ZPp-pqArTYKaTBaEg_b4fz386Z";
+const SUPABASE_TABLE = "shugo_data";
+const SUPABASE_ROW_ID = "casiers";
+const SUPABASE_PATROL_ROW = "patrols";
 
-function login(){
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-const pass =
-document.getElementById("mainPassword").value;
+let appData = {
+  cours: [
+    { title: "Ninjutsu Avancé", description: "Document de cours" },
+    { title: "Contrôle du Chakra", description: "Document de cours" }
+  ],
+  exam: [
+    { title: "Examen Genin", description: "Session Juin" },
+    { title: "Examen Chunin", description: "Session Été" }
+  ],
+  eleves: [
+    { title: "Akero", description: "Participation : Oui\nRésultat : Réussi" },
+    { title: "Doma", description: "Participation : Non\nRésultat : En attente" }
+  ],
+  rapports: [
+    { title: "Rapport Cours Chakra", description: "Professeur Ryu" },
+    { title: "Rapport Examen Genin", description: "Examinateur Sako" }
+  ]
+};
 
-if(pass === "sako"){
+let searchState = {
+  cours: "",
+  exam: "",
+  eleves: "",
+  rapports: ""
+};
 
-document
-.getElementById("loginScreen")
-.style.display = "none";
+async function loadDataFromSupabase() {
+  setStatus("Chargement des données...");
 
-document
-.getElementById("app")
-.classList.remove("hidden");
+  const { data, error } = await supabaseClient
+    .from(SUPABASE_TABLE)
+    .select("data")
+    .eq("id", SUPABASE_ROW_ID)
+    .single();
 
-}else{
+  if (error) {
+    console.warn(error);
 
-alert("Mot de passe incorrect");
+    setStatus("Aucune donnée trouvée, création de la ligne Supabase...");
+    await saveDataToSupabase();
 
+    renderAll();
+    setStatus("Données initialisées.");
+    return;
+  }
+
+  if (data && data.data) {
+    appData = {
+      cours: data.data.cours || [],
+      exam: data.data.exam || [],
+      eleves: data.data.eleves || [],
+      rapports: data.data.rapports || []
+    };
+  }
+
+  renderAll();
+  setStatus("Données chargées depuis Supabase.");
 }
 
+async function saveDataToSupabase() {
+  setStatus("Sauvegarde en cours...");
+
+  const { error } = await supabaseClient
+    .from(SUPABASE_TABLE)
+    .upsert({
+      id: SUPABASE_ROW_ID,
+      data: appData,
+      updated_at: new Date().toISOString()
+    });
+
+  if (error) {
+    console.error(error);
+    setStatus("Erreur Supabase : " + error.message);
+    alert("Erreur Supabase : " + error.message);
+    return false;
+  }
+
+  setStatus("Sauvegardé.");
+  return true;
 }
 
-function showSection(id){
-
-document
-.querySelectorAll("section")
-.forEach(section=>{
-
-section.classList.add("hidden");
-
-});
-
-document
-.getElementById(id)
-.classList.remove("hidden");
+function setStatus(message) {
+  document.getElementById("status").textContent = message;
 }
 
-function logout(){
+function login() {
+  const pass = document.getElementById("mainPassword").value;
 
-location.reload();
-
+  if (pass === "sako") {
+    document.getElementById("loginScreen").style.display = "none";
+    document.getElementById("app").classList.remove("hidden");
+    loadDataFromSupabase();
+  } else {
+    alert("Mot de passe incorrect");
+  }
 }
 
+function showSection(id) {
+  document.querySelectorAll("section").forEach(section => {
+    section.classList.add("hidden");
+  });
+
+  document.getElementById(id).classList.remove("hidden");
+}
+
+function logout() {
+  location.reload();
+}
+
+function renderAll() {
+  renderList("cours");
+  renderList("exam");
+  renderList("eleves");
+  renderList("rapports");
+}
+
+function renderList(type) {
+  const list = document.getElementById(type + "List");
+  list.innerHTML = "";
+
+  const search = searchState[type].toLowerCase();
+
+  const items = appData[type].filter(item => {
+    return (
+      item.title.toLowerCase().includes(search) ||
+      item.description.toLowerCase().includes(search)
+    );
+  });
+
+  if (items.length === 0) {
+    list.innerHTML = `
+      <div class="card">
+        <h3>Aucun élément</h3>
+        <p>Aucune donnée à afficher pour le moment.</p>
+      </div>
+    `;
+    return;
+  }
+
+  items.forEach((item, index) => {
+    const realIndex = appData[type].indexOf(item);
+
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <h3>${escapeHtml(item.title)}</h3>
+      ${formatDescription(item.description)}
+      <div class="card-actions">
+        <button class="small-btn" onclick="editItem('${type}', ${realIndex})">Modifier</button>
+        <button class="small-btn delete-btn" onclick="deleteItem('${type}', ${realIndex})">Supprimer</button>
+      </div>
+    `;
+
+    list.appendChild(card);
+  });
+}
+
+function formatDescription(text) {
+  return text
+    .split("\n")
+    .map(line => `<p>${escapeHtml(line)}</p>`)
+    .join("");
+}
+
+function setSearch(type, value) {
+  searchState[type] = value;
+  renderList(type);
+}
+
+async function addItem(type) {
+  const title = prompt("Titre :");
+  if (!title || !title.trim()) return;
+
+  const description = prompt("Description :");
+  if (description === null) return;
+
+  appData[type].push({
+    title: title.trim(),
+    description: description.trim() || "Sans description"
+  });
+
+  renderList(type);
+  await saveDataToSupabase();
+}
+
+async function editItem(type, index) {
+  const item = appData[type][index];
+  if (!item) return;
+
+  const title = prompt("Modifier le titre :", item.title);
+  if (!title || !title.trim()) return;
+
+  const description = prompt("Modifier la description :", item.description);
+  if (description === null) return;
+
+  appData[type][index] = {
+    title: title.trim(),
+    description: description.trim() || "Sans description"
+  };
+
+  renderList(type);
+  await saveDataToSupabase();
+}
+
+async function deleteItem(type, index) {
+  const item = appData[type][index];
+  if (!item) return;
+
+  if (!confirm("Supprimer : " + item.title + " ?")) return;
+
+  appData[type].splice(index, 1);
+
+  renderList(type);
+  await saveDataToSupabase();
+}
+
+function escapeHtml(text) {
+  return String(text)
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
 </script>
 
 </body>
