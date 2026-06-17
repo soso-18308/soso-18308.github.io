@@ -141,6 +141,104 @@ body {
   filter: brightness(1.08);
 }
 
+/* LOADING */
+
+.loading-screen {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background:
+    radial-gradient(circle at top, rgba(37,99,235,.35), transparent 35%),
+    linear-gradient(135deg, #020617 0%, #0f172a 60%, #020617 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+}
+
+.loading-box {
+  width: min(520px, 100%);
+  background: rgba(15, 23, 42, .9);
+  border: 1px solid rgba(96, 165, 250, .25);
+  border-radius: 30px;
+  padding: 42px;
+  text-align: center;
+  box-shadow: 0 30px 90px rgba(0,0,0,.55);
+  backdrop-filter: blur(18px);
+}
+
+.loading-symbol {
+  width: 100px;
+  height: 100px;
+  margin: 0 auto 20px;
+  border-radius: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #60a5fa;
+  font-size: 62px;
+  background: rgba(96,165,250,.08);
+  border: 1px solid rgba(96,165,250,.25);
+  box-shadow:
+    inset 0 0 35px rgba(96,165,250,.12),
+    0 0 40px rgba(96,165,250,.08);
+}
+
+.loading-box h1 {
+  font-family: 'Cinzel', serif;
+  color: #60a5fa;
+  letter-spacing: 4px;
+  font-size: 28px;
+  margin-bottom: 12px;
+}
+
+.loading-box p {
+  min-height: 48px;
+  color: #bfdbfe;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+.loader {
+  width: 58px;
+  height: 58px;
+  border: 4px solid rgba(96,165,250,.18);
+  border-top-color: #60a5fa;
+  border-radius: 50%;
+  margin: 0 auto 24px;
+  animation: spin 1s linear infinite;
+}
+
+.loading-bar {
+  width: 100%;
+  height: 10px;
+  background: rgba(2, 6, 23, .85);
+  border: 1px solid rgba(96,165,250,.18);
+  border-radius: 999px;
+  overflow: hidden;
+  margin-bottom: 12px;
+}
+
+#loadingProgress {
+  width: 0%;
+  height: 100%;
+  background: linear-gradient(90deg, #2563eb, #0ea5e9, #60a5fa);
+  border-radius: 999px;
+  transition: width .25s ease;
+}
+
+#loadingPercent {
+  color: #93c5fd;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
 /* APP */
 
 .hidden {
@@ -384,6 +482,18 @@ nav button.active {
   line-height: 1.5;
 }
 
+.card a {
+  color: #93c5fd;
+  font-weight: 700;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(147,197,253,.45);
+}
+
+.card a:hover {
+  color: white;
+  border-bottom-color: white;
+}
+
 .card-actions {
   position: relative;
   margin-top: 18px;
@@ -514,8 +624,6 @@ nav button.active {
   font-weight: 800;
 }
 
-/* RESPONSIVE */
-
 @media (max-width: 780px) {
   header {
     padding: 18px;
@@ -558,6 +666,26 @@ nav button.active {
     <p>Interface enseignants</p>
     <input type="password" id="mainPassword" placeholder="Mot de passe">
     <button class="primary-btn" onclick="login()">ACCÉDER</button>
+  </div>
+</div>
+
+<div id="loadingScreen" class="loading-screen hidden">
+  <div class="loading-box">
+    <div class="loading-symbol">水</div>
+
+    <h1>Chargement du centre</h1>
+
+    <p id="loadingPhrase">
+      Initialisation du centre de documentation...
+    </p>
+
+    <div class="loader"></div>
+
+    <div class="loading-bar">
+      <div id="loadingProgress"></div>
+    </div>
+
+    <span id="loadingPercent">0%</span>
   </div>
 </div>
 
@@ -671,7 +799,7 @@ nav button.active {
 
     <div class="form-group">
       <label for="itemDescription">Description</label>
-      <textarea id="itemDescription" placeholder="Ajoute les détails ici..."></textarea>
+      <textarea id="itemDescription" placeholder="Ajoute les détails ici. Tu peux aussi coller un lien https://... ou www..."></textarea>
     </div>
 
     <div class="modal-actions">
@@ -747,6 +875,75 @@ const labels = {
   }
 };
 
+async function login() {
+  const pass = document.getElementById("mainPassword").value;
+
+  if (pass !== "sako") {
+    document.getElementById("mainPassword").value = "";
+    document.getElementById("mainPassword").placeholder = "Mot de passe incorrect";
+    return;
+  }
+
+  document.getElementById("loginScreen").style.display = "none";
+  document.getElementById("loadingScreen").classList.remove("hidden");
+
+  await startLoadingScreen();
+
+  document.getElementById("loadingScreen").classList.add("hidden");
+  document.getElementById("app").classList.remove("hidden");
+
+  loadDataFromSupabase();
+}
+
+function startLoadingScreen() {
+  return new Promise(resolve => {
+    const phrases = [
+      "Initialisation du centre de documentation de la section...",
+      "Ce centre de documentation de section a été monté par Duke Hebikage.",
+      "Chargement des archives pédagogiques...",
+      "Synchronisation avec les données Supabase...",
+      "Si un problème vous arrive, merci de vous adresser à Duke Hebikage.",
+      "Préparation des livres de cours, examens, élèves et rapports...",
+      "Vérification des accès enseignants...",
+      "Ouverture sécurisée du centre Kodomo..."
+    ];
+
+    const phraseElement = document.getElementById("loadingPhrase");
+    const progressElement = document.getElementById("loadingProgress");
+    const percentElement = document.getElementById("loadingPercent");
+
+    const duration = Math.floor(Math.random() * 5000) + 5000;
+    const startTime = Date.now();
+
+    let phraseIndex = 0;
+
+    phraseElement.textContent = phrases[phraseIndex];
+    progressElement.style.width = "0%";
+    percentElement.textContent = "0%";
+
+    const phraseInterval = setInterval(() => {
+      phraseIndex = (phraseIndex + 1) % phrases.length;
+      phraseElement.textContent = phrases[phraseIndex];
+    }, 1800);
+
+    const progressInterval = setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      const progress = Math.min(100, Math.round((elapsed / duration) * 100));
+
+      progressElement.style.width = progress + "%";
+      percentElement.textContent = progress + "%";
+
+      if (progress >= 100) {
+        clearInterval(phraseInterval);
+        clearInterval(progressInterval);
+
+        phraseElement.textContent = "Centre Kodomo prêt. Bienvenue.";
+        setTimeout(resolve, 500);
+      }
+    }, 120);
+  });
+}
+
 async function loadDataFromSupabase() {
   setStatus("Chargement des données...");
 
@@ -806,19 +1003,6 @@ function setStatus(message) {
   `;
 }
 
-function login() {
-  const pass = document.getElementById("mainPassword").value;
-
-  if (pass === "sako") {
-    document.getElementById("loginScreen").style.display = "none";
-    document.getElementById("app").classList.remove("hidden");
-    loadDataFromSupabase();
-  } else {
-    document.getElementById("mainPassword").value = "";
-    document.getElementById("mainPassword").placeholder = "Mot de passe incorrect";
-  }
-}
-
 function showSection(id) {
   document.querySelectorAll("section").forEach(section => {
     section.classList.add("hidden");
@@ -853,8 +1037,8 @@ function renderList(type) {
 
   const items = appData[type].filter(item => {
     return (
-      item.title.toLowerCase().includes(search) ||
-      item.description.toLowerCase().includes(search)
+      String(item.title).toLowerCase().includes(search) ||
+      String(item.description).toLowerCase().includes(search)
     );
   });
 
@@ -890,10 +1074,26 @@ function renderList(type) {
 }
 
 function formatDescription(text) {
-  return String(text)
+  return String(text || "")
     .split("\n")
-    .map(line => `<p>${escapeHtml(line)}</p>`)
+    .map(line => `<p>${linkifyText(line)}</p>`)
     .join("");
+}
+
+function linkifyText(text) {
+  const escaped = escapeHtml(text);
+
+  const urlRegex = /((https?:\/\/|www\.)[^\s<]+)/gi;
+
+  return escaped.replace(urlRegex, function(url) {
+    let href = url;
+
+    if (href.toLowerCase().startsWith("www.")) {
+      href = "https://" + href;
+    }
+
+    return `<a href="${href}" target="_blank" rel="noopener noreferrer">${url}</a>`;
+  });
 }
 
 function setSearch(type, value) {
@@ -970,9 +1170,7 @@ async function deleteItem(type, index) {
   const item = appData[type][index];
   if (!item) return;
 
-  const cardName = item.title;
-
-  const confirmDelete = window.confirm("Supprimer définitivement : " + cardName + " ?");
+  const confirmDelete = window.confirm("Supprimer définitivement : " + item.title + " ?");
   if (!confirmDelete) return;
 
   appData[type].splice(index, 1);
