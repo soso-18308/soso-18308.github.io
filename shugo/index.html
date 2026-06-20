@@ -854,6 +854,26 @@ body.admin-mode #vadmin.act{
       <div><div class="ptitle" style="color:var(--purple3)">⚙ Administration</div><div class="psub">Gestion des annonces, popups et affiches de recherche</div></div>
     </div>
 
+    <!-- ANNEES RAPPORTS -->
+    <div class="admin-section">
+      <div class="admin-section-title">Années des rapports</div>
+      <p style="font-size:12px;color:var(--text3);margin-bottom:14px;font-style:italic">Changer d'année renouvelle la catégorie Rapports : seuls les rapports de l'année active sont comptés.</p>
+      <div style="background:var(--bg3);border:1px solid var(--border2);border-radius:6px;padding:14px;margin-bottom:14px">
+        <div style="display:flex;align-items:flex-end;gap:10px;flex-wrap:wrap;margin-bottom:12px">
+          <div style="min-width:180px">
+            <label class="flbl">Année active</label>
+            <select class="fselect" id="report-year-select" onchange="setReportYear(this.value)"></select>
+          </div>
+          <div style="min-width:160px">
+            <label class="flbl">Nouvelle année</label>
+            <input class="finput" id="report-year-new" type="number" min="2000" max="2099" placeholder="Ex: 2027" />
+          </div>
+          <button class="abtn purp" onclick="addReportYear()">Ajouter l'année</button>
+        </div>
+        <div id="report-year-list" style="display:flex;gap:8px;flex-wrap:wrap"></div>
+      </div>
+    </div>
+
     <!-- POPUPS -->
     <div class="admin-section">
       <div class="admin-section-title">📢 Popups d'annonce</div>
@@ -986,6 +1006,7 @@ const AGENT_PHOTOS_KEY="sg_agent_photos_v1";
 const PATROLS_KEY="sg_patrols_v1";
 const POPUPS_KEY="sg_popups_v1";
 const WANTED_KEY="sg_wanted_v1";
+const SETTINGS_KEY="sg_settings_v1";
 
 const SUPABASE_URL="https://sgxcsrwurhjvnkalpxun.supabase.co";
 const SUPABASE_ANON_KEY="sb_publishable_hvgD-ZPp-pqArTYKaTBaEg_b4fz386Z";
@@ -1048,6 +1069,8 @@ let wanteds=[];
 let wantedPhotoData=null;
 let currentCasierPhotoIdx=-1;
 let loadingTipTimer=null;
+let currentReportYear=String(new Date().getFullYear());
+let reportYears=[currentReportYear];
 const LOADING_TIPS=[
   "En cas de souci, adressez-vous à Duke Hebikage.",
   "Besoin d'aide ? Adressez-vous à Duke Hebikage.",
@@ -1060,6 +1083,19 @@ const LOADING_TIPS=[
 
 // ── UTILS ──
 function esc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));}
+function normYear(v){
+  const y=String(v||'').trim();
+  return /^\d{4}$/.test(y)?y:String(new Date().getFullYear());
+}
+function normalizeSettings(s){
+  s=s&&typeof s==='object'?s:{};
+  currentReportYear=normYear(s.currentReportYear||currentReportYear);
+  reportYears=Array.isArray(s.reportYears)?s.reportYears.map(normYear):[];
+  if(!reportYears.includes(currentReportYear))reportYears.push(currentReportYear);
+  reportYears=[...new Set(reportYears)].sort((a,b)=>Number(b)-Number(a));
+  return {currentReportYear,reportYears};
+}
+function getSettings(){return {currentReportYear,reportYears};}
 function suspectPhotoKey(nom){return String(nom||'').trim().toLowerCase();}
 function agentPhotoKey(name){return String(name||'').trim().toLowerCase();}
 function startLoadingTips(){
@@ -1126,6 +1162,8 @@ function loadPopupsLocal(){try{const r=localStorage.getItem(POPUPS_KEY);popups=r
 function savePopupsLocal(){try{localStorage.setItem(POPUPS_KEY,JSON.stringify(popups));}catch(e){}}
 function loadWantedsLocal(){try{const r=localStorage.getItem(WANTED_KEY);wanteds=r?JSON.parse(r):[];}catch(e){wanteds=[];}}
 function saveWantedsLocal(){try{localStorage.setItem(WANTED_KEY,JSON.stringify(wanteds));}catch(e){}}
+function loadSettingsLocal(){try{const r=localStorage.getItem(SETTINGS_KEY);normalizeSettings(r?JSON.parse(r):{});}catch(e){normalizeSettings({});}}
+function saveSettingsLocal(){try{localStorage.setItem(SETTINGS_KEY,JSON.stringify(getSettings()));}catch(e){}}
 async function mergeCasierPhotosFrom(sourceCasiers){
   if(!Array.isArray(sourceCasiers)||!sourceCasiers.length)return 0;
   let merged=0;
@@ -1217,6 +1255,9 @@ async function savePopupsRemote(){await sbSet('popups',popups);}
 // Wanteds
 async function loadWantedsRemote(){const d=await sbGet('wanteds');return Array.isArray(d)?d:[];}
 async function saveWantedsRemote(){await sbSet('wanteds',wanteds);}
+// Settings
+async function loadSettingsRemote(){const d=await sbGet('settings');return d&&typeof d==='object'?d:{};}
+async function saveSettingsRemote(){await sbSet('settings',getSettings());}
 
 async function saveAgentPhotos(){
   saveAgentPhotosLocal();
@@ -1238,25 +1279,32 @@ async function saveWantedsSync(){
   saveWantedsLocal();
   if(storageMode==='remote'&&supabaseReady()){try{await saveWantedsRemote();}catch(e){console.error('Wanteds sync failed',e);}}
 }
+async function saveSettingsSync(){
+  saveSettingsLocal();
+  if(storageMode==='remote'&&supabaseReady()){try{await saveSettingsRemote();}catch(e){console.error('Settings sync failed',e);}}
+}
 
 // ── CHARGEMENT GLOBAL ──
 async function ld(){
-  loadAgentPhotosLocal();loadSuspectPhotosLocal();loadPatrolsLocal();loadPopupsLocal();loadWantedsLocal();
+  loadSettingsLocal();loadAgentPhotosLocal();loadSuspectPhotosLocal();loadPatrolsLocal();loadPopupsLocal();loadWantedsLocal();
   const localCasiersBeforeRemote=loadLocal();
   if(!supabaseReady()){
     casiers=localCasiersBeforeRemote;storageMode='local';setSyncStatus('Local');
     await migrateInlinePhotos();
+    saveSettingsLocal();
     return;
   }  try{
     setSyncStatus('Connexion...','');
     // Charger d'abord les photos, PUIS normaliser les casiers (migration .photo→suspectPhotos)
-    const [remotePhotosAgents,remotePhotosSuspects,remotePatrols,remotePopups,remoteWanteds]=await Promise.all([
+    const [remoteSettings,remotePhotosAgents,remotePhotosSuspects,remotePatrols,remotePopups,remoteWanteds]=await Promise.all([
+      loadSettingsRemote().catch(()=>({})),
       loadAgentPhotosRemote().catch(()=>({})),
       loadSuspectPhotosRemote().catch(()=>({})),
       loadPatrolsRemote().catch(()=>[]),
       loadPopupsRemote().catch(()=>[]),
       loadWantedsRemote().catch(()=>[])
     ]);
+    normalizeSettings(remoteSettings);
     if(Object.keys(remotePhotosAgents).length)agentPhotos=remotePhotosAgents;
     if(Object.keys(remotePhotosSuspects).length)suspectPhotos=remotePhotosSuspects;
     const remoteCasiers=await loadRemote();
@@ -1267,9 +1315,11 @@ async function ld(){
     if(remoteWanteds.length)wanteds=remoteWanteds;
     storageMode='remote';setSyncStatus('Partagé','on');
     if(casiers.length===0){const local=localCasiersBeforeRemote;if(local.length){casiers=local;await saveRemote();}}
-    saveLocal();saveAgentPhotosLocal();saveSuspectPhotosLocal();savePatrolsLocal();savePopupsLocal();saveWantedsLocal();
+    saveSettingsLocal();saveLocal();saveAgentPhotosLocal();saveSuspectPhotosLocal();savePatrolsLocal();savePopupsLocal();saveWantedsLocal();
     // Migrer les anciennes photos inline vers suspectPhotos
     await migrateInlinePhotos();
+    saveSettingsLocal();
+    saveSettingsRemote().catch(()=>{});
     if(mergedLocalPhotos>0){saveLocal();await saveRemote().catch(()=>{});await saveSuspectPhotos();}
   }catch(e){
     casiers=loadLocal();storageMode='local';setSyncStatus('Local secours','err');
@@ -1335,7 +1385,7 @@ function normalizeCasier(c){
   c.infractions=Array.isArray(c.infractions)?c.infractions:[];
   c.incidents=Array.isArray(c.incidents)&&c.incidents.length?c.incidents:[{
     date:c.date,grade:c.grade||null,gradeName:c.gradeName,gradeMult:c.gradeMult,
-    agent:c.agent,infractions:c.infractions,baseTotal:Number(c.baseTotal)||0,total:Number(c.total)||0
+    agent:c.agent,infractions:c.infractions,baseTotal:Number(c.baseTotal)||0,total:Number(c.total)||0,reportYear:c.reportYear||currentReportYear
   }];
   c.incidents=c.incidents.map(normalizeIncident);
   updateTotals(c);
@@ -1349,6 +1399,8 @@ function normalizeIncident(inc){
   inc.agent.nom=String(inc.agent.nom||'');inc.agent.grade=String(inc.agent.grade||'');inc.agent.autres=String(inc.agent.autres||'');
   inc.infractions=Array.isArray(inc.infractions)?inc.infractions:[];
   inc.baseTotal=Number(inc.baseTotal)||0;inc.total=Number(inc.total)||0;
+  inc.reportYear=normYear(inc.reportYear||currentReportYear);
+  if(!reportYears.includes(inc.reportYear))reportYears.push(inc.reportYear);
   return inc;
 }
 function updateTotals(c){
@@ -1384,7 +1436,7 @@ async function chkpw(){
           renderList(document.getElementById('srch')?.value||'');
           renderReports(document.getElementById('agent-srch')?.value||'');
           renderPatrols(document.getElementById('patrol-srch')?.value||'');
-          renderWantedSidebar();renderPopupAdmin();renderWantedAdmin();
+          renderWantedSidebar();renderYearAdmin();renderPopupAdmin();renderWantedAdmin();
         }
       });
     }
@@ -1393,7 +1445,7 @@ async function chkpw(){
     if(ls){ls.classList.remove('show');ls.classList.add('hidden');setTimeout(()=>{ls.style.display='none';},500);}
     document.getElementById('app').style.display='block';
     buildGrades();buildInf();refreshAgentOptions();
-    renderList();renderReports();renderPatrols();renderWantedSidebar();renderPopupAdmin();renderWantedAdmin();
+    renderList();renderReports();renderPatrols();renderWantedSidebar();renderYearAdmin();renderPopupAdmin();renderWantedAdmin();
     showActivePopups();
   } else {
     document.getElementById('pe').textContent='Accès refusé — mot de passe incorrect.';
@@ -1414,7 +1466,7 @@ function sv(name,nbIdx){
   if(name==='reports')renderReports(document.getElementById('agent-srch')?.value||'');
   if(name==='patrouilles')renderPatrols(document.getElementById('patrol-srch')?.value||'');
   if(name==='list')renderList(document.getElementById('srch')?.value||'');
-  if(name==='admin'){renderPopupAdmin();renderWantedAdmin();}
+  if(name==='admin'){renderYearAdmin();renderPopupAdmin();renderWantedAdmin();}
 }
 
 function openNew(fresh=false){
@@ -1553,6 +1605,7 @@ function buildIncident(){
   });
   return {
     date:(()=>{const j=document.getElementById('fd-jour')?.value||'';const m=document.getElementById('fd-mois')?.value||'';return j&&m?j+'/'+m:document.getElementById('fd').value||'';})(),
+    reportYear:currentReportYear,
     grade:selGrade,gradeName:grade?grade.name:'—',gradeMult:mult,
     agent:{nom:(document.getElementById('fa-nom').value||'').trim(),grade:(document.getElementById('fa-grade').value||'').trim(),autres:(document.getElementById('fa-autres').value||'').trim()},
     infractions:inf_list,baseTotal:base,total
@@ -1782,6 +1835,7 @@ function getAgentGroups(){
   casiers.forEach(c=>{
     updateTotals(c);
     c.incidents.forEach(inc=>{
+      if(normYear(inc.reportYear)!==currentReportYear)return;
       const raw=inc.agent&&inc.agent.nom?inc.agent.nom.trim():'';
       if(raw){
         const key=agentPhotoKey(raw);
@@ -1816,8 +1870,8 @@ function renderReports(filter=''){
   if(!root)return;
   const q=filter.trim().toLowerCase();
   const groups=getAgentGroups().filter(g=>!q||g.name.toLowerCase().includes(q));
-  if(count)count.textContent=groups.length+' agent(s) enregistré(s)';
-  if(groups.length===0){root.innerHTML='<div class="empty">'+(filter?'Aucun agent trouvé.':'Aucun rapport disponible.')+'</div>';return;}
+  if(count)count.textContent=groups.length+' agent(s) enregistré(s) · Année '+currentReportYear;
+  if(groups.length===0){root.innerHTML='<div class="empty">'+(filter?'Aucun agent trouvé pour '+currentReportYear+'.':'Aucun rapport disponible pour '+currentReportYear+'.')+'</div>';return;}
   root.innerHTML=groups.map(g=>{
     const nbResp=g.items.filter(it=>it.role==='responsable').length;
     const nbSec=g.items.filter(it=>it.role==='secondaire').length;
@@ -1934,6 +1988,42 @@ function renderPatrols(filter=''){
     const av=photo?`<img src="${esc(photo)}" alt="" style="width:100%;height:100%;object-fit:cover;border-radius:50%" />`:`<span style="font-family:'Cinzel',serif;font-size:16px;color:var(--sand3)">${esc(init)}</span>`;
     return `<div class="patrol-card"><div class="patrol-header"><div style="display:flex;align-items:center;gap:12px"><div style="width:44px;height:44px;border-radius:50%;border:1px solid var(--border2);background:var(--bg3);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0">${av}</div><div><div class="patrol-agent">${esc(p.agent)}</div><div class="patrol-badge">${p.grade?esc(p.grade)+' · ':''}<span style="color:var(--text2)">${p.date?'📅 '+esc(p.date):'Date inconnue'}</span></div>${autresStr}</div></div><div style="display:flex;flex-direction:column;align-items:flex-end;gap:6px"><div class="patrol-time-block"><div class="patrol-time-lbl">Patrouille</div><div>${esc(timeStr)}</div>${dur}</div><button class="patrol-del" onclick="delPatrol(${p.id})">✕ Supprimer</button></div></div>${reportStr}</div>`;
   }).join('');
+}
+
+// ── ANNEES RAPPORTS ADMIN ──
+function sortedReportYears(){
+  if(!reportYears.includes(currentReportYear))reportYears.push(currentReportYear);
+  reportYears=[...new Set(reportYears.map(normYear))].sort((a,b)=>Number(b)-Number(a));
+  return reportYears;
+}
+function renderYearAdmin(){
+  const select=document.getElementById('report-year-select');
+  const list=document.getElementById('report-year-list');
+  if(!select||!list)return;
+  const years=sortedReportYears();
+  select.innerHTML=years.map(y=>`<option value="${esc(y)}"${y===currentReportYear?' selected':''}>${esc(y)}</option>`).join('');
+  list.innerHTML=years.map(y=>`<button class="toggle-btn ${y===currentReportYear?'active':'inactive'}" onclick="setReportYear('${esc(y)}')">${esc(y)}${y===currentReportYear?' · active':''}</button>`).join('');
+}
+async function setReportYear(year){
+  currentReportYear=normYear(year);
+  if(!reportYears.includes(currentReportYear))reportYears.push(currentReportYear);
+  sortedReportYears();
+  await saveSettingsSync();
+  renderYearAdmin();
+  renderReports(document.getElementById('agent-srch')?.value||'');
+  refreshAgentOptions();
+}
+async function addReportYear(){
+  const inp=document.getElementById('report-year-new');
+  const y=normYear(inp?.value||'');
+  if(inp)inp.value='';
+  currentReportYear=y;
+  if(!reportYears.includes(y))reportYears.push(y);
+  sortedReportYears();
+  await saveSettingsSync();
+  renderYearAdmin();
+  renderReports(document.getElementById('agent-srch')?.value||'');
+  refreshAgentOptions();
 }
 
 // ── POPUPS ADMIN ──
