@@ -866,7 +866,7 @@ body.admin-mode #vadmin.act{
           </div>
           <div style="min-width:160px">
             <label class="flbl">Nouvelle année</label>
-            <input class="finput" id="report-year-new" type="number" min="2000" max="2099" placeholder="Ex: 2027" />
+            <input class="finput" id="report-year-new" type="number" min="0" max="9999" placeholder="Ex: 1" />
           </div>
           <button class="abtn purp" onclick="addReportYear()">Ajouter l'année</button>
         </div>
@@ -1069,8 +1069,10 @@ let wanteds=[];
 let wantedPhotoData=null;
 let currentCasierPhotoIdx=-1;
 let loadingTipTimer=null;
-let currentReportYear=String(new Date().getFullYear());
+const DEFAULT_REPORT_YEAR="0";
+let currentReportYear=DEFAULT_REPORT_YEAR;
 let reportYears=[currentReportYear];
+let reportYearMigrationNeeded=false;
 const LOADING_TIPS=[
   "En cas de souci, adressez-vous à Duke Hebikage.",
   "Besoin d'aide ? Adressez-vous à Duke Hebikage.",
@@ -1085,12 +1087,19 @@ const LOADING_TIPS=[
 function esc(v){return String(v??'').replace(/[&<>"']/g,ch=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[ch]));}
 function normYear(v){
   const y=String(v||'').trim();
-  return /^\d{4}$/.test(y)?y:String(new Date().getFullYear());
+  return /^\d{1,4}$/.test(y)?String(Number(y)):DEFAULT_REPORT_YEAR;
 }
 function normalizeSettings(s){
   s=s&&typeof s==='object'?s:{};
-  currentReportYear=normYear(s.currentReportYear||currentReportYear);
-  reportYears=Array.isArray(s.reportYears)?s.reportYears.map(normYear):[];
+  const realYear=String(new Date().getFullYear());
+  const yearsFromSettings=Array.isArray(s.reportYears)?s.reportYears.map(normYear).filter(y=>y!==realYear):[];
+  const savedYear=s.currentReportYear!==undefined?normYear(s.currentReportYear):DEFAULT_REPORT_YEAR;
+  currentReportYear=savedYear;
+  if(savedYear===realYear){
+    currentReportYear=DEFAULT_REPORT_YEAR;
+  }
+  reportYears=yearsFromSettings;
+  if(!reportYears.includes(DEFAULT_REPORT_YEAR))reportYears.push(DEFAULT_REPORT_YEAR);
   if(!reportYears.includes(currentReportYear))reportYears.push(currentReportYear);
   reportYears=[...new Set(reportYears)].sort((a,b)=>Number(b)-Number(a));
   return {currentReportYear,reportYears};
@@ -1291,6 +1300,7 @@ async function ld(){
   if(!supabaseReady()){
     casiers=localCasiersBeforeRemote;storageMode='local';setSyncStatus('Local');
     await migrateInlinePhotos();
+    await migrateReportYears();
     saveSettingsLocal();
     return;
   }  try{
@@ -1318,6 +1328,7 @@ async function ld(){
     saveSettingsLocal();saveLocal();saveAgentPhotosLocal();saveSuspectPhotosLocal();savePatrolsLocal();savePopupsLocal();saveWantedsLocal();
     // Migrer les anciennes photos inline vers suspectPhotos
     await migrateInlinePhotos();
+    await migrateReportYears();
     saveSettingsLocal();
     saveSettingsRemote().catch(()=>{});
     if(mergedLocalPhotos>0){saveLocal();await saveRemote().catch(()=>{});await saveSuspectPhotos();}
@@ -1366,6 +1377,32 @@ async function migrateInlinePhotos(){
   }
 }
 
+async function migrateReportYears(){
+  let changed=0;
+  casiers.forEach(c=>{
+    if(!Array.isArray(c.incidents))return;
+    c.incidents.forEach(inc=>{
+      if(!inc.reportYear&&inc.reportYear!==0){
+        inc.reportYear=DEFAULT_REPORT_YEAR;
+        changed++;
+      } else {
+        const y=normYear(inc.reportYear);
+        const fixedYear=y===String(new Date().getFullYear())?DEFAULT_REPORT_YEAR:y;
+        if(String(inc.reportYear)!==fixedYear){inc.reportYear=fixedYear;changed++;}
+      }
+      if(!reportYears.includes(inc.reportYear))reportYears.push(inc.reportYear);
+    });
+  });
+  sortedReportYears();
+  if(changed>0||reportYearMigrationNeeded){
+    saveLocal();
+    if(storageMode==='remote'&&supabaseReady())await saveRemote().catch(()=>{});
+    reportYearMigrationNeeded=false;
+  }
+  saveSettingsLocal();
+  if(storageMode==='remote'&&supabaseReady())saveSettingsRemote().catch(()=>{});
+}
+
 // ── NORMALISATION ──
 function normalizeCasier(c){
   c=c&&typeof c==='object'?c:{};
@@ -1385,7 +1422,7 @@ function normalizeCasier(c){
   c.infractions=Array.isArray(c.infractions)?c.infractions:[];
   c.incidents=Array.isArray(c.incidents)&&c.incidents.length?c.incidents:[{
     date:c.date,grade:c.grade||null,gradeName:c.gradeName,gradeMult:c.gradeMult,
-    agent:c.agent,infractions:c.infractions,baseTotal:Number(c.baseTotal)||0,total:Number(c.total)||0,reportYear:c.reportYear||currentReportYear
+    agent:c.agent,infractions:c.infractions,baseTotal:Number(c.baseTotal)||0,total:Number(c.total)||0,reportYear:c.reportYear||DEFAULT_REPORT_YEAR
   }];
   c.incidents=c.incidents.map(normalizeIncident);
   updateTotals(c);
@@ -1399,7 +1436,15 @@ function normalizeIncident(inc){
   inc.agent.nom=String(inc.agent.nom||'');inc.agent.grade=String(inc.agent.grade||'');inc.agent.autres=String(inc.agent.autres||'');
   inc.infractions=Array.isArray(inc.infractions)?inc.infractions:[];
   inc.baseTotal=Number(inc.baseTotal)||0;inc.total=Number(inc.total)||0;
-  inc.reportYear=normYear(inc.reportYear||currentReportYear);
+  if(inc.reportYear!==undefined&&inc.reportYear!==null&&String(inc.reportYear).trim()!==''){
+    const yRaw=normYear(inc.reportYear);
+    const y=yRaw===String(new Date().getFullYear())?DEFAULT_REPORT_YEAR:yRaw;
+    if(String(inc.reportYear)!==y)reportYearMigrationNeeded=true;
+    inc.reportYear=y;
+  } else {
+    inc.reportYear=DEFAULT_REPORT_YEAR;
+    reportYearMigrationNeeded=true;
+  }
   if(!reportYears.includes(inc.reportYear))reportYears.push(inc.reportYear);
   return inc;
 }
@@ -2005,6 +2050,7 @@ function renderYearAdmin(){
   list.innerHTML=years.map(y=>`<button class="toggle-btn ${y===currentReportYear?'active':'inactive'}" onclick="setReportYear('${esc(y)}')">${esc(y)}${y===currentReportYear?' · active':''}</button>`).join('');
 }
 async function setReportYear(year){
+  if(!adminUnlocked)return;
   currentReportYear=normYear(year);
   if(!reportYears.includes(currentReportYear))reportYears.push(currentReportYear);
   sortedReportYears();
@@ -2014,6 +2060,7 @@ async function setReportYear(year){
   refreshAgentOptions();
 }
 async function addReportYear(){
+  if(!adminUnlocked)return;
   const inp=document.getElementById('report-year-new');
   const y=normYear(inp?.value||'');
   if(inp)inp.value='';
