@@ -310,15 +310,15 @@
     z-index:2;
   }
   .tile.hold{
-    height: 24px; left:12%; width:76%; border-radius: 999px;
-    background: linear-gradient(90deg, color-mix(in srgb, var(--lane-color) 75%, white), color-mix(in srgb, var(--lane-color) 32%, var(--panel)));
-    box-shadow: 0 0 16px color-mix(in srgb, var(--lane-color) 40%, transparent), 0 2px 8px rgba(0,0,0,0.4);
+    height: 230px; left:3%; width:94%; border-radius: 14px;
+    background: linear-gradient(180deg, color-mix(in srgb, var(--lane-color) 75%, white), color-mix(in srgb, var(--lane-color) 32%, var(--panel)));
+    box-shadow: 0 0 26px color-mix(in srgb, var(--lane-color) 45%, transparent), 0 6px 22px rgba(0,0,0,0.5);
   }
   .tile.hold::after{
-    content:''; position:absolute; inset: 4px 8px; border-radius:999px;
+    content:''; position:absolute; inset: 8px; border-radius:8px;
     background: rgba(255,255,255,0.18);
-    transform: scaleX(var(--hold-progress, 0));
-    transform-origin:left center;
+    transform: scaleY(var(--hold-progress, 0));
+    transform-origin: bottom center;
     transition: transform .06s linear;
   }
   .tile.good{ background: color-mix(in srgb, var(--lane-color) 80%, white); box-shadow: 0 0 30px color-mix(in srgb, var(--lane-color) 80%, transparent); }
@@ -379,7 +379,7 @@
       width: 26px; height: 26px; line-height: 26px; font-size: 10.5px; bottom: 14px;
     }
     .tile{ left: 7%; width: 86%; }
-    .tile.hold{ left: 10%; width: 80%; }
+    .tile.hold{ left: 4%; width: 92%; height: 190px; }
     .center-msg h2{ font-size: 11px; letter-spacing: 2px; padding: 0 24px; }
     #boost-msg{ font-size: 44px; }
     .menu-wrap{ padding: calc(28px + env(safe-area-inset-top, 0px)) 5vw 40px; }
@@ -994,7 +994,7 @@
   function spawnTile(){
     const candidateLanes = Array.from({length: LANES}, (_, i) => i);
     const laneIdx = candidateLanes[Math.floor(Math.random() * candidateLanes.length)];
-    if(tiles.some(t => t.lane === laneIdx && t.y < 170)) return;
+    if(tiles.some(t => t.lane === laneIdx && t.y < 260)) return;
     const lane = laneEls[laneIdx];
     const el = document.createElement('div');
     const holdReady = (elapsed - lastHoldSpawnAt) > MIN_HOLD_GAP_MS;
