@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1, user-scalable=no, viewport-fit=cover">
 <title>Clair de Lune — Piano Tiles</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -29,9 +29,13 @@
     color: var(--text);
     font-family: 'Inter', sans-serif;
     overflow:hidden;
+    overscroll-behavior:none;
     -webkit-tap-highlight-color: transparent;
+    -webkit-user-select:none; user-select:none;
+    -webkit-touch-callout:none;
   }
-  #app{ position:relative; width:100%; height:100vh; }
+  #app{ position:relative; width:100%; height:100vh; height:100dvh; }
+  input, textarea{ -webkit-user-select:text; user-select:text; }
 
   .ambient{
     position:absolute; inset:0; z-index:0; pointer-events:none;
@@ -224,7 +228,8 @@
   .hud{
     position:absolute; top:0; left:0; right:0; z-index:5;
     display:flex; align-items:center; justify-content:space-between;
-    padding: 16px 22px; background: linear-gradient(180deg, rgba(10,11,22,0.9), transparent);
+    padding: calc(16px + env(safe-area-inset-top, 0px)) calc(22px + env(safe-area-inset-right, 0px)) 16px calc(22px + env(safe-area-inset-left, 0px));
+    background: linear-gradient(180deg, rgba(10,11,22,0.9), transparent);
   }
   .hud-left{ display:flex; align-items:center; gap:14px; }
   .hud-title{ font-family:'Sora',sans-serif; font-weight:700; font-size:14px; letter-spacing:0.3px; max-width:180px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
@@ -251,6 +256,7 @@
 
   #playfield{
     position:relative; width:100%; height:100%; display:flex;
+    touch-action:none;
     background:
       radial-gradient(ellipse 70% 45% at 50% 0%, rgba(139,123,255,0.10), transparent 65%),
       radial-gradient(ellipse 90% 40% at 50% 100%, rgba(139,123,255,0.06), transparent 70%);
@@ -266,6 +272,7 @@
   }
   .lane{
     position:relative; flex:1; height:100%; border-right: 1px solid var(--line); overflow:hidden;
+    touch-action:none;
     background: linear-gradient(180deg, transparent 0%, transparent 70%, color-mix(in srgb, var(--lane-color) 10%, transparent) 100%);
     transition: background .15s ease;
   }
@@ -280,7 +287,9 @@
     box-shadow: 0 0 14px color-mix(in srgb, var(--lane-color) 35%, transparent);
   }
   .hit-zone{
-    position:absolute; bottom:0; left:0; right:0; height: 88px;
+    position:absolute; bottom:0; left:0; right:0;
+    height: calc(88px + env(safe-area-inset-bottom, 0px));
+    padding-bottom: env(safe-area-inset-bottom, 0px);
     border-top: 2px solid var(--lane-color);
     background: linear-gradient(180deg, color-mix(in srgb, var(--lane-color) 16%, transparent), transparent);
     box-shadow: 0 -4px 20px color-mix(in srgb, var(--lane-color) 25%, transparent) inset;
@@ -299,6 +308,18 @@
     border: 1px solid color-mix(in srgb, var(--lane-color) 70%, transparent);
     box-shadow: 0 6px 22px color-mix(in srgb, var(--lane-color) 35%, transparent), 0 2px 8px rgba(0,0,0,0.5);
     z-index:2;
+  }
+  .tile.hold{
+    height: 24px; left:12%; width:76%; border-radius: 999px;
+    background: linear-gradient(90deg, color-mix(in srgb, var(--lane-color) 75%, white), color-mix(in srgb, var(--lane-color) 32%, var(--panel)));
+    box-shadow: 0 0 16px color-mix(in srgb, var(--lane-color) 40%, transparent), 0 2px 8px rgba(0,0,0,0.4);
+  }
+  .tile.hold::after{
+    content:''; position:absolute; inset: 4px 8px; border-radius:999px;
+    background: rgba(255,255,255,0.18);
+    transform: scaleX(var(--hold-progress, 0));
+    transform-origin:left center;
+    transition: transform .06s linear;
   }
   .tile.good{ background: color-mix(in srgb, var(--lane-color) 80%, white); box-shadow: 0 0 30px color-mix(in srgb, var(--lane-color) 80%, transparent); }
 
@@ -345,6 +366,31 @@
   .over-score{ font-family:'JetBrains Mono', monospace; font-size: 44px; font-weight:700; color: var(--gold); margin: 14px 0 4px; }
   .over-label{ color: var(--text-dim); font-size:12px; letter-spacing:1px; margin-bottom:26px; }
   .over-actions{ display:flex; gap:10px; }
+
+  @media (max-width: 720px){
+    .hud{
+      padding: calc(10px + env(safe-area-inset-top, 0px)) calc(12px + env(safe-area-inset-right, 0px)) 10px calc(12px + env(safe-area-inset-left, 0px));
+    }
+    .hud-title{ max-width: 120px; font-size: 11px; }
+    .hud-score #score{ font-size: 18px; }
+    #quit-btn span{ display:none; }
+    #quit-btn{ padding: 8px; }
+    .lane .lane-key-label{
+      width: 26px; height: 26px; line-height: 26px; font-size: 10.5px; bottom: 14px;
+    }
+    .tile{ left: 7%; width: 86%; }
+    .tile.hold{ left: 10%; width: 80%; }
+    .center-msg h2{ font-size: 11px; letter-spacing: 2px; padding: 0 24px; }
+    #boost-msg{ font-size: 44px; }
+    .menu-wrap{ padding: calc(28px + env(safe-area-inset-top, 0px)) 5vw 40px; }
+    .menu-head h1{ font-size: 26px; }
+    .song-grid{ grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); gap: 12px; }
+  }
+
+  @media (max-width: 720px) and (orientation: landscape){
+    .menu-wrap{ padding-top: calc(16px + env(safe-area-inset-top, 0px)); }
+    .song-grid{ grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+  }
 
   @media (prefers-reduced-motion: reduce){
     .screen, .mkey, .life, .btn-solid, #pw-submit, .song-card{ transition:none !important; }
@@ -462,8 +508,13 @@
   // Change le mot de passe ici :
   const SITE_PASSWORD = "clairdelune";
 
-  const LANES = 7;
-  const LANE_KEYS = ["A","S","D","F","J","K","L"];
+  const LANES = 5;
+  const LANE_KEYS = ["A","S","D","F","J"];
+  // les notes longues (à maintenir) sont plus rares et espacées dans le temps,
+  // pour rester une surprise occasionnelle plutôt qu'une habitude
+  const HOLD_NOTE_CHANCE = 0.10;
+  const MIN_HOLD_GAP_MS = 6500;
+  let lastHoldSpawnAt = -99999;
   // gamme pentatonique sur deux octaves, une note par voie (Hz)
   const LANE_FREQS = [196.00, 220.00, 261.63, 293.66, 329.63, 392.00, 440.00]; // G A C D E G A
   // une couleur d'accent par voie, pour que l'écran de jeu ne soit plus tout noir
@@ -764,6 +815,7 @@
   let currentSong = null;
   let currentAudioEl = null;
   let boostTimer = null;
+  const activePressedLanes = new Set();
   const songResults = new Map();
 
   function getSongStars(song){
@@ -828,7 +880,10 @@
       laneEls.push(lane);
     }
     window.addEventListener('keydown', onKeyDown);
+    window.addEventListener('keyup', onKeyUp);
     playfield.addEventListener('pointerdown', onPointerDown);
+    window.addEventListener('pointerup', onPointerUp);
+    window.addEventListener('pointercancel', onPointerUp);
   }
 
   function buildLives(){
@@ -874,6 +929,7 @@
     tiles = [];
     elapsed = 0;
     lastSpawn = -9999;
+    lastHoldSpawnAt = -99999;
     lastBeatIndex = -1;
     scoreEl.textContent = '0';
     comboEl.textContent = '';
@@ -941,10 +997,47 @@
     if(tiles.some(t => t.lane === laneIdx && t.y < 170)) return;
     const lane = laneEls[laneIdx];
     const el = document.createElement('div');
-    el.className = 'tile';
+    const holdReady = (elapsed - lastHoldSpawnAt) > MIN_HOLD_GAP_MS;
+    const isHold = holdReady && Math.random() < HOLD_NOTE_CHANCE;
+    if(isHold) lastHoldSpawnAt = elapsed;
+    el.className = 'tile' + (isHold ? ' hold' : '');
     el.style.top = '-120px';
     lane.appendChild(el);
-    tiles.push({ lane: laneIdx, el, y: -120, hit: false });
+    tiles.push({
+      lane: laneIdx,
+      el,
+      y: -120,
+      hit: false,
+      type: isHold ? 'hold' : 'tap',
+      holdStarted: false,
+      holdProgress: 0,
+      // note longue à maintenir plus longtemps pour bien se démarquer des tuiles normales
+      holdDuration: isHold ? 950 + Math.random() * 550 : 0
+    });
+  }
+
+  function completeHoldNote(tile){
+    tile.hit = true;
+    tile.el.classList.add('good');
+    tile.el.style.transition = 'opacity .15s, transform .15s';
+    tile.el.style.opacity = '0';
+    tile.el.style.transform = 'scaleX(1.05)';
+    setTimeout(()=>{ tile.el.remove(); tiles = tiles.filter(x=>x!==tile); }, 150);
+
+    combo++;
+    const gain = 18 + Math.floor(combo/4)*4;
+    score += gain * multiplier;
+    scoreEl.textContent = score;
+    comboEl.textContent = combo > 1 ? combo + 'x combo' : '';
+    impactMusic();
+    flashLane(tile.lane);
+    popText(tile.lane, 'HOLD +' + (gain * multiplier));
+
+    const newMult = Math.min(16, Math.pow(2, Math.floor(combo / 8)));
+    if(newMult > multiplier){
+      multiplier = newMult;
+      showBoost(multiplier);
+    }
   }
 
   function loop(ts){
@@ -980,6 +1073,24 @@
       const paceBoost = 1 + progress * 1.15;
       t.y += fallSpeed * dt / 1000 * paceBoost;
       t.el.style.top = t.y + 'px';
+
+      if(t.type === 'hold' && t.holdStarted){
+        if(activePressedLanes.has(t.lane)){
+          t.holdProgress += dt;
+          const ratio = Math.min(1, t.holdProgress / t.holdDuration);
+          t.el.style.setProperty('--hold-progress', ratio.toFixed(3));
+          if(ratio >= 1){
+            completeHoldNote(t);
+            continue;
+          }
+        } else if(t.holdProgress > 0){
+          t.el.remove();
+          tiles.splice(i,1);
+          registerMiss();
+          continue;
+        }
+      }
+
       if(!t.hit && t.y > fieldH){
         t.el.remove();
         tiles.splice(i,1);
@@ -990,15 +1101,44 @@
     if(running) rafId = requestAnimationFrame(loop);
   }
 
-  function registerHit(laneIdx){
-    // On accepte le clic dès qu'une tuile est visible dans la voie, pas seulement
-    // quand elle est tout en bas : on prend la plus avancée (la plus proche des touches).
-    let best = null;
+  // Marge de tolérance autour d'une tuile pour la détection tactile : un doigt est
+  // large et imprécis, donc on accepte un léger débordement tout en exigeant que
+  // le point touché soit bien sur la tuile — pas n'importe où dans sa colonne.
+  const TOUCH_PAD = 16;
+  function tileAtPoint(laneIdx, clientX, clientY){
+    let found = null;
     for(const t of tiles){
       if(t.hit || t.lane !== laneIdx) continue;
-      if(!best || t.y > best.y) best = t;
+      const rect = t.el.getBoundingClientRect();
+      if(clientX >= rect.left - TOUCH_PAD && clientX <= rect.right + TOUCH_PAD &&
+         clientY >= rect.top - TOUCH_PAD && clientY <= rect.bottom + TOUCH_PAD){
+        if(!found || t.y > found.y) found = t;
+      }
+    }
+    return found;
+  }
+
+  function registerHit(laneIdx, specificTile){
+    // Au clavier (pas de coordonnées), on prend la tuile la plus avancée de la voie.
+    // Au toucher, specificTile impose qu'on ait vraiment touché la tuile elle-même.
+    let best = specificTile || null;
+    if(!best){
+      for(const t of tiles){
+        if(t.hit || t.lane !== laneIdx) continue;
+        if(!best || t.y > best.y) best = t;
+      }
     }
     if(best){
+      if(best.type === 'hold'){
+        if(!best.holdStarted){
+          best.holdStarted = true;
+          best.holdProgress = 0;
+          best.el.classList.add('good');
+          activePressedLanes.add(laneIdx);
+        }
+        return;
+      }
+
       best.hit = true;
       best.el.classList.add('good');
       best.el.style.transition = 'opacity .15s, transform .15s';
@@ -1067,15 +1207,41 @@
     if(gameScreen.classList.contains('hidden')) return;
     const idx = LANE_KEYS.indexOf(e.key.toUpperCase());
     if(idx === -1) return;
+    activePressedLanes.add(idx);
     if(!running){ startRun(); return; }
     registerHit(idx);
+  }
+  function onKeyUp(e){
+    const idx = LANE_KEYS.indexOf(e.key.toUpperCase());
+    if(idx !== -1) activePressedLanes.delete(idx);
   }
   function onPointerDown(e){
     const laneEl = e.target.closest('.lane');
     if(!laneEl) return;
     const idx = parseInt(laneEl.dataset.lane, 10);
     if(!running){ startRun(); return; }
-    registerHit(idx);
+
+    const tile = tileAtPoint(idx, e.clientX, e.clientY);
+    if(tile){
+      activePressedLanes.add(idx);
+      registerHit(idx, tile);
+    } else {
+      // Touché la colonne mais pas la tuile elle-même : ça ne compte pas comme un bon appui.
+      combo = 0; multiplier = 1;
+      comboEl.textContent = '';
+    }
+  }
+  function onPointerUp(e){
+    // On relâche toutes les voies concernées par ce pointeur (fonctionne même si le
+    // doigt a glissé hors de la lane d'origine avant d'être relâché).
+    if(typeof e.clientX === 'number' && typeof e.clientY === 'number'){
+      const laneEl = document.elementFromPoint(e.clientX, e.clientY)?.closest?.('.lane');
+      if(laneEl){
+        activePressedLanes.delete(parseInt(laneEl.dataset.lane, 10));
+        return;
+      }
+    }
+    activePressedLanes.clear();
   }
 
   retryBtn.addEventListener('click', ()=>{
